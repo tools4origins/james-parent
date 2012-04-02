@@ -93,16 +93,16 @@
         <derby.version>10.7.1.1</derby.version>
         <hadoop.version>1.0.1</hadoop.version>
         <hbase.version>0.92.0</hbase.version>
-        <imap.version>0.3</imap.version>
+        <imap.version>0.4-SNAPSHOT</imap.version>
         <jackrabbit.version>2.2.5</jackrabbit.version>
         <javax.activation.groupId>javax.activation</javax.activation.groupId>
         <javax.activation.artifactId>activation</javax.activation.artifactId>
         <javax.mail.groupId>javax.mail</javax.mail.groupId>
         <javax.mail.artifactId>mail</javax.mail.artifactId>
-        <jsieve.version>0.5</jsieve.version>
-        <mailbox.version>0.4</mailbox.version>
+        <jsieve.version>0.6-SNAPSHOT</jsieve.version>
+        <mailbox.version>0.5-SNAPSHOT</mailbox.version>
         <productName>Apache-James Mail Server</productName>
-        <protocols.version>1.6.2</protocols.version>
+        <protocols.version>1.6.3-SNAPSHOT</protocols.version>
         <spring.version>3.1.0.RELEASE</spring.version>
     </properties>
 
