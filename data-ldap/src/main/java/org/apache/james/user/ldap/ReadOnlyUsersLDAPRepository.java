@@ -50,7 +50,6 @@ import org.apache.james.user.ldap.api.LdapConstants;
 import org.apache.james.util.retry.DoublingRetrySchedule;
 import org.apache.james.util.retry.api.RetrySchedule;
 import org.apache.james.util.retry.naming.ldap.RetryingLdapContext;
-
 import org.slf4j.Logger;
 
 /**
@@ -75,11 +74,11 @@ import org.slf4j.Logger;
  * <p>
  * The following fragment of XML provides an example configuration to enable
  * this repository: </br>
- * 
+ *
  * <pre>
  *  &lt;users-store&gt;
- *      &lt;repository name=&quot;LDAPUsers&quot; 
- *      class=&quot;org.apache.james.userrepository.ReadOnlyUsersLDAPRepository&quot; 
+ *      &lt;repository name=&quot;LDAPUsers&quot;
+ *      class=&quot;org.apache.james.userrepository.ReadOnlyUsersLDAPRepository&quot;
  *      ldapHost=&quot;ldap://myldapserver:389&quot;
  *      principal=&quot;uid=ldapUser,ou=system&quot;
  *      credentials=&quot;password&quot;
@@ -92,9 +91,9 @@ import org.slf4j.Logger;
  *      retryIntervalScale=&quot;1000&quot;
  *  &lt;/users-store&gt;
  * </pre>
- * 
+ *
  * </br>
- * 
+ *
  * Its constituent attributes are defined as follows:
  * <ul>
  * <li><b>ldapHost:</b> The URL of the LDAP server to connect to.</li>
@@ -169,20 +168,20 @@ import org.slf4j.Logger;
  * </ul>
  * </ul>
  * </p>
- * 
+ *
  * <p>
  * In order to enable group/role based access restrictions, you can use the
  * &quot;&lt;restriction&gt;&quot; configuration element. An example of this is
  * shown below: <br>
- * 
+ *
  * <pre>
  * &lt;restriction
- * 	memberAttribute=&quot;uniqueMember&quot;&gt;
- * 		&lt;group&gt;cn=PermanentStaff,ou=Groups,o=myorg.co.uk,ou=system&lt;/group&gt;
- *        	&lt;group&gt;cn=TemporaryStaff,ou=Groups,o=myorg.co.uk,ou=system&lt;/group&gt;
+ *  memberAttribute=&quot;uniqueMember&quot;&gt;
+ *    &lt;group&gt;cn=PermanentStaff,ou=Groups,o=myorg.co.uk,ou=system&lt;/group&gt;
+ *          &lt;group&gt;cn=TemporaryStaff,ou=Groups,o=myorg.co.uk,ou=system&lt;/group&gt;
  * &lt;/restriction&gt;
  * </pre>
- * 
+ *
  * Its constituent attributes and elements are defined as follows:
  * <ul>
  * <li>
@@ -194,7 +193,7 @@ import org.slf4j.Logger;
  * the &quot;&lt;restriction&gt;&quot; sections.</li>
  * </ul>
  * </p>
- * 
+ *
  * <p>
  * The following parameters may be used to adjust the underlying
  * <code>com.sun.jndi.ldap.LdapCtxFactory</code>. See <a href=
@@ -213,10 +212,10 @@ import org.slf4j.Logger;
  * <code>com.sun.jndi.ldap.read.timeout</code> to the specified integer value.
  * Applicable to Java 6 and above.
  * </ul>
- * 
+ *
  * @see ReadOnlyLDAPUser
  * @see ReadOnlyLDAPGroupRestriction
- * 
+ *
  */
 public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurable, LogEnabled {
 
@@ -294,13 +293,13 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
     // A value of less than or equal to zero means to use the network protocol's
     // (i.e., TCP's) timeout value.
     private int connectionTimeout = -1;
-    
+
     // The LDAP read timeout in milliseconds.
     private int readTimeout = -1;
 
     // The schedule for retry attempts
     private RetrySchedule schedule = null;
-    
+
     // Maximum number of times to retry a connection attempts. Default is no
     // retries.
     private int maxRetries = 0;
@@ -309,7 +308,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
 
     /**
      * Creates a new instance of ReadOnlyUsersLDAPRepository.
-     * 
+     *
      */
     public ReadOnlyUsersLDAPRepository() {
         super();
@@ -320,7 +319,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
      * James server configuration data. The fields extracted include
      * {@link #ldapHost}, {@link #userIdAttribute}, {@link #userBase},
      * {@link #principal}, {@link #credentials} and {@link #restriction}.
-     * 
+     *
      * @param configuration
      *            An encapsulation of the James server configuration data.
      */
@@ -358,7 +357,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
     /**
      * Initialises the user-repository instance. It will create a connection to
      * the LDAP host using the supplied configuration.
-     * 
+     *
      * @throws Exception
      *             If an error occurs authenticating or connecting to the
      *             specified LDAP host.
@@ -390,12 +389,12 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
                     append('\n').
                     append("readTimeout: ").
                     append(readTimeout).
-                    append('\n').                    
+                    append('\n').
                     append("retrySchedule: ").
                     append(schedule).
                     append('\n').
                     append("maxRetries: ").
-                    append(maxRetries).                   
+                    append(maxRetries).
                     append('\n').
                     toString());
         }
@@ -405,7 +404,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
 
     /**
      * Answer the LDAP context used to connect with the LDAP server.
-     * 
+     *
      * @return an <code>LdapContext</code>
      * @throws NamingException
      */
@@ -415,14 +414,14 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
         }
         return ldapContext;
     }
-    
+
     protected void updateLdapContext() throws NamingException {
         ldapContext = computeLdapContext();
     }
 
     /**
      * Answers a new LDAP/JNDI context using the specified user credentials.
-     * 
+     *
      * @return an LDAP directory context
      * @throws NamingException
      *             Propagated from underlying LDAP communication API.
@@ -436,7 +435,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
             }
         };
     }
-    
+
     protected Properties getContextEnvironment()
     {
         final Properties props = new Properties();
@@ -458,20 +457,20 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
         if (readTimeout > -1)
         {
             props.put(PROPERTY_NAME_READ_TIMEOUT, Integer.toString(readTimeout));
-        }        
+        }
         return props;
     }
 
     /**
      * Indicates if the user with the specified DN can be found in the group
      * membership map&#45;as encapsulated by the specified parameter map.
-     * 
+     *
      * @param userDN
      *            The DN of the user to search for.
      * @param groupMembershipList
      *            A map containing the entire group membership lists for the
      *            configured groups. This is organised as a map of
-     * 
+     *
      *            <code>&quot;&lt;groupDN&gt;=&lt;[userDN1,userDN2,...,userDNn]&gt;&quot;</code>
      *            pairs. In essence, each <code>groupDN</code> string is
      *            associated to a list of <code>userDNs</code>.
@@ -497,7 +496,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
     /**
      * Gets all the user entities taken from the LDAP server, as taken from the
      * search-context given by the value of the attribute {@link #userBase}.
-     * 
+     *
      * @return A set containing all the relevant users found in the LDAP
      *         directory.
      * @throws NamingException
@@ -524,7 +523,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
      * encapsulates the user list as a collection of {@link ReadOnlyLDAPUser}s.
      * This method delegates the extraction of a single user's details to the
      * method {@link #buildUser(String)}.
-     * 
+     *
      * @param userDNs
      *            The distinguished-names (DNs) of the users whose information
      *            is to be extracted from the LDAP repository.
@@ -547,13 +546,52 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
         return results;
     }
 
+
+    /**
+     * For a given name, this method makes ldap search in userBase with filter {@link #userIdAttribute}=name and objectClass={@link #userObjectClass}
+     * and builds {@link User} based on search result.
+     *
+     * @param name
+     *            The userId which should be value of the field {@link #userIdAttribute}
+     * @return A {@link ReadOnlyLDAPUser} instance which is initialized with the
+     *         userId of this user and ldap connection information with which
+     *         the user was searched. Return null if such a user was not found.
+     * @throws NamingException
+     *             Propagated by the underlying LDAP communication layer.
+     */
+    private ReadOnlyLDAPUser searchAndBuildUser(String name) throws NamingException {
+      SearchControls sc = new SearchControls();
+      sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
+      sc.setReturningAttributes(new String[] { userIdAttribute });
+      sc.setCountLimit(1);
+
+      StringBuilder builderFilter = new StringBuilder("(&(");
+      builderFilter.append(userIdAttribute).append("=").append(name).append(")")
+                   .append("(objectClass=").append(userObjectClass).append("))");
+
+      NamingEnumeration<SearchResult> sr = ldapContext.search(userBase, builderFilter.toString(),
+          sc);
+
+      if (!sr.hasMore())
+        return null;
+
+      SearchResult r = sr.next();
+      Attribute userName = r.getAttributes().get(userIdAttribute);
+
+      if (!restriction.isActivated()
+          || userInGroupsMembershipList(r.getNameInNamespace(), restriction.getGroupMembershipLists(ldapContext)))
+        return new ReadOnlyLDAPUser(userName.get().toString(), r.getNameInNamespace(), ldapContext);
+
+      return null;
+    }
+
     /**
      * Given a userDN, this method retrieves the user attributes from the LDAP
      * server, so as to extract the items that are of interest to James.
      * Specifically it extracts the userId, which is extracted from the LDAP
      * attribute whose name is given by the value of the field
      * {@link #userIdAttribute}.
-     * 
+     *
      * @param userDN
      *            The distinguished-name of the user whose details are to be
      *            extracted from the LDAP repository.
@@ -564,29 +602,9 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
      *             Propagated by the underlying LDAP communication layer.
      */
     private ReadOnlyLDAPUser buildUser(String userDN) throws NamingException {
-        SearchControls sc = new SearchControls();
-        sc.setSearchScope(SearchControls.OBJECT_SCOPE);
-        sc.setReturningAttributes(new String[] { userIdAttribute });
-        sc.setCountLimit(1);
-
-        StringBuilder builderFilter = new StringBuilder("(objectClass=");
-        builderFilter.append(userObjectClass);
-        builderFilter.append(")");
-        NamingEnumeration<SearchResult> sr = ldapContext.search(userDN, builderFilter.toString(),
-                sc);
-
-        if (!sr.hasMore())
-            return null;
-
-        Attributes userAttributes = sr.next().getAttributes();
-        Attribute userName = userAttributes.get(userIdAttribute);
-
-        if (!restriction.isActivated()
-                || userInGroupsMembershipList(userDN, restriction
-                        .getGroupMembershipLists(ldapContext)))
-            return new ReadOnlyLDAPUser(userName.get().toString(), userDN, ldapContext);
-
-        return null;
+      Attributes userAttributes = ldapContext.getAttributes(userDN);
+      Attribute userName = userAttributes.get(userIdAttribute);
+      return new ReadOnlyLDAPUser(userName.get().toString(), userDN, ldapContext);
     }
 
     /**
@@ -602,7 +620,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
     /*
      * TODO Should this be deprecated? At least the method isn't declared in the
      * interface anymore
-     * 
+     *
      * @see UsersRepository#containsCaseInsensitive(java.lang.String)
      */
     public boolean containsCaseInsensitive(String name) throws UsersRepositoryException {
@@ -628,7 +646,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
     /*
      * TODO Should this be deprecated? At least the method isn't declared in the
      * interface anymore
-     * 
+     *
      * @see UsersRepository#getRealName(java.lang.String)
      */
     public String getRealName(String name) throws UsersRepositoryException {
@@ -645,7 +663,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
      */
     public User getUserByName(String name) throws UsersRepositoryException {
         try {
-            return buildUser(userIdAttribute + "=" + name + "," + userBase);
+          return searchAndBuildUser(name);
         } catch (NamingException e) {
             log.error("Unable to retrieve user from ldap", e);
             throw new UsersRepositoryException("Unable to retrieve user from ldap", e);
@@ -656,7 +674,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
     /*
      * TODO Should this be deprecated? At least the method isn't declared in the
      * interface anymore
-     * 
+     *
      * @see UsersRepository#getUserByNameCaseInsensitive(java.lang.String)
      */
     public User getUserByNameCaseInsensitive(String name) throws UsersRepositoryException {
