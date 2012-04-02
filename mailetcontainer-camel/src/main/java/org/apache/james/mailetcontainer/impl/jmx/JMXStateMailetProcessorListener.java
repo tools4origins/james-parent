@@ -138,22 +138,20 @@ public class JMXStateMailetProcessorListener implements MailetProcessorListener,
      */
     @SuppressWarnings("unchecked")
     private void registerMatchers(String parentMBeanName, Iterator<Matcher> matchers, int nestingLevel) throws MalformedObjectNameException, JMException {
-        // current level
-        int currentLevel = nestingLevel;
         int i = 0;
 
         while (matchers.hasNext()) {
             Matcher matcher = matchers.next();
             MatcherManagement matcherManagement = new MatcherManagement(matcher.getMatcherConfig());
 
-            String matcherMBeanName = parentMBeanName + ",subtype" + currentLevel + "=matcher,index" + currentLevel + "=" + (i++) + ",matchername" + currentLevel + "=" + matcherManagement.getMatcherName();
+            String matcherMBeanName = parentMBeanName + ",subtype" + nestingLevel + "=matcher,index" + nestingLevel + "=" + (i++) + ",matchername" + nestingLevel + "=" + matcherManagement.getMatcherName();
             registerMBean(matcherMBeanName, matcherManagement);
             matcherMap.put(matcher, matcherManagement);
             // Handle CompositeMatcher which were added by JAMES-948
             if (matcher instanceof CompositeMatcher) {
                 // we increment the nesting as we have one more child level and
                 // register the child matchers
-                registerMatchers(matcherMBeanName, ((CompositeMatcher) matcher).iterator(), ++nestingLevel);
+                registerMatchers(matcherMBeanName, ((CompositeMatcher) matcher).iterator(), nestingLevel + 1);
             }
 
         }
