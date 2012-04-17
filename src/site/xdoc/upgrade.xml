@@ -27,9 +27,14 @@
 
         <section name="Upgrade">
 
-            <p>Howto upgrade from previous version.</p>
+            <p>If you are already using Apache James 2.3, you may face important changes. 
+            We have written <a href="upgrade-2.3.html">this page</a> to help you.</p>
+
+            <p>If you are want to do incremental upgrade 
+               you may need <a href="upgrade-database.html">to upgrade your database schema</a>.</p>
 
         </section>
 
     </body>
+
 </document>
