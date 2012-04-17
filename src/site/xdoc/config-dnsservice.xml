@@ -20,16 +20,16 @@
 <document>
 
 <properties>
- <title>DNS Service Configuration</title>
+ <title>Apache James Server 3 - DNS Service Configuration</title>
 </properties>
 
 <body>
  
  <section name="DNS Service Configuration">
 
-    <subsection name="dnsservice.xml">
+    <subsection name="dnsservice.conf">
 
-      <p>Consult <a href="https://svn.apache.org/repos/asf/james/server/tags/james-server-3.0-beta3/container-spring/src/main/config/examples/dnsservice.xml">dnsservice.xml</a> in SVN to get some examples and hints.</p>
+      <p>Consult <a href="https://svn.apache.org/repos/asf/james/app/tags/james-server-3.0-beta4/src/main/resources/dnsservice-template.conf">dnsservice-template.conf</a> in SVN to get some examples and hints.</p>
 
       <p>Specifies DNS Server information for use by various components inside Apache James Server.</p>
 

@@ -20,7 +20,7 @@
 <document>
 
  <properties>
-  <title>Release Notes</title>
+  <title>Apache James Server 3 - Release Notes</title>
   <author email="site-dev@james.apache.org">James Project Web Team</author>
  </properties>
 
@@ -35,6 +35,25 @@
 	</div>
 </div>
       
+<section name="Version 3.0-beta4">
+
+  <p>Released April 2012</p>
+
+  <p>The Apache James project is happy to announce the release 
+     of version 3.0-beta4 of its modular mail server.</p>
+
+  <p>We thank all Users for their feedback and tests and we encourage anyone to 
+     <a href="http://james.apache.org/download.cgi#Apache_James_Server">download</a>
+     and discover our Beta 4 release.</p>
+     
+  <p>You can read the 
+     <a href="https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=10411&amp;version=12317240">detailed release notes</a>.</p>
+
+  <p>If you're interested in contributing to the James project, please subscribe to the James 
+     <a href="http://james.apache.org/mail.html">mailing lists</a>.</p>
+
+</section>
+
 <section name="Version 3.0-beta3 (Milestone 3)">
 
   <p>Released 2011</p>

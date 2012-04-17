@@ -20,7 +20,7 @@
 <document>
 
  <properties>
-  <title>Provided Mailets</title>
+  <title>Apache James Server 3 - Provided Mailets</title>
  </properties>
 
 <body>
@@ -412,6 +412,10 @@ delivering emails. If the tag is absent then the service will bind to the
 default local address of the machine. This tag is useful for multihomed machines.<br/>
 Note: Currently you must use the same IP address for all of those RemoteDelivery 
 instances where you explicitly supply a bind address.</li>
+<li><strong>startTLS</strong> (optional) - a boolean value (true/false) indicating whether starTLS is
+on.  Defaults to false.</li>
+<li><strong>sslEnable</strong> (optional) - a boolean value (true/false) indicating whether starTLS is
+on.  Defaults to false.</li>
 <li><strong>debug</strong> (optional) - a boolean value (true/false) indicating whether debugging is
 on.  Defaults to false.</li>
 </ul>

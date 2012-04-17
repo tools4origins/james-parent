@@ -20,14 +20,14 @@
 <document>
 
  <properties>
-  <title>Recipient Rewrite Table Configuration</title>
+  <title>Apache James Server 3 - Recipient Rewrite Table Configuration</title>
  </properties>
 
 <body>
 
   <section name="Recipient Rewrite Table Configuration">
 
-    <p>Consult <a href="https://svn.apache.org/repos/asf/james/server/tags/james-server-3.0-beta3/container-spring/src/main/config/examples/recipientrewritetable.xml">recipientrewritetable.xml</a> in SVN to get some examples and hints.</p>
+    <p>Consult <a href="https://svn.apache.org/repos/asf/james/app/tags/james-server-3.0-beta4/src/main/resources/recipientrewritetable-template.conf">recipientrewritetable-template.conf</a> in SVN to get some examples and hints.</p>
 
     <subsection name="JPA Recipient Rewrite Table">
     

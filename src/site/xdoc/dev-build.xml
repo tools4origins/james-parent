@@ -20,7 +20,7 @@
 <document>
 
  <properties>
-  <title>Build Apache James from Source</title>
+  <title>Apache James Server 3 - Build Apache James from Source</title>
 </properties>
 
 <body>
@@ -162,8 +162,8 @@
       <img src="./images/eclipse/eclipse-run-james.gif"/>
       
       <p>If you change a JPA Entity class, your will need to run 'mvn package'
-          or add the following option to your run configuration 
-          '-javaagent:your_home_folder\.m2\repository\org\apache\openjpa\openjpa\2.0.1\openjpa-2.0.1.jar'
+          or add the following option to the VM argument of your run configuration 
+          '-javaagent:my_home_folder/.m2/repository/org/apache/openjpa/openjpa/2.0.1/openjpa-2.0.1.jar'
       </p>
 
     </subsection>

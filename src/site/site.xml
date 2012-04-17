@@ -19,6 +19,12 @@
 -->
 <project name="Apache James Server 3.0">
 
+  <skin>
+    <groupId>org.apache.james</groupId>
+    <artifactId>james-skin</artifactId>
+    <version>${james-skin.version}</version>
+  </skin>
+
   <bannerLeft>
     <name>Apache James Server 3.0</name>
     <src>images/logos/james-server-logo.gif</src>
@@ -31,16 +37,16 @@
     <menu name="Overview">
       <item name="Introduction" href="/index.html"/>
       <item name="Release Notes" href="/release-notes.html"/>
-      <item name="Sitemap" href="/sitemap.html"/>
+<!--       <item name="Sitemap" href="/sitemap.html"/> -->
 <!--      <item name="JIRA Report" href="/jira-report.html"/>-->
     </menu>
   
     <menu name="Features">
-      <item name="Servers" href="/feature-servers.html" />
-      <item name="Persistence" href="/feature-persistence.html" />
       <item name="Mailet Container" href="/feature-mailetcontainer.html" />
-      <item name="SMTP Hooks" href="/feature-smtp-hooks.html" />
       <item name="Queue Priority" href="/feature-queue-priority.html" />
+      <item name="Persistence" href="/feature-persistence.html" />
+      <item name="Protocols" href="/feature-protocols.html" />
+      <item name="SMTP Hooks" href="/feature-smtp-hooks.html" />
       <item name="Performance" href="/feature-performance.html" />
       <item name="Security" href="/feature-security.html" />
     </menu>

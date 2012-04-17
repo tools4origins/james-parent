@@ -20,7 +20,7 @@
 <document>
 
  <properties>
-  <title>SSL / TLS Configuration</title>
+  <title>Apache James Server 3 - SSL / TLS Configuration</title>
  </properties>
 
 <body>
@@ -155,10 +155,6 @@ verify return:1
     </subsection>
 
   </section>
-
-  <section name="Simultaneous Support of SSL/TLS and non-SSL/TLS per Protocol">
-   <p>See <a href="https://svn.apache.org/repos/asf/james/server/trunk/container-spring/src/main/config/examples/smtpserver-ssl.xml">smtp_ssl.xml</a> in example folder.</p>
-  </section>  
 
 </body>
 
