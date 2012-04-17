@@ -55,7 +55,7 @@
       <item name="1. Quick Start" href="/quick-start.html" />
       <item name="2. Install James" href="/install.html" />
       <item name="3. Configure James" href="/config.html" collapse="true" >
-        <item name="Server-wide" href="/config-serverwide.html" />
+        <item name="System" href="/config-system.html" />
         <item name="Domain List" href="/config-domainlist.html" />
         <item name="Users" href="/config-users.html" />
         <item name="Recipient Rewrite" href="/config-recipientrewritetable.html" />
