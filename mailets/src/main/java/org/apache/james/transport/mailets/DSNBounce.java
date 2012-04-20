@@ -154,13 +154,13 @@ public class DSNBounce extends AbstractNotify {
             // and doing so would likely cause a loop with spam detecting
             // matchers.
             try {
-                newMail.setRemoteAddr(dns.getLocalHost().getHostName());
+                newMail.setRemoteHost(dns.getLocalHost().getHostName());
             } catch (UnknownHostException e) {
                 newMail.setRemoteHost("localhost");
             }
 
             try {
-                newMail.setRemoteHost(dns.getLocalHost().getHostAddress());
+                newMail.setRemoteAddr(dns.getLocalHost().getHostAddress());
             } catch (UnknownHostException e) {
                 newMail.setRemoteAddr("127.0.0.1");
             }
