@@ -118,6 +118,9 @@
         <dt><strong>jmx.port</strong></dt>
         <dd>The port number the MBean Server will bind/listen to.</dd>
       </dl>
+      
+      <p>To access from a remote location, it has been reported that -Dcom.sun.management.jmxremote.ssl=false is 
+         needed in the startup script.</p>
 
     </subsection>
 

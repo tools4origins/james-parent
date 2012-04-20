@@ -63,6 +63,9 @@ Additional Notes to be documented
       <li>DNSService</li>
       <li>Queues</li>
     </ul>
+     
+    <p>If you want to access the JXM server from a remote location, you can <a href="config-system.html">configure
+       the hostname and port</a> on which James listens to.</p>
     
   </section>
     
