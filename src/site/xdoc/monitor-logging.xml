@@ -32,6 +32,9 @@
     <p>The log4j.properties reside in the ./conf folder. You can edit it to change the 
        logging level, per component.</p>
        
+    <p>You can change the logging level while the server is running via JMX 
+       (under org.apache.james/container).</p>
+       
     <p>All log files are written in the ./log folder. The ./log/james-sever.log gathers all the other logs.
       Log file rotation is also available.</p>
     
