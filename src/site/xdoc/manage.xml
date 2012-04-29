@@ -79,7 +79,7 @@
       
       <p>The managed objects are exposed from localhost only (for security reasons) on the following URL:</p>
       
-      <p><code>service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi</code></p>
+      <p><code>service:jmx:rmi://localhost/jndi/rmi://localhost:999/jmxrmi </code></p>
       
       <p>Simply launch jconsole to access the exposed attributes and methods.</p>
 <!-- 
@@ -95,9 +95,21 @@
         </div>
       </div>
 -->
-      <p>If you want a remote access, you can install a web application management tool such as jmanage. 
+      <p>If you want a remote access, change 'localhost' to your server hostname in the previous URL:</p>
+      
+      <p><code>service:jmx:rmi://localhost/jndi/rmi://localhost:999/jmxrmi </code></p>
+      
+      <p>To manage through a firewall, you will have to take care to random ports creation (read
+         <a href="http://docs.oracle.com/javase/6/docs/technotes/guides/management/agent.html">JMX agent</a>
+         , 
+         <a href="http://olegz.wordpress.com/2009/03/23/jmx-connectivity-through-the-firewall">JMX through firewall</a>
+         and
+         <a href="http://blogs.law.harvard.edu/hoanga/2006/07/07/getting-java-jmx-to-work-through-firewalls-properly">Getting Java JMX to work through firewalls properly</a>.
+      </p>
+      
+      <p>You can install a web application management tool such as jmanage. 
          You will get screens such as the following one.</p>
-         
+      
        <p><img src="images/jmx-management/jmx-domainlist.png"/></p>
 
     </subsection>
