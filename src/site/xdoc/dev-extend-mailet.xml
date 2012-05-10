@@ -57,6 +57,28 @@ methods.</p>
 <p>The value of getMailetInfo() for the Mailet is prepended to the log entries for that 
 Mailet.  So it may be desirable for you to override this method so you can distinguish mailet
 log entries by Mailet.</p>
+<p>Alternatively, you can instanciate your own logger and log with different level, as show in the
+following snippet (don't forget to update the log4j.properties so you log are taken into account).</p>
+<code>
+package com.test;
+
+import javax.mail.MessagingException;
+
+import org.apache.mailet.Mail;
+import org.apache.mailet.base.GenericMailet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class MyMailet extends GenericMailet{
+  private static final Logger logger = LoggerFactory.getLogger(MyMailet.class);
+  @Override
+  public void service(Mail mail) throws MessagingException {
+    log("log via mailet logger with INFO level");
+    logger.info("Log via slf4j with INFO level !!! Add log4j.logger.com.test=INFO, CONS, FILE in the log4j.properties");
+    logger.debug("Log via slf4j with DEBUG level !!! Add log4j.logger.com.test=DEBUG, CONS, FILE in the log4j.properties");
+  }
+}
+</code>
 </subsection>
 
 <subsection name="Initialization">
