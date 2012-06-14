@@ -153,6 +153,13 @@ public class ServerCmd {
                     printUsage();
                     System.exit(1);
                 }
+            } else if (CmdType.CONTAINSDOMAIN.equals(cmdType)) {
+                if (cmdType.hasCorrectArguments(arguments.length)) {
+                    probe.containsDomain(arguments[1]);
+                } else {
+                    printUsage();
+                    System.exit(1);
+                }
             } else if (CmdType.LISTDOMAINS.equals(cmdType)) {
                 if (cmdType.hasCorrectArguments(arguments.length)) {
                     sCmd.print(probe.listDomains(), System.out);
@@ -270,6 +277,7 @@ public class ServerCmd {
                 + "removeuser <username>%n" 
                 + "listusers%n" 
                 + "adddomain <domainname>%n"
+                + "containsdomain <domainname>%n" 
                 + "removedomain <domainname>%n" 
                 + "listdomains%n"
                 + "addAddressMapping <user> <domain> <fromaddress>%n"

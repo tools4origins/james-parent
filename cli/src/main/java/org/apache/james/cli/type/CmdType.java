@@ -27,6 +27,7 @@ public enum CmdType {
     LISTUSERS("listusers", 1), 
     ADDDOMAIN("adddomain", 2), 
     REMOVEDOMAIN("removedomain", 2), 
+    CONTAINSDOMAIN("containsdomain", 2), 
     LISTDOMAINS("listdomains", 1),
     LISTMAPPINGS("listmappings", 1),
     LISTUSERDOMAINMAPPINGS("listuserdomainmappings", 3),

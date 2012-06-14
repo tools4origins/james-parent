@@ -71,6 +71,15 @@ public interface ServerProbe {
     public void addDomain(String domain) throws Exception;
 
     /**
+     * Return true if the domain exists in the service
+     * 
+     * @param domain
+     *            The domain to remove.
+     * @throws Exception
+     */
+    public boolean containsDomain(String domain) throws Exception;
+
+    /**
      * Remove domain from the service
      * 
      * @param domain

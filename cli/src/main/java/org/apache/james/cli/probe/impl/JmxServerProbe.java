@@ -134,6 +134,13 @@ public class JmxServerProbe implements ServerProbe {
     }
 
     /**
+     * @see org.apache.james.cli.probe.ServerProbe#containsDomain(java.lang.String)
+     */
+    public boolean containsDomain(String domain) throws Exception {
+        return domainListProcxy.containsDomain(domain);
+    }
+
+    /**
      * @see org.apache.james.cli.probe.ServerProbe#addDomain(java.lang.String)
      */
     public void addDomain(String domain) throws Exception {
