@@ -67,6 +67,7 @@
     adddomain &lt;/domainname&gt;
     removedomain &lt;/domainname&gt;
     listdomains
+    containsdomain
       </source>
   
       <p>Note the address and port defined in conf/jmx.properties (default is jmx.address=127.0.0.1 and jmx.port=9999)</p>
