@@ -48,6 +48,8 @@
       
       <p>spring beans files are the place where the Apache James Server wiring is done. It should be modified only by expert-users.</p>
       
+      <p>In combination with james-database.properties and META-INF/persistence.xml, the datasource to access the database is defined in spring-server.xml</p>
+      
     </subsection>
 
     <subsection name="james-database.properties">
