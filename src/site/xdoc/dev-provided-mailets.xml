@@ -536,15 +536,26 @@ present, no error message is set.</li>
 </p>
 </subsection>
 
-<subsection name="ToFolder">
-  <p>Description: ...</p>
+<subsection name="ToSenderFolder">
+  <p>
+    Description: Place a copy of the mail message in a folder of the sender. It needs to be used in combination
+    with the SenderIsLocal matcher
+  </p>
   
   <p>Parameters:
     <ul>
-      <li><strong>...</strong> (required) - ....</li>
-      <li><strong>...</strong> (optional) - ....</li>
+      <li><strong>folder</strong> (required) - The folder name of the Sender mailbox in which the mail will be copied.</li>
+      <li><strong>consume</strong> (optional) - flag tru or false: will tell is the mail will be further processed by the upcoming processor mailets, or not</li>
     </ul>
   </p>
+  
+<source>
+&lt;mailet match="SenderIsLocal" class="ToSenderFolder"&gt;
+  &lt;folder&gt;Sent&lt;/folder&gt;
+  &lt;consume&gt;false&lt;/consume&gt;
+&lt;/mailet&gt;
+</source>
+  
 </subsection>
 
 <subsection name="ToMultiRepository">
