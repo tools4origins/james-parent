@@ -27,7 +27,7 @@ public class MailetMailAddressAdapter extends MailAddress {
     private static final long serialVersionUID = 1L;
 
     public MailetMailAddressAdapter(org.apache.james.protocols.smtp.MailAddress mailAddress) throws AddressException {
-        super(mailAddress.toString());
+        super(mailAddress.getLocalPart(), mailAddress.getDomain());
     }
 
 }

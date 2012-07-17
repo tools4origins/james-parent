@@ -96,10 +96,15 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
                 for (MailAddress address: recipientCollection) {
                     rcpts.add(new MailetMailAddressAdapter(address));
                 }
-                MailImpl mail = new MailImpl(MailImpl.getId(), new MailetMailAddressAdapter(mailAddress), rcpts);
+                
+                MailetMailAddressAdapter mailetMailAddressAdapter = null;
+                if (mailAddress != MailAddress.nullSender()) {
+                    mailetMailAddressAdapter = new MailetMailAddressAdapter(mailAddress);
+                }
 
-                // store mail in the session so we can be sure it get disposed
-                // later
+                MailImpl mail = new MailImpl(MailImpl.getId(), mailetMailAddressAdapter, rcpts);
+
+                // store mail in the session so we can be sure it get disposed later
                 session.setAttachment(SMTPConstants.MAIL, mail, State.Transaction);
 
                 MimeMessageCopyOnWriteProxy mimeMessageCopyOnWriteProxy = null;
