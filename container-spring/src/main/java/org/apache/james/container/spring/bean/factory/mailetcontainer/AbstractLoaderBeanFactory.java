@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.container.spring.bean.factory.mailetcontainer;
 
-import org.apache.james.container.spring.bean.AbstractBeanFactory;
+import org.apache.james.container.spring.bean.factory.AbstractBeanFactory;
 import org.apache.mailet.MailetException;
 
 public abstract class AbstractLoaderBeanFactory<T> extends AbstractBeanFactory {
