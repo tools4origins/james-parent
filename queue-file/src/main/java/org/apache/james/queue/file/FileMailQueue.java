@@ -52,13 +52,10 @@ import org.slf4j.Logger;
 /**
  * {@link ManageableMailQueue} implementation which use the fs to store {@link Mail}'s
  * 
- * On create of the {@link FileMailQueue} the {@link #init()} will get called. This takes care of load the needed meta-data into memory for fast access.
- * 
- * 
- * 
+ * On create of the {@link FileMailQueue} the {@link #init()} will get called. This takes care of 
+ * loading the needed meta-data into memory for fast access.
  */
 public class FileMailQueue implements ManageableMailQueue {
-
     private final ConcurrentHashMap<String, FileItem> keyMappings = new ConcurrentHashMap<String, FileMailQueue.FileItem>();
     private final BlockingQueue<String> inmemoryQueue = new LinkedBlockingQueue<String>();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -78,36 +75,35 @@ public class FileMailQueue implements ManageableMailQueue {
         this.sync = sync;
         this.queueDir = new File(parentDir, queuename);
         this.queueDirName = queueDir.getAbsolutePath();
-
         init();
     }
     
     private void init() throws IOException {
         
         for (int i = 1; i <= SPLITCOUNT; i++) {
+
             File qDir = new File(queueDir, Integer.toString(i));
             if (!qDir.exists() && !qDir.mkdirs()) {
                 throw new IOException("Unable to create queue directory " +  qDir);
             }
-            String[] files = queueDir.list(new FilenameFilter() {
-                
+            
+            String[] files = qDir.list(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
-                    if (name.endsWith(OBJECT_EXTENSION)) {
-                        return true;
-                    }
-                    return false;
+                    return name.endsWith(OBJECT_EXTENSION);
                 }
             });
-            for (int a = 0; a < files.length; a++) {
+
+            for (int a=0; a < files.length; a++) {
+                
                 final String name = files[a];
                 ObjectInputStream oin = null;
                 
-
                 try {
+
                     final String msgFileName = name.substring(0, name.length() - OBJECT_EXTENSION.length()) + MSG_EXTENSION;
 
-                    FileItem item = new FileItem(queueDirName + "/" + name, queueDirName + "/" + msgFileName);
+                    FileItem item = new FileItem(qDir.getAbsolutePath() + File.separator + name, qDir.getAbsolutePath() + File.separator + msgFileName);
 
                     oin = new ObjectInputStream(new FileInputStream(item.getObjectFile()));
                     Mail mail = (Mail) oin.readObject();
@@ -115,7 +111,6 @@ public class FileMailQueue implements ManageableMailQueue {
                     if (next == null) {
                         next = 0L;
                     }
-
 
                     final String key = mail.getName();
                     keyMappings.put(key, item);
@@ -163,9 +158,6 @@ public class FileMailQueue implements ManageableMailQueue {
         }
     }
     
-    
-    
-    
     @Override
     public void enQueue(final Mail mail, long delay, TimeUnit unit) throws MailQueueException {
         final String key = mail.getName() + "-" + COUNTER.incrementAndGet();
@@ -192,7 +184,6 @@ public class FileMailQueue implements ManageableMailQueue {
             if (sync) out.getFD().sync();
             
             keyMappings.put(key, item);
-        
 
             if (delay > 0) {
                 mail.setAttribute(NEXT_DELIVERY, System.currentTimeMillis() + unit.toMillis(delay));
@@ -252,8 +243,6 @@ public class FileMailQueue implements ManageableMailQueue {
 
     }
 
-    
-    
     @Override
     public void enQueue(Mail mail) throws MailQueueException {
         enQueue(mail, 0, TimeUnit.MILLISECONDS);
@@ -353,12 +342,10 @@ public class FileMailQueue implements ManageableMailQueue {
             return in.newStream(0, -1);
         }
 
-
         @Override
         public long getMessageSize() throws IOException {
             return file.length();
         }
-        
 
         /**
          * @see org.apache.james.core.MimeMessageSource#disposeSource()
@@ -376,8 +363,6 @@ public class FileMailQueue implements ManageableMailQueue {
     
     /**
      * Helper class which is used to reference the path to the object and msg file
-     * 
-     *
      */
     private final class FileItem {
         private String objectfile;
@@ -415,6 +400,7 @@ public class FileMailQueue implements ManageableMailQueue {
         }
         
     }
+
     @Override
     public long getSize() throws MailQueueException {
         return keyMappings.size();
