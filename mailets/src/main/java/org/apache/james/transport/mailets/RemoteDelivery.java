@@ -19,37 +19,6 @@
 
 package org.apache.james.transport.mailets;
 
-import org.apache.james.dnsservice.api.DNSService;
-import org.apache.james.dnsservice.api.TemporaryResolutionException;
-import org.apache.james.dnsservice.library.MXHostAddressIterator;
-import org.apache.james.domainlist.api.DomainList;
-import org.apache.james.domainlist.api.DomainListException;
-import org.apache.james.lifecycle.api.LifecycleUtil;
-import org.apache.james.queue.api.MailPrioritySupport;
-import org.apache.james.queue.api.MailQueue;
-import org.apache.james.queue.api.MailQueueFactory;
-import org.apache.james.queue.api.MailQueue.MailQueueException;
-import org.apache.james.queue.api.MailQueue.MailQueueItem;
-import org.apache.james.transport.util.MailetContextLog;
-import org.apache.james.util.TimeConverter;
-import org.apache.mailet.base.GenericMailet;
-import org.apache.mailet.HostAddress;
-import org.apache.mailet.Mail;
-import org.apache.mailet.MailAddress;
-import org.apache.mailet.MailetContext;
-
-import javax.annotation.Resource;
-import javax.mail.Address;
-import javax.mail.MessagingException;
-import javax.mail.SendFailedException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimePart;
-import javax.mail.internet.ParseException;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -73,6 +42,37 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import javax.annotation.Resource;
+import javax.mail.Address;
+import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimePart;
+import javax.mail.internet.ParseException;
+
+import org.apache.james.dnsservice.api.DNSService;
+import org.apache.james.dnsservice.api.TemporaryResolutionException;
+import org.apache.james.dnsservice.library.MXHostAddressIterator;
+import org.apache.james.domainlist.api.DomainList;
+import org.apache.james.domainlist.api.DomainListException;
+import org.apache.james.lifecycle.api.LifecycleUtil;
+import org.apache.james.queue.api.MailPrioritySupport;
+import org.apache.james.queue.api.MailQueue;
+import org.apache.james.queue.api.MailQueue.MailQueueException;
+import org.apache.james.queue.api.MailQueue.MailQueueItem;
+import org.apache.james.queue.api.MailQueueFactory;
+import org.apache.james.transport.util.MailetContextLog;
+import org.apache.james.util.TimeConverter;
+import org.apache.mailet.HostAddress;
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
+import org.apache.mailet.MailetContext;
+import org.apache.mailet.base.GenericMailet;
 
 /**
  * <p>The RemoteDelivery mailet delivers messages to a remote SMTP server able to deliver or forward messages to their final
@@ -832,6 +832,7 @@ public class RemoteDelivery extends GenericMailet implements Runnable {
                         // something else in the server was abusing memory, we
                         // would
                         // not want to start purging the retrying spool!
+                        log("Exception caught in RemoteDelivery.run()", e);
                         LifecycleUtil.dispose(mail);
                         // workRepository.remove(key);
                         queueItem.done(false);
