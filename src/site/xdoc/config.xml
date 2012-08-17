@@ -30,7 +30,9 @@
     <p>All configuration files resides in the ./conf and ./conf/META-INF folder.</p>
     
     <p>We ship with default configuration (embedded in jars) and -template files
-       you can use to override the default configuration.</p>
+       you can use to override the default configuration. Simply copy in conf folder *-template.conf
+       to *.conf (example: smtpserver-template.conf to smtpserver.conf), and change
+       in *.conf the settings to map your needs.</p>
        
     <p>You can/must configure James for the following:</p>
     
