@@ -18,8 +18,16 @@
  ****************************************************************/
 package org.apache.james.core;
 
-import org.apache.james.lifecycle.api.LifecycleUtil;
-import org.apache.mailet.base.RFC2822Headers;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Properties;
 
 import javax.mail.BodyPart;
 import javax.mail.Session;
@@ -28,13 +36,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Properties;
-
-import static org.junit.Assert.*;
+import org.apache.james.lifecycle.api.LifecycleUtil;
+import org.apache.mailet.base.RFC2822Headers;
 import org.junit.Test;
 
 /**
@@ -169,12 +172,18 @@ public class MimeMessageTest {
                 + "Subject: test3\r\n"
                 // javamail 1.4.3 NOTES:
                 // this headers don't get added by version 1.4.3
-                //which should be the right behavoir anyway
+                //which should be the right behavior anyway
                 //+"Content-Transfer-Encoding: 7bit\r\n"
                 //+"Content-Type: text/plain; charset=us-ascii\r\n"
+                
+                // geronimo javamail 1.4.3 NOTES:
+                // this headers are effectively added by geronimo javamail 1.4 version 1.8.3
+                // which is the right behavior anyway
+                +"Content-Transfer-Encoding: 7bit\r\n"
+                +"Content-Type: text/plain; charset=us-ascii\r\n"
 
                 + "\r\n"
-                + "second part\r\n"
+                + "third part\r\n"
                 + "------=_Part_0_XXXXXXXXXXX.XXXXXXXXXXX--\r\n";
     }
 
@@ -211,7 +220,7 @@ public class MimeMessageTest {
 
         MimeMultipart content2 = (MimeMultipart) mm.getContent();
         content2.addBodyPart(new MimeBodyPart(new InternetHeaders(new ByteArrayInputStream(
-                "Subject: test3\r\n".getBytes())), "second part".getBytes()));
+                "Subject: test3\r\n".getBytes())), "third part".getBytes()));
         mm.setContent(content2, mm.getContentType());
         mm.saveChanges();
 
