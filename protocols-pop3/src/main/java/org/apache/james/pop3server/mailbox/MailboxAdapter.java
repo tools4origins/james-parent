@@ -46,7 +46,7 @@ public class MailboxAdapter implements Mailbox {
             return null;
         }
     }
-    
+
     private final static FetchGroup FULL_GROUP = new POP3FetchGroup() {
 
         @Override
@@ -80,7 +80,7 @@ public class MailboxAdapter implements Mailbox {
             return MINIMAL;
         }
     };
-    
+
     private final MessageManager manager;
     private final MailboxSession session;
 
@@ -93,10 +93,10 @@ public class MailboxAdapter implements Mailbox {
     }
 
     @Override
-    public InputStream getMessageBody(long uid) throws IOException {
+    public InputStream getMessageBody(String uid) throws IOException {
         try {
             mailboxManager.startProcessingRequest(session);
-            Iterator<MessageResult> results = manager.getMessages(MessageRange.one(uid), BODY_GROUP, session);
+            Iterator<MessageResult> results = manager.getMessages(MessageRange.one(new Long(uid)), BODY_GROUP, session);
             if (results.hasNext()) {
                 return results.next().getBody().getInputStream();
             } else {
@@ -110,10 +110,11 @@ public class MailboxAdapter implements Mailbox {
     }
 
     @Override
-    public InputStream getMessageHeaders(long uid) throws IOException {
+    public InputStream getMessageHeaders(String uid) throws IOException {
         try {
             mailboxManager.startProcessingRequest(session);
-            Iterator<MessageResult> results = manager.getMessages(MessageRange.one(uid), HEADERS_GROUP, session);
+            Iterator<MessageResult> results = manager.getMessages(MessageRange.one(new Long(uid)), HEADERS_GROUP,
+                    session);
             if (results.hasNext()) {
                 return results.next().getHeaders().getInputStream();
             } else {
@@ -127,10 +128,10 @@ public class MailboxAdapter implements Mailbox {
     }
 
     @Override
-    public InputStream getMessage(long uid) throws IOException {
+    public InputStream getMessage(String uid) throws IOException {
         try {
             mailboxManager.startProcessingRequest(session);
-            Iterator<MessageResult> results = manager.getMessages(MessageRange.one(uid), FULL_GROUP, session);
+            Iterator<MessageResult> results = manager.getMessages(MessageRange.one(new Long(uid)), FULL_GROUP, session);
             if (results.hasNext()) {
                 return results.next().getFullContent().getInputStream();
             } else {
@@ -151,8 +152,7 @@ public class MailboxAdapter implements Mailbox {
             List<MessageMetaData> mList = new ArrayList<MessageMetaData>();
             while (results.hasNext()) {
                 MessageResult result = results.next();
-                
-                MessageMetaData metaData = new MessageMetaData(result.getUid(), result.getSize());
+                MessageMetaData metaData = new MessageMetaData(Long.toString(result.getUid()), result.getSize());
                 mList.add(metaData);
             }
             return Collections.unmodifiableList(mList);
@@ -164,11 +164,11 @@ public class MailboxAdapter implements Mailbox {
     }
 
     @Override
-    public void remove(long... uids) throws IOException {
+    public void remove(String... uids) throws IOException {
         List<Long> uidList = new ArrayList<Long>();
 
         for (int i = 0; i < uids.length; i++) {
-            uidList.add(uids[i]);
+            uidList.add(new Long(uids[i]));
         }
 
         List<MessageRange> ranges = MessageRange.toRanges(uidList);
@@ -189,7 +189,8 @@ public class MailboxAdapter implements Mailbox {
     public String getIdentifier() throws IOException {
         try {
             mailboxManager.startProcessingRequest(session);
-            long validity = manager.getMetaData(false, session, MessageManager.MetaData.FetchGroup.NO_COUNT).getUidValidity();
+            long validity = manager.getMetaData(false, session, MessageManager.MetaData.FetchGroup.NO_COUNT)
+                    .getUidValidity();
             return Long.toString(validity);
         } catch (MailboxException e) {
             throw new IOException("Unable to retrieve indentifier for mailbox", e);
