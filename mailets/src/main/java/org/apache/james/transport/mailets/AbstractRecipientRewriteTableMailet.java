@@ -157,7 +157,6 @@ public abstract class AbstractRecipientRewriteTableMailet extends GenericMailet 
                         logBuffer.append(", ");
                 }
                 getMailetContext().log(logBuffer.toString());
-                return null;
             } catch (MessagingException me) {
                 StringBuffer logBuffer = new StringBuffer(128).append("Error forwarding mail to ");
                 for (Iterator<MailAddress> j = remoteRecipients.iterator(); j.hasNext();) {
