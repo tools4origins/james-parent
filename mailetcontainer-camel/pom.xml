@@ -78,7 +78,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.james</groupId>
-            <artifactId>apache-mailet</artifactId>
+            <artifactId>apache-mailet-api</artifactId>
         </dependency>
         <!--
             <dependency>
@@ -120,7 +120,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.james</groupId>
-            <artifactId>apache-standard-mailets</artifactId>
+            <artifactId>apache-mailet-standard</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -50,7 +50,7 @@
 
         <dependency>
             <groupId>org.apache.james</groupId>
-            <artifactId>apache-mailet</artifactId>
+            <artifactId>apache-mailet-api</artifactId>
         </dependency>
 
         <!-- RFC2822Headers constants imported from mailet-base (undetected by bytecode analyzers because constants are inlined) -->
