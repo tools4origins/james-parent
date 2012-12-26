@@ -50,7 +50,7 @@ public class MailHeaders extends InternetHeaders implements Serializable, Clonea
      * @throws MessagingException
      *             if the super class cannot be properly instantiated
      */
-    public MailHeaders() throws MessagingException {
+    public MailHeaders() {
         super();
     }
 

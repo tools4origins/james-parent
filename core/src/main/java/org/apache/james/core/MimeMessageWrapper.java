@@ -82,7 +82,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
 
     private long initialHeaderSize;
 
-    private MimeMessageWrapper(Session session) throws MessagingException {
+    private MimeMessageWrapper(Session session) {
         super(session);
         this.headers = null;
         this.modified = false;
@@ -98,7 +98,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
      *            the MimeMessageSource
      * @throws MessagingException
      */
-    public MimeMessageWrapper(Session session, MimeMessageSource source) throws MessagingException {
+    public MimeMessageWrapper(Session session, MimeMessageSource source) {
         this(session);
         this.source = source;
     }
@@ -166,6 +166,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
      *
      * @see javax.mail.internet.MimeMessage#updateMessageID()
      */
+    @Override
     protected void updateMessageID() throws MessagingException {
         if (getMessageID() == null)
             super.updateMessageID();
@@ -190,7 +191,6 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
     protected synchronized void loadHeaders() throws MessagingException {
         if (headers != null) {
             // Another thread has already loaded these headers
-            return;
         } else if (source != null) {
             try {
                 InputStream in = source.getInputStream();
@@ -217,7 +217,6 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
     public synchronized void loadMessage() throws MessagingException {
         if (messageParsed) {
             // Another thread has already loaded this message
-            return;
         } else if (source != null) {
             sourceIn = null;
             try {
@@ -267,6 +266,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
     /**
      * Rewritten for optimization purposes
      */
+    @Override
     public void writeTo(OutputStream os) throws IOException, MessagingException {
         writeTo(os, os);
 
@@ -275,6 +275,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
     /**
      * Rewritten for optimization purposes
      */
+    @Override
     public void writeTo(OutputStream os, String[] ignoreList) throws IOException, MessagingException {
         writeTo(os, os, ignoreList);
     }
@@ -292,7 +293,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
 
     public synchronized void writeTo(OutputStream headerOs, OutputStream bodyOs, String[] ignoreList, boolean preLoad) throws IOException, MessagingException {
         
-        if (preLoad == false && source != null && !isBodyModified()) {
+        if (!preLoad && source != null && !isBodyModified()) {
             // We do not want to instantiate the message... just read from
             // source
             // and write to this outputstream
@@ -304,7 +305,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
                 MailHeaders parsedHeaders = new MailHeaders(in);
 
                 // check if we should use the parsed headers or not
-                if (isHeaderModified() == false) {
+                if (!isHeaderModified()) {
                     myHeaders = parsedHeaders;
                 } else {
                     // The headers was modified so we need to call saveChanges() just to be sure
@@ -331,7 +332,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
             }
             IOUtils.copy(new InternetHeadersInputStream(headers.getNonMatchingHeaderLines(ignoreList)), headerOs);
 
-            if (preLoad && messageParsed == false) {
+            if (preLoad && !messageParsed) {
                 loadMessage();
             }
             MimeMessageUtil.writeMessageBodyTo(this, bodyOs);
@@ -343,6 +344,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
      * body, not the entire message (should not count headers). This size will
      * never change on {@link #saveChanges()}
      */
+    @Override
     public synchronized int getSize() throws MessagingException {
         if (source != null) {
             try {
@@ -370,8 +372,9 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
      * Corrects JavaMail 1.1 version which always returns -1. Only corrected for
      * content less than 5000 bytes, to avoid memory hogging.
      */
+    @Override
     public int getLineCount() throws MessagingException {
-        InputStream in = null;
+        InputStream in;
         try {
             in = getContentStream();
         } catch (Exception e) {
@@ -427,6 +430,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
      * the headers
      */
 
+    @Override
     public String[] getHeader(String name) throws MessagingException {
         if (headers == null) {
             loadHeaders();
@@ -434,6 +438,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
         return headers.getHeader(name);
     }
 
+    @Override
     public String getHeader(String name, String delimiter) throws MessagingException {
         if (headers == null) {
             loadHeaders();
@@ -441,6 +446,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
         return headers.getHeader(name, delimiter);
     }
 
+    @Override
     public Enumeration getAllHeaders() throws MessagingException {
         if (headers == null) {
             loadHeaders();
@@ -448,6 +454,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
         return headers.getAllHeaders();
     }
 
+    @Override
     public Enumeration getMatchingHeaders(String[] names) throws MessagingException {
         if (headers == null) {
             loadHeaders();
@@ -455,6 +462,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
         return headers.getMatchingHeaders(names);
     }
 
+    @Override
     public Enumeration getNonMatchingHeaders(String[] names) throws MessagingException {
         if (headers == null) {
             loadHeaders();
@@ -462,6 +470,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
         return headers.getNonMatchingHeaders(names);
     }
 
+    @Override
     public Enumeration getAllHeaderLines() throws MessagingException {
         if (headers == null) {
             loadHeaders();
@@ -469,6 +478,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
         return headers.getAllHeaderLines();
     }
 
+    @Override
     public Enumeration getMatchingHeaderLines(String[] names) throws MessagingException {
         if (headers == null) {
             loadHeaders();
@@ -476,6 +486,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
         return headers.getMatchingHeaderLines(names);
     }
 
+    @Override
     public Enumeration getNonMatchingHeaderLines(String[] names) throws MessagingException {
         if (headers == null) {
             loadHeaders();
@@ -498,21 +509,25 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
         headersModified = true;
     }
 
+    @Override
     public void setHeader(String name, String value) throws MessagingException {
         checkModifyHeaders();
         super.setHeader(name, value);
     }
 
+    @Override
     public void addHeader(String name, String value) throws MessagingException {
         checkModifyHeaders();
         super.addHeader(name, value);
     }
 
+    @Override
     public void removeHeader(String name) throws MessagingException {
         checkModifyHeaders();
         super.removeHeader(name);
     }
 
+    @Override
     public void addHeaderLine(String line) throws MessagingException {
         checkModifyHeaders();
         super.addHeaderLine(line);
@@ -524,6 +539,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
      * 
      * @see javax.mail.Part#setDataHandler(javax.activation.DataHandler)
      */
+    @Override
     public synchronized void setDataHandler(DataHandler arg0) throws MessagingException {
         modified = true;
         saved = false;
@@ -531,9 +547,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
         super.setDataHandler(arg0);
     }
 
-    /**
-     * @see org.apache.james.lifecycle.api.Disposable#dispose()
-     */
+    @Override
     public void dispose() {
         if (sourceIn != null) {
             IOUtils.closeQuietly(sourceIn);
@@ -546,6 +560,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
     /**
      * @see javax.mail.internet.MimeMessage#parse(java.io.InputStream)
      */
+    @Override
     protected synchronized void parse(InputStream is) throws MessagingException {
         // the super implementation calls
         // headers = createInternetHeaders(is);
@@ -559,6 +574,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
      * 
      * @see javax.mail.internet.MimeMessage#createInternetHeaders(java.io.InputStream)
      */
+    @Override
     protected synchronized InternetHeaders createInternetHeaders(InputStream is) throws MessagingException {
         /*
          * This code is no more needed: see JAMES-570 and new tests
@@ -601,6 +617,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
     /**
      * @see javax.mail.internet.MimeMessage#getContentStream()
      */
+    @Override
     protected InputStream getContentStream() throws MessagingException {
         if (!messageParsed) {
             loadMessage();
@@ -611,6 +628,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
     /**
      * @see javax.mail.internet.MimeMessage#getRawInputStream()
      */
+    @Override
     public synchronized InputStream getRawInputStream() throws MessagingException {
         if (!messageParsed && !isModified() && source != null) {
             InputStream is;

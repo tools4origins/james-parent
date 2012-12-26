@@ -263,6 +263,7 @@ public class MailImpl implements Disposable, Mail {
      * 
      * @return the error message associated with this MailImpl
      */
+    @Override
     public String getErrorMessage() {
         return errorMessage;
     }
@@ -643,6 +644,7 @@ public class MailImpl implements Disposable, Mail {
      * @see org.apache.mailet.Mail#hasAttributes()
      * @since 2.2.0
      */
+    @Override
     public boolean hasAttributes() {
         return !attributes.isEmpty();
     }
@@ -665,8 +667,7 @@ public class MailImpl implements Disposable, Mail {
         out.close();
         ByteArrayInputStream bi = new ByteArrayInputStream(b.toByteArray());
         ObjectInputStream in = new ObjectInputStream(bi);
-        Object no = in.readObject();
-        return no;
+        return in.readObject();
     }
 
     private static final java.util.Random random = new java.util.Random(); // Used
@@ -705,8 +706,7 @@ public class MailImpl implements Disposable, Mail {
             }
         }
 
-        StringBuffer nameBuffer = new StringBuffer(64).append(oldName).append("-!").append(random.nextInt(1048576));
-        return nameBuffer.toString();
+        return oldName + "-!" + random.nextInt(1048576);
     }
 
     /**
@@ -715,8 +715,7 @@ public class MailImpl implements Disposable, Mail {
      * @return the new identifier
      */
     public static String getId() {
-        StringBuilder idBuffer = new StringBuilder().append("Mail").append(System.currentTimeMillis()).append("-").append(UUID.randomUUID());
-        return idBuffer.toString();
+        return "Mail" + System.currentTimeMillis() + "-" + UUID.randomUUID();
     }
 
 }

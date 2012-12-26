@@ -102,9 +102,9 @@ public class MimeMessageWrapperTest extends MimeMessageFromStreamTest {
         }
     }
     TestableMimeMessageWrapper mw = null;
-    String content = "Subject: foo\r\nContent-Transfer-Encoding2: plain";
-    String sep = "\r\n\r\n";
-    String body = "bar\r\n";
+    final String content = "Subject: foo\r\nContent-Transfer-Encoding2: plain";
+    final String sep = "\r\n\r\n";
+    final String body = "bar\r\n";
 
     @Override
     protected MimeMessage getMessageFromSources(String sources) throws Exception {
@@ -264,7 +264,7 @@ public class MimeMessageWrapperTest extends MimeMessageFromStreamTest {
         mw.saveChanges();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(mw.getMessageInputStream()));
-        String line = null;
+        String line;
 
         boolean headerUpdated = false;
         while ((line = reader.readLine()) != null) {
@@ -284,12 +284,12 @@ public class MimeMessageWrapperTest extends MimeMessageFromStreamTest {
     public void testMessageStreamWithUpatedContent() throws MessagingException, IOException {
         String newContent = "This is the new message content!";
         mw.setText(newContent);
-        assertEquals(newContent, (String) mw.getContent());
+        assertEquals(newContent, mw.getContent());
 
         mw.saveChanges();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(mw.getMessageInputStream()));
-        String line = null;
+        String line;
 
         boolean contentUpdated = false;
         while ((line = reader.readLine()) != null) {

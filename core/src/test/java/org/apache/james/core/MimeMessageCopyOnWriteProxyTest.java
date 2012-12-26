@@ -34,9 +34,9 @@ import org.junit.Test;
 
 public class MimeMessageCopyOnWriteProxyTest extends MimeMessageFromStreamTest {
 
-    String content = "Subject: foo\r\nContent-Transfer-Encoding2: plain";
-    String sep = "\r\n\r\n";
-    String body = "bar\r\n.\r\n";
+    final String content = "Subject: foo\r\nContent-Transfer-Encoding2: plain";
+    final String sep = "\r\n\r\n";
+    final String body = "bar\r\n.\r\n";
 
     @Override
     protected MimeMessage getMessageFromSources(String sources) throws Exception {

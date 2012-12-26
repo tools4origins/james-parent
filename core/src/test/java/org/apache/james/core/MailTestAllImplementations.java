@@ -33,7 +33,7 @@ public abstract class MailTestAllImplementations {
     /** provide the concrete implementation to test */
     protected abstract Mail createMailImplementation();
 
-    protected void helperTestInitialState(Mail mail) throws MessagingException {
+    protected void helperTestInitialState(Mail mail) {
         assertFalse("no initial attributes", mail.hasAttributes());
         assertNull("no initial error", mail.getErrorMessage());
         assertNotNull("initial last update set", mail.getLastUpdated());

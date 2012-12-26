@@ -35,7 +35,7 @@ public class InternetHeadersInputStream extends InputStream {
 
     private final static String LINE_SEPERATOR = "\r\n";
 
-    private Enumeration<String> headerLines;
+    private final Enumeration<String> headerLines;
     private byte[] currLine;
     private int pos = 0;
 
@@ -51,7 +51,7 @@ public class InternetHeadersInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         if (currLine == null || pos == currLine.length) {
-            if (readNextLine() == false) {
+            if (!readNextLine()) {
                 return -1;
             }
         }
@@ -71,7 +71,7 @@ public class InternetHeadersInputStream extends InputStream {
                 pos = 0;
                 String line = (headerLines.nextElement() + LINE_SEPERATOR);
                 // Add seperator to show that headers are complete
-                if (headerLines.hasMoreElements() == false) {
+                if (!headerLines.hasMoreElements()) {
                     line += LINE_SEPERATOR;
                 }
                 currLine = line.getBytes("US-ASCII");

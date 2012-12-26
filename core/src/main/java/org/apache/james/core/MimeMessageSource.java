@@ -63,7 +63,7 @@ public abstract class MimeMessageSource {
         InputStream in = null;
         try {
             in = getInputStream();
-            int read = 0;
+            int read;
             byte[] data = new byte[1024];
             while ((read = in.read(data)) > 0) {
                 size += read;

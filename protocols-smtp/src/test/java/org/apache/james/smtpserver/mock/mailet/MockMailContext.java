@@ -21,11 +21,15 @@ package org.apache.james.smtpserver.mock.mailet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
+import org.apache.mailet.LookupException;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.apache.mailet.MailetContext;
+import org.apache.mailet.TemporaryLookupException;
 
 public class MockMailContext implements MailetContext {
 
@@ -39,6 +43,11 @@ public class MockMailContext implements MailetContext {
     @Override
     public void bounce(Mail mail, String message, MailAddress bouncer) throws MessagingException {
         // trivial implementation
+    }
+
+    @Override
+    public List<String> dnsLookup(String s, RecordType recordType) throws TemporaryLookupException, LookupException {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
@@ -103,6 +112,16 @@ public class MockMailContext implements MailetContext {
     }
 
     @Override
+    public void log(LogLevel logLevel, String s) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void log(LogLevel logLevel, String s, Throwable throwable) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void removeAttribute(String name) {
         // trivial implementation
     }
@@ -131,11 +150,6 @@ public class MockMailContext implements MailetContext {
     @Override
     public void setAttribute(String name, Object object) {
         attributes.put(name, object);
-    }
-
-    @Override
-    public void storeMail(MailAddress sender, MailAddress recipient, MimeMessage msg) throws MessagingException {
-        // trivial implementation
     }
 
     @Override

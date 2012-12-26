@@ -53,7 +53,7 @@ public class MimeMessageTest {
         return mmCreated;
     }
 
-    protected String getSimpleMessageCleanedSource() throws Exception {
+    protected String getSimpleMessageCleanedSource() {
         return "Subject: test\r\n"
                 + "MIME-Version: 1.0\r\n"
                 + "Content-Type: text/plain; charset=us-ascii\r\n"
@@ -71,7 +71,7 @@ public class MimeMessageTest {
         return mmCreated;
     }
 
-    protected String getMessageWithBadReturnPathSource() throws Exception {
+    protected String getMessageWithBadReturnPathSource() {
         return "Subject: test\r\n"
                 + "Return-Path: <mybadreturn@example.com>\r\n"
                 + "MIME-Version: 1.0\r\n"
@@ -81,7 +81,7 @@ public class MimeMessageTest {
                 + "test body";
     }
 
-    protected String getSimpleMessageCleanedSourceHeaderExpected() throws Exception {
+    protected String getSimpleMessageCleanedSourceHeaderExpected() {
         return "X-Test: foo\r\n" + getSimpleMessageCleanedSource();
     }
 

@@ -101,7 +101,7 @@ public class MimeMessageUtil {
      * @throws IOException
      * @throws UnsupportedDataTypeException
      */
-    public static void writeToInternal(MimeMessage message, OutputStream headerOs, OutputStream bodyOs, String[] ignoreList) throws MessagingException, IOException, UnsupportedDataTypeException {
+    public static void writeToInternal(MimeMessage message, OutputStream headerOs, OutputStream bodyOs, String[] ignoreList) throws MessagingException, IOException {
         if (message.getMessageID() == null) {
             message.saveChanges();
         }
@@ -123,7 +123,7 @@ public class MimeMessageUtil {
      * @throws UnsupportedDataTypeException
      * @throws MessagingException
      */
-    public static void writeMessageBodyTo(MimeMessage message, OutputStream bodyOs) throws IOException, UnsupportedDataTypeException, MessagingException {
+    public static void writeMessageBodyTo(MimeMessage message, OutputStream bodyOs) throws IOException, MessagingException {
         OutputStream bos;
         InputStream bis;
 

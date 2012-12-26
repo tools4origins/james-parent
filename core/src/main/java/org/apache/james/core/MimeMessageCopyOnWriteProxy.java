@@ -109,7 +109,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
      *            MimeMessageWrapper
      * @throws MessagingException
      */
-    public MimeMessageCopyOnWriteProxy(MimeMessage original) throws MessagingException {
+    public MimeMessageCopyOnWriteProxy(MimeMessage original) {
         this(original, false);
     }
 
@@ -129,7 +129,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
      * @param writeable
      * @throws MessagingException
      */
-    private MimeMessageCopyOnWriteProxy(MimeMessage original, boolean writeable) throws MessagingException {
+    private MimeMessageCopyOnWriteProxy(MimeMessage original, boolean writeable) {
         super(Session.getDefaultInstance(System.getProperties(), null));
 
         if (original instanceof MimeMessageCopyOnWriteProxy) {
@@ -465,6 +465,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see java.lang.Object#equals(java.lang.Object)
      */
+    @Override
     public boolean equals(Object arg0) {
         return getWrappedMessage().equals(arg0);
     }
@@ -472,6 +473,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see java.lang.Object#hashCode()
      */
+    @Override
     public int hashCode() {
         return getWrappedMessage().hashCode();
     }
@@ -479,6 +481,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return getWrappedMessage().toString();
     }
@@ -490,6 +493,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see javax.mail.Message#setFrom(javax.mail.Address)
      */
+    @Override
     public void setFrom(Address address) throws MessagingException {
         getWrappedMessageForWriting().setFrom(address);
     }
@@ -497,6 +501,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see javax.mail.Message#setFrom()
      */
+    @Override
     public void setFrom() throws MessagingException {
         getWrappedMessageForWriting().setFrom();
     }
@@ -504,6 +509,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see javax.mail.Message#addFrom(javax.mail.Address[])
      */
+    @Override
     public void addFrom(Address[] addresses) throws MessagingException {
         getWrappedMessageForWriting().addFrom(addresses);
     }
@@ -512,6 +518,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
      * @see javax.mail.Message#setRecipients(javax.mail.Message.RecipientType,
      *      javax.mail.Address[])
      */
+    @Override
     public void setRecipients(Message.RecipientType type, Address[] addresses) throws MessagingException {
         getWrappedMessageForWriting().setRecipients(type, addresses);
     }
@@ -520,6 +527,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
      * @see javax.mail.Message#addRecipients(javax.mail.Message.RecipientType,
      *      javax.mail.Address[])
      */
+    @Override
     public void addRecipients(Message.RecipientType type, Address[] addresses) throws MessagingException {
         getWrappedMessageForWriting().addRecipients(type, addresses);
     }
@@ -527,6 +535,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see javax.mail.Message#setReplyTo(javax.mail.Address[])
      */
+    @Override
     public void setReplyTo(Address[] addresses) throws MessagingException {
         getWrappedMessageForWriting().setReplyTo(addresses);
     }
@@ -534,6 +543,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see javax.mail.Message#setSubject(java.lang.String)
      */
+    @Override
     public void setSubject(String subject) throws MessagingException {
         getWrappedMessageForWriting().setSubject(subject);
     }
@@ -542,6 +552,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
      * @see javax.mail.internet.MimeMessage#setSubject(java.lang.String,
      *      java.lang.String)
      */
+    @Override
     public void setSubject(String subject, String charset) throws MessagingException {
         getWrappedMessageForWriting().setSubject(subject, charset);
     }
@@ -549,6 +560,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see javax.mail.Message#setSentDate(java.util.Date)
      */
+    @Override
     public void setSentDate(Date d) throws MessagingException {
         getWrappedMessageForWriting().setSentDate(d);
     }
@@ -556,6 +568,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see javax.mail.Part#setDisposition(java.lang.String)
      */
+    @Override
     public void setDisposition(String disposition) throws MessagingException {
         getWrappedMessageForWriting().setDisposition(disposition);
     }
@@ -563,6 +576,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * @see javax.mail.internet.MimeMessage#setContentID(java.lang.String)
      */
+    @Override
     public void setContentID(String cid) throws MessagingException {
         getWrappedMessageForWriting().setContentID(cid);
     }

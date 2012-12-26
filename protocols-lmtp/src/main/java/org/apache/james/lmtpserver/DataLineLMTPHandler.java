@@ -18,18 +18,12 @@
  ****************************************************************/
 package org.apache.james.lmtpserver;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.james.protocols.api.Response;
 import org.apache.james.protocols.api.handler.WiringException;
 import org.apache.james.protocols.lmtp.LMTPMultiResponse;
 import org.apache.james.protocols.lmtp.hook.DeliverToRecipientHook;
 import org.apache.james.protocols.smtp.MailAddress;
+import org.apache.james.protocols.smtp.MailAddressException;
 import org.apache.james.protocols.smtp.SMTPResponse;
 import org.apache.james.protocols.smtp.SMTPRetCode;
 import org.apache.james.protocols.smtp.SMTPSession;
@@ -37,6 +31,12 @@ import org.apache.james.protocols.smtp.core.AbstractHookableCmdHandler;
 import org.apache.james.protocols.smtp.dsn.DSNStatus;
 import org.apache.james.smtpserver.DataLineJamesMessageHookHandler;
 import org.apache.mailet.Mail;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Handler which takes care of deliver the mail to the recipients INBOX
@@ -49,17 +49,21 @@ public class DataLineLMTPHandler extends DataLineJamesMessageHookHandler {
     @Override
     protected Response processExtensions(SMTPSession session, final Mail mail) {
         LMTPMultiResponse mResponse = null;
-        
+
         // build a wrapper around the Mail
         final ReadOnlyMailEnvelope env = new ReadOnlyMailEnvelope(mail);
-        @SuppressWarnings("unchecked")
-        Iterator<MailAddress> recipients = mail.getRecipients().iterator();
-        
-        while (recipients.hasNext()) {
-            MailAddress recipient = recipients.next();
+
+        for (org.apache.mailet.MailAddress recipient : mail.getRecipients()) {
+            // TODO: the transformation code between MailAddress is purely to compile. No idea if it does what it's supposed
+            MailAddress recipientAddress;
+            try {
+                recipientAddress = new MailAddress(recipient.getLocalPart(), recipient.getDomain());
+            } catch (MailAddressException e) {
+                throw new RuntimeException(e);
+            }
             Response response = null;
-            for (DeliverToRecipientHook handler: handlers) {
-                response = AbstractHookableCmdHandler.calcDefaultSMTPResponse(handler.deliver(session, recipient, env));
+            for (DeliverToRecipientHook handler : handlers) {
+                response = AbstractHookableCmdHandler.calcDefaultSMTPResponse(handler.deliver(session, recipientAddress, env));
                 if (response != null) {
                     break;
                 }
@@ -88,7 +92,7 @@ public class DataLineLMTPHandler extends DataLineJamesMessageHookHandler {
     @Override
     public void wireExtensions(Class interfaceName, List extension) throws WiringException {
         if (interfaceName.equals(DeliverToRecipientHook.class)) {
-           handlers.addAll((Collection<? extends DeliverToRecipientHook>) extension);
+            handlers.addAll((Collection<? extends DeliverToRecipientHook>) extension);
         }
     }
 
@@ -97,11 +101,10 @@ public class DataLineLMTPHandler extends DataLineJamesMessageHookHandler {
         public ReadOnlyMailEnvelope(Mail mail) {
             super(mail, null);
         }
-        
+
         @Override
-        public OutputStream getMessageOutputStream() throws IOException{
+        public OutputStream getMessageOutputStream() throws IOException {
             throw new IOException("Read-only envelope");
         }
-        
     }
 }

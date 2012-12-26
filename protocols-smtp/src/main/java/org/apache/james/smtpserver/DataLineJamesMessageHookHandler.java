@@ -47,7 +47,6 @@ import org.apache.mailet.Mail;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -67,7 +66,6 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
 
     private List<MessageHook> mHandlers;
 
-    @Override
     public Response onLine(SMTPSession session, ByteBuffer lineByteBuffer, LineHandler<SMTPSession> next) {
 
         byte[] line = new byte[lineByteBuffer.remaining()];
@@ -150,12 +148,8 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
         if (mail != null && messageHandlers != null) {
             try {
                 MimeMessageInputStreamSource mmiss = (MimeMessageInputStreamSource) session.getAttachment(SMTPConstants.DATA_MIMEMESSAGE_STREAMSOURCE, State.Transaction);
-                OutputStream out = null;
-                try {
-                    out = mmiss.getWritableOutputStream();
-                } catch (FileNotFoundException e) {
-                    session.getLogger().debug("Unable to obtain OutputStream for Mail " + mail, e);
-                }
+                OutputStream out;
+                out = mmiss.getWritableOutputStream();
                 for (MessageHook rawHandler : mHandlers) {
                     session.getLogger().debug("executing james message handler " + rawHandler);
                     long start = System.currentTimeMillis();
@@ -182,7 +176,7 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
                 for (JamesMessageHook messageHandler : messageHandlers) {
                     session.getLogger().debug("executing james message handler " + messageHandler);
                     long start = System.currentTimeMillis();
-                    HookResult hRes = messageHandler.onMessage(session, mail);
+                    HookResult hRes = ((JamesMessageHook) messageHandler).onMessage(session, mail);
                     long executionTime = System.currentTimeMillis() - start;
                     if (rHooks != null) {
                         for (HookResultHook rHook : rHooks) {
@@ -261,7 +255,16 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
 
         @Override
         public List<MailAddress> getRecipients() {
-            return new ArrayList<MailAddress>(mail.getRecipients());
+            //TODO: not sure this MailAddress transformation code does the right thing
+            List<MailAddress> mailAddressList = new ArrayList<MailAddress>();
+            for (org.apache.mailet.MailAddress address : mail.getRecipients()) {
+                try {
+                    mailAddressList.add(new MailAddress(address.getLocalPart(), address.getDomain()));
+                } catch (MailAddressException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            return mailAddressList;
         }
 
         @Override
@@ -282,5 +285,6 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
                 return -1;
             }
         }
+
     }
 }
