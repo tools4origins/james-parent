@@ -18,85 +18,47 @@
  ****************************************************************/
 package org.apache.james.mailetcontainer.impl.matchers;
 
-import java.util.Arrays;
-import java.util.Collection;
-import javax.mail.MessagingException;
-import javax.mail.internet.ParseException;
-import org.apache.james.transport.matchers.All;
-import org.apache.james.transport.matchers.RecipientIs;
 import org.apache.mailet.MailAddress;
-import org.apache.mailet.Matcher;
-import org.apache.mailet.base.test.FakeMail;
-import org.apache.mailet.base.test.FakeMailContext;
-import org.apache.mailet.base.test.FakeMatcherConfig;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
 import org.junit.Test;
 
-public class AndTest {
+import javax.mail.MessagingException;
+import java.util.Collection;
 
-    private FakeMailContext context;
-    private FakeMail mockedMail;
-    private CompositeMatcher matcher;
+public class AndTest extends BaseMatchersTest {
 
-    private void setupMockedMail() throws ParseException {
-    mockedMail = new FakeMail();
-    mockedMail.setRecipients(Arrays.asList(new MailAddress[]{
-            new MailAddress("test@james.apache.org"),
-            new MailAddress("test2@james.apache.org")}));
-
-    }
-
-    /**
-     * Setup a composite Or matcher and test it
-     * @throws MessagingException
-     */
-    private void setupMatcher() throws MessagingException {
-    context = new FakeMailContext();
-    matcher = new And();
-    FakeMatcherConfig mci = new FakeMatcherConfig("And", context);
-    matcher.init(mci);
-    }
-
-    private void setupChild(String match) throws MessagingException {
-    Matcher child = null;
-    if (match.equals("All")) {
-        child = new All();
-    } else {
-        child = new RecipientIs();
-    }
-    FakeMatcherConfig sub = new FakeMatcherConfig(match, context);
-    child.init(sub);
-    matcher.add(child);
-
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        setupCompositeMatcher("And", And.class);
     }
 
     // test if all recipients was returned
     @Test
     public void testAndIntersectSameTwice() throws MessagingException {
-    setupMockedMail();
-    setupMatcher();
-    setupChild("RecipientIs=test@james.apache.org");
-    setupChild("RecipientIs=test@james.apache.org");
-    setupChild("All");
+        setupChild("RecipientIs=test@james.apache.org");
+        setupChild("RecipientIs=test@james.apache.org");
+        setupChild("All");
 
-    Collection matchedRecipients = matcher.match(mockedMail);
+        Collection matchedRecipients = matcher.match(mockedMail);
 
-    assertNotNull(matchedRecipients);
-    assertEquals(1, matchedRecipients.size());
-    MailAddress address = (MailAddress) matchedRecipients.iterator().next();
-    assertEquals(address, "test@james.apache.org");
+        assertNotNull(matchedRecipients);
+        assertEquals(1, matchedRecipients.size());
+        MailAddress address = (MailAddress) matchedRecipients.iterator().next();
+        assertEquals(address.toString(), "test@james.apache.org");
     }
 
     @Test
     public void testAndNoIntersect() throws MessagingException {
-    setupMockedMail();
-    setupMatcher();
-    setupChild("RecipientIs=test@james.apache.org");
-    setupChild("RecipientIs=test2@james.apache.org");
+        setupChild("RecipientIs=test@james.apache.org");
+        setupChild("RecipientIs=test2@james.apache.org");
 
-    Collection matchedRecipients = matcher.match(mockedMail);
+        Collection matchedRecipients = matcher.match(mockedMail);
 
-    assertNotNull(matchedRecipients);
-    assertEquals(0, matchedRecipients.size());
+        assertNotNull(matchedRecipients);
+        assertEquals(0, matchedRecipients.size());
     }
 }

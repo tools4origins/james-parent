@@ -18,14 +18,22 @@
  ****************************************************************/
 package org.apache.james.mailetcontainer.api.mock;
 
-import java.util.*;
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.MimeMessage;
 import org.apache.mailet.HostAddress;
+import org.apache.mailet.LookupException;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.apache.mailet.MailetContext;
+import org.apache.mailet.TemporaryLookupException;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.MimeMessage;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class MockMailetContext implements MailetContext {
 
@@ -35,13 +43,16 @@ public class MockMailetContext implements MailetContext {
     @Override
     public void bounce(Mail arg0, String arg1) throws MessagingException {
         throw new UnsupportedOperationException("Not implemented");
-
     }
 
     @Override
     public void bounce(Mail arg0, String arg1, MailAddress arg2) throws MessagingException {
         throw new UnsupportedOperationException("Not implemented");
+    }
 
+    @Override
+    public List<String> dnsLookup(String s, RecordType recordType) throws TemporaryLookupException, LookupException {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
@@ -133,6 +144,16 @@ public class MockMailetContext implements MailetContext {
     }
 
     @Override
+    public void log(LogLevel logLevel, String s) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public void log(LogLevel logLevel, String s, Throwable throwable) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
     public void removeAttribute(String arg0) {
         attributes.remove(arg0);
     }
@@ -140,7 +161,6 @@ public class MockMailetContext implements MailetContext {
     @Override
     public void sendMail(MimeMessage arg0) throws MessagingException {
         throw new UnsupportedOperationException("Not implemented");
-
     }
 
     @Override
@@ -151,26 +171,15 @@ public class MockMailetContext implements MailetContext {
     @Override
     public void sendMail(MailAddress arg0, Collection arg1, MimeMessage arg2) throws MessagingException {
         throw new UnsupportedOperationException("Not implemented");
-
     }
 
     @Override
     public void sendMail(MailAddress arg0, Collection arg1, MimeMessage arg2, String arg3) throws MessagingException {
         throw new UnsupportedOperationException("Not implemented");
-
     }
 
     @Override
     public void setAttribute(String arg0, Object arg1) {
         attributes.put(arg0, arg1);
-    }
-
-    @Override
-    public void storeMail(MailAddress arg0, MailAddress arg1, MimeMessage arg2) throws MessagingException {
-        throw new UnsupportedOperationException("Not implemented");
-    }
-
-    public List<Mail> getSentMails() {
-        return mails;
     }
 }

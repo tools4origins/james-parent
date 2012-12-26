@@ -19,26 +19,6 @@
 
 package org.apache.james.mailetcontainer.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Vector;
-
-import javax.annotation.Resource;
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.ParseException;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.core.MailImpl;
@@ -54,15 +34,39 @@ import org.apache.james.mailetcontainer.api.MailProcessor;
 import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
 import org.apache.mailet.HostAddress;
+import org.apache.mailet.LookupException;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.apache.mailet.MailetContext;
+import org.apache.mailet.TemporaryLookupException;
 import org.apache.mailet.base.RFC2822Headers;
 import org.slf4j.Logger;
 
+import javax.annotation.Resource;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
 public class JamesMailetContext implements MailetContext, LogEnabled, Configurable {
 
-    /** A hash table of server attributes These are the MailetContext attributes */
+    /**
+     * A hash table of server attributes These are the MailetContext attributes
+     */
     private Hashtable<String, Object> attributes = new Hashtable<String, Object>();
     protected DNSService dns;
 
@@ -99,6 +103,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#getMailServers(String)
      */
+    @Override
     public Collection<String> getMailServers(String host) {
         try {
             return dns.findMXRecords(host);
@@ -112,6 +117,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#getAttribute(java.lang.String)
      */
+    @Override
     public Object getAttribute(String key) {
         return attributes.get(key);
     }
@@ -120,6 +126,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
      * @see org.apache.mailet.MailetContext#setAttribute(java.lang.String,
      *      java.lang.Object)
      */
+    @Override
     public void setAttribute(String key, Object object) {
         attributes.put(key, object);
     }
@@ -127,6 +134,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#removeAttribute(java.lang.String)
      */
+    @Override
     public void removeAttribute(String key) {
         attributes.remove(key);
     }
@@ -134,9 +142,10 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#getAttributeNames()
      */
+    @Override
     public Iterator<String> getAttributeNames() {
         Vector<String> names = new Vector<String>();
-        for (Enumeration<String> e = attributes.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = attributes.keys(); e.hasMoreElements(); ) {
             names.add(e.nextElement());
         }
         return names.iterator();
@@ -148,9 +157,10 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
      * is different than a mail-client's reply, which would use the Reply-To or
      * From header. This will send the bounce with the server's postmaster as
      * the sender.
-     * 
+     *
      * @see org.apache.mailet.MailetContext#bounce(Mail, String)
      */
+    @Override
     public void bounce(Mail mail, String message) throws MessagingException {
         bounce(mail, message, getPostmaster());
     }
@@ -181,9 +191,10 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
      * multipart (mixed)/ contentPartRoot (body) = mpContent (alternative)/ part
      * (body) = message part (body) = original
      * </p>
-     * 
+     *
      * @see org.apache.mailet.MailetContext#bounce(Mail, String, MailAddress)
      */
+    @Override
     public void bounce(Mail mail, String message, MailAddress bouncer) throws MessagingException {
         if (mail.getSender() == null) {
             if (log.isInfoEnabled())
@@ -206,17 +217,18 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         LifecycleUtil.dispose(reply);
     }
 
+    @Override
+    public List<String> dnsLookup(String s, RecordType recordType) throws TemporaryLookupException, LookupException {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
     /**
      * Generates a bounce mail that is a bounce of the original message.
-     * 
-     * @param bounceText
-     *            the text to be prepended to the message to describe the bounce
-     *            condition
-     * 
+     *
+     * @param bounceText the text to be prepended to the message to describe the bounce
+     *                   condition
      * @return the bounce mail
-     * 
-     * @throws MessagingException
-     *             if the bounce mail could not be created
+     * @throws MessagingException if the bounce mail could not be created
      */
     private MailImpl rawBounce(Mail mail, String bounceText) throws MessagingException {
         // This sends a message to the james component that is a bounce of the
@@ -227,7 +239,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         reply.setSentDate(new Date());
         Collection<MailAddress> recipients = new HashSet<MailAddress>();
         recipients.add(mail.getSender());
-        InternetAddress addr[] = { new InternetAddress(mail.getSender().toString()) };
+        InternetAddress addr[] = {new InternetAddress(mail.getSender().toString())};
         reply.setRecipients(Message.RecipientType.TO, addr);
         reply.setFrom(new InternetAddress(mail.getRecipients().iterator().next().toString()));
         reply.setText(bounceText);
@@ -238,12 +250,13 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#isLocalUser(String)
      */
+    @Override
     public boolean isLocalUser(String name) {
         if (name == null) {
             return false;
         }
         try {
-            if (name.indexOf("@") == -1) {
+            if (!name.contains("@")) {
                 try {
                     return isLocalEmail(new MailAddress(name.toLowerCase(), domains.getDefaultDomain()));
                 } catch (DomainListException e) {
@@ -262,6 +275,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#isLocalEmail(org.apache.mailet.MailAddress)
      */
+    @Override
     public boolean isLocalEmail(MailAddress mailAddress) {
         if (mailAddress != null) {
             String userName = mailAddress.toString().toLowerCase();
@@ -269,14 +283,13 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
                 return false;
             }
             try {
-                if (localusers.supportVirtualHosting() == false) {
+                if (!localusers.supportVirtualHosting()) {
                     userName = mailAddress.getLocalPart().toLowerCase();
                 }
                 return localusers.contains(userName);
 
             } catch (UsersRepositoryException e) {
                 log("Unable to access UsersRepository", e);
-
             }
         }
         return false;
@@ -285,6 +298,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#getPostmaster()
      */
+    @Override
     public MailAddress getPostmaster() {
         return postmaster;
     }
@@ -292,6 +306,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#getMajorVersion()
      */
+    @Override
     public int getMajorVersion() {
         return 2;
     }
@@ -299,10 +314,10 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#getMinorVersion()
      */
+    @Override
     public int getMinorVersion() {
         return 4;
     }
-
 
     /**
      * Performs DNS lookups as needed to find servers which should or might
@@ -312,13 +327,13 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
      * is done using MX records, and the HostAddress instances are returned
      * sorted by MX priority. If no host is found for domainName, the Iterator
      * returned will be empty and the first call to hasNext() will return false.
-     * 
+     *
+     * @param domainName - the domain for which to find mail servers
+     * @return an Iterator over HostAddress instances, sorted by priority
      * @see org.apache.james.dnsservice.api.DNSService#getHostName(java.net.InetAddress)
      * @since Mailet API v2.2.0a16-unstable
-     * @param domainName
-     *            - the domain for which to find mail servers
-     * @return an Iterator over HostAddress instances, sorted by priority
      */
+    @Override
     public Iterator<HostAddress> getSMTPHostAddresses(String domainName) {
         try {
             return new MXHostAddressIterator(dns.findMXRecords(domainName).iterator(), dns, false, log);
@@ -328,9 +343,11 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
             return Collections.unmodifiableCollection(new ArrayList<HostAddress>(0)).iterator();
         }
     }
+
     /**
      * @see org.apache.mailet.MailetContext#getServerInfo()
      */
+    @Override
     public String getServerInfo() {
         return "Apache JAMES";
     }
@@ -338,6 +355,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#isLocalServer(java.lang.String)
      */
+    @Override
     public boolean isLocalServer(String name) {
         try {
             return domains.containsDomain(name);
@@ -350,37 +368,73 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.mailet.MailetContext#log(java.lang.String)
      */
+    @Override
+    @Deprecated
     public void log(String arg0) {
         log.info(arg0);
     }
 
     /**
      * @see org.apache.mailet.MailetContext#log(java.lang.String,
-     * java.lang.Throwable)
+     *      java.lang.Throwable)
      */
+    @Override
+    @Deprecated
     public void log(String arg0, Throwable arg1) {
         log.info(arg0, arg1);
     }
 
+    @Override
+    public void log(LogLevel logLevel, String s) {
+        switch (logLevel) {
+            case INFO:
+                log.info(s);
+                break;
+            case WARN:
+                log.warn(s);
+                break;
+            case ERROR:
+                log.error(s);
+                break;
+            default:
+                log.debug(s);
+        }
+    }
+
+    @Override
+    public void log(LogLevel logLevel, String s, Throwable throwable) {
+        switch (logLevel) {
+            case INFO:
+                log.info(s, throwable);
+                break;
+            case WARN:
+                log.warn(s, throwable);
+                break;
+            case ERROR:
+                log.error(s, throwable);
+                break;
+            default:
+                log.debug(s, throwable);
+        }
+    }
+
     /**
      * Place a mail on the spool for processing
-     * 
-     * @param message
-     *            the message to send
-     * 
-     * @throws MessagingException
-     *             if an exception is caught while placing the mail on the spool
+     *
+     * @param message the message to send
+     * @throws MessagingException if an exception is caught while placing the mail on the spool
      */
+    @Override
     public void sendMail(MimeMessage message) throws MessagingException {
         MailAddress sender = new MailAddress((InternetAddress) message.getFrom()[0]);
         Collection<MailAddress> recipients = new HashSet<MailAddress>();
         Address addresses[] = message.getAllRecipients();
         if (addresses != null) {
-            for (int i = 0; i < addresses.length; i++) {
+            for (Address address : addresses) {
                 // Javamail treats the "newsgroups:" header field as a
                 // recipient, so we want to filter those out.
-                if (addresses[i] instanceof InternetAddress) {
-                    recipients.add(new MailAddress((InternetAddress) addresses[i]));
+                if (address instanceof InternetAddress) {
+                    recipients.add(new MailAddress((InternetAddress) address));
                 }
             }
         }
@@ -388,9 +442,8 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     }
 
     /**
-     * @see
-     * org.apache.mailet.MailetContext#sendMail(org.apache.mailet.MailAddress,
-     * java.util.Collection, javax.mail.internet.MimeMessage)
+     * @see org.apache.mailet.MailetContext#sendMail(org.apache.mailet.MailAddress,
+     *      java.util.Collection, javax.mail.internet.MimeMessage)
      */
     @SuppressWarnings("unchecked")
     public void sendMail(MailAddress sender, Collection recipients, MimeMessage message) throws MessagingException {
@@ -399,17 +452,17 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
 
     /**
      * TODO: Should we use the MailProcessorList or the MailQueue here ?
-     * 
+     *
      * @see org.apache.mailet.MailetContext#sendMail(org.apache.mailet.Mail)
      */
+    @Override
     public void sendMail(Mail mail) throws MessagingException {
         processorList.service(mail);
     }
 
     /**
-     * @see
-     * org.apache.mailet.MailetContext#sendMail(org.apache.mailet.MailAddress,
-     * java.util.Collection, javax.mail.internet.MimeMessage, java.lang.String)
+     * @see org.apache.mailet.MailetContext#sendMail(org.apache.mailet.MailAddress,
+     *      java.util.Collection, javax.mail.internet.MimeMessage, java.lang.String)
      */
     @SuppressWarnings("unchecked")
     public void sendMail(MailAddress sender, Collection recipients, MimeMessage message, String state) throws MessagingException {
@@ -432,11 +485,9 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
      * The local field localDeliveryMailet will be removed when we remove the
      * storeMail method.
      * </p>
-     * 
+     *
      * @deprecated since 2.2.0 look at the LocalDelivery code to find out how to
      *             do the local delivery.
-     * @see org.apache.mailet.MailetContext#storeMail(org.apache.mailet.MailAddress,
-     *      org.apache.mailet.MailAddress, javax.mail.internet.MimeMessage)
      */
     public void storeMail(MailAddress sender, MailAddress recipient, MimeMessage msg) throws MessagingException {
         throw new UnsupportedOperationException("Was removed");
@@ -445,6 +496,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.james.lifecycle.api.LogEnabled#setLog(org.slf4j.Logger)
      */
+    @Override
     public void setLog(Logger log) {
         this.log = log;
     }
@@ -452,6 +504,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     /**
      * @see org.apache.james.lifecycle.api.Configurable#configure(HierarchicalConfiguration)
      */
+    @Override
     public void configure(HierarchicalConfiguration config) throws ConfigurationException {
         try {
 
@@ -467,17 +520,15 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
                 // list
                 String[] doms = domains.getDomains();
                 if (doms != null) {
-                    for (int i = 0; i < doms.length; i++) {
-                        String serverName = doms[i].toLowerCase(Locale.US);
+                    for (String dom : doms) {
+                        String serverName = dom.toLowerCase(Locale.US);
                         if (!("localhost".equals(serverName))) {
                             domainName = serverName; // ok, not localhost, so
-                                                     // use it
-                            continue;
+                            // use it
                         }
                     }
 
                 }
-
                 // if we found a suitable domain, use it. Otherwise fallback to
                 // the
                 // host name.
@@ -486,9 +537,11 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
             try {
                 this.postmaster = new MailAddress(postMasterAddress);
                 if (!domains.containsDomain(postmaster.getDomain())) {
-                    StringBuffer warnBuffer = new StringBuffer(320).append("The specified postmaster address ( ").append(postmaster)
-                            .append(" ) is not a local address.  This is not necessarily a problem, but it does mean that emails addressed to the postmaster will be routed to another server.  For some configurations this may cause problems.");
-                    log.warn(warnBuffer.toString());
+                    String warnBuffer = "The specified postmaster address ( " + postmaster + " ) is not a local " +
+                            "address.  This is not necessarily a problem, but it does mean that emails addressed to " +
+                            "the postmaster will be routed to another server.  For some configurations this may " +
+                            "cause problems.";
+                    log.warn(warnBuffer);
                 }
             } catch (AddressException e) {
                 throw new ConfigurationException("Postmaster address " + postMasterAddress + "is invalid", e);
@@ -496,6 +549,5 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         } catch (DomainListException e) {
             throw new ConfigurationException("Unable to access DomainList", e);
         }
-
     }
 }

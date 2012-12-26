@@ -19,72 +19,41 @@
 
 package org.apache.james.mailetcontainer.impl.matchers;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import javax.mail.MessagingException;
-import javax.mail.internet.ParseException;
-import org.apache.james.transport.matchers.RecipientIs;
 import org.apache.mailet.MailAddress;
-import org.apache.mailet.Matcher;
-import org.apache.mailet.base.test.FakeMail;
-import org.apache.mailet.base.test.FakeMailContext;
-import org.apache.mailet.base.test.FakeMatcherConfig;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Before;
 import org.junit.Test;
 
-public class OrTest {
+import java.util.Collection;
+import java.util.Iterator;
 
-    private FakeMail mockedMail;
+public class OrTest extends BaseMatchersTest {
 
-    private CompositeMatcher matcher;
-
-    private void setupMockedMail() throws ParseException {
-        mockedMail = new FakeMail();
-        mockedMail.setRecipients(Arrays.asList(new MailAddress[] {
-        new MailAddress("test@james.apache.org"),
-        new MailAddress("test2@james.apache.org") }));
-
-    }
-
-    /**
-     * Setup a composite Or matcher and test it
-     * @throws MessagingException
-     */
-    private void setupMatcher() throws MessagingException {
-        FakeMailContext context = new FakeMailContext();
-        matcher = new Or();
-        FakeMatcherConfig mci = new FakeMatcherConfig("Or",context);
-        matcher.init(mci);
-        Matcher child = null;
-        FakeMatcherConfig sub = null;
-        child = new RecipientIs();
-        sub = new FakeMatcherConfig("RecipientIsRegex=test@james.apache.org",context);
-        child.init(sub);
-        matcher.add(child);
-        child = new RecipientIs();
-        sub = new FakeMatcherConfig("RecipientIsRegex=test2@james.apache.org",context);
-        child.init(sub);
-        matcher.add(child);
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        setupCompositeMatcher("Or", Or.class);
     }
 
     // test if all recipients was returned
     @Test
-    public void testAllRecipientsReturned() throws MessagingException {
-        setupMockedMail();
-        setupMatcher();
+    public void testAllRecipientsReturned() throws Exception {
+        setupChild("RecipientIsRegex=test@james.apache.org");
+        setupChild("RecipientIsRegex=test2@james.apache.org");
 
         Collection matchedRecipients = matcher.match(mockedMail);
 
         assertNotNull(matchedRecipients);
         assertEquals(matchedRecipients.size(), mockedMail.getRecipients().size());
-        
+
         // Now ensure they match the actual recipients
-        Iterator iterator = matchedRecipients.iterator(); 
-        MailAddress address = (MailAddress)iterator.next();
-        assertEquals(address,"test@james.apache.org");
-        address = (MailAddress)iterator.next();
-        assertEquals(address,"test2@james.apache.org");
+        Iterator iterator = matchedRecipients.iterator();
+        MailAddress address = (MailAddress) iterator.next();
+        assertEquals(address, "test@james.apache.org");
+        address = (MailAddress) iterator.next();
+        assertEquals(address, "test2@james.apache.org");
     }
 
 }

@@ -16,55 +16,51 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
+
 package org.apache.james.mailetcontainer.impl.matchers;
 
+import org.apache.james.mailet.standard.matchers.All;
+import org.apache.james.mailet.standard.matchers.RecipientIs;
 import org.apache.mailet.MailAddress;
+import org.apache.mailet.Matcher;
 import org.apache.mailet.base.test.FakeMail;
 import org.apache.mailet.base.test.FakeMailContext;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.apache.mailet.base.test.FakeMatcherConfig;
 import org.junit.Before;
-import org.junit.Test;
 
 import javax.mail.MessagingException;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.Arrays;
 
-public class XorTest extends BaseMatchersTest {
+public class BaseMatchersTest {
 
-    @Override
+    protected FakeMailContext context;
+    protected FakeMail mockedMail;
+    protected CompositeMatcher matcher;
+
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        setupCompositeMatcher("Xor", Xor.class);
+        mockedMail = new FakeMail();
+        mockedMail.setRecipients(Arrays.asList(new MailAddress("test@james.apache.org"),
+                new MailAddress("test2@james.apache.org")));
     }
 
-    // test if all recipients was returned
-    @Test
-    public void testIntersectSame() throws MessagingException {
-        setupChild("RecipientIsRegex=test@james.apache.org");
-        setupChild("RecipientIsRegex=test@james.apache.org");
-
-        Collection matchedRecipients = matcher.match(mockedMail);
-
-        assertNotNull(matchedRecipients);
-        assertEquals(0, matchedRecipients.size());
+    void setupCompositeMatcher(String matcherName, Class<? extends GenericCompositeMatcher> matcherClass)
+            throws Exception {
+        context = new FakeMailContext();
+        matcher = matcherClass.newInstance();
+        FakeMatcherConfig mci = new FakeMatcherConfig(matcherName, context);
+        matcher.init(mci);
     }
 
-    @Test
-    public void testNoIntersect() throws MessagingException {
-        setupChild("RecipientIsRegex=test@james.apache.org");
-        setupChild("RecipientIsRegex=test2@james.apache.org");
-
-        Collection matchedRecipients = matcher.match(mockedMail);
-
-        assertNotNull(matchedRecipients);
-        assertEquals(2, matchedRecipients.size());
-
-        Iterator iterator = matchedRecipients.iterator();
-        MailAddress address = (MailAddress) iterator.next();
-        assertEquals(address, "test@james.apache.org");
-        address = (MailAddress) iterator.next();
-        assertEquals(address, "test2@james.apache.org");
+    void setupChild(String matcherName) throws MessagingException {
+        Matcher child;
+        if (matcherName.equals("All")) {
+            child = new All();
+        } else {
+            child = new RecipientIs();
+        }
+        FakeMatcherConfig sub = new FakeMatcherConfig(matcherName, context);
+        child.init(sub);
+        matcher.add(child);
     }
 }

@@ -19,13 +19,6 @@
 
 package org.apache.james.transport.matchers;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.Resource;
-import javax.mail.MessagingException;
-
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
@@ -37,12 +30,19 @@ import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.model.MailboxQuery;
 import org.apache.james.mailbox.model.MessageRange;
 import org.apache.james.mailbox.model.MessageResult;
+import org.apache.james.mailet.standard.matchers.AbstractQuotaMatcher;
 import org.apache.james.transport.util.MailetContextLog;
 import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.apache.mailet.MailetContext;
+
+import javax.annotation.Resource;
+import javax.mail.MessagingException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>
@@ -55,11 +55,11 @@ import org.apache.mailet.MailetContext;
  * user or common to all of them).
  * </p>
  * <p>
- * This matcher need to calculate the mailbox size everytime it is called. This
+ * This matcher need to calculate the mailbox size every time it is called. This
  * can slow down things if there are many mails in the mailbox. Some users also
  * report big problems with the matcher if a JDBC based mailrepository is used.
  * </p>
- * 
+ *
  * @since 2.2.0
  */
 abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
@@ -72,15 +72,15 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
     }
 
     @Resource(name = "usersrepository")
-    public void setUsersRepository(UsersRepository localusers) {
-        this.localusers = localusers;
+    public void setUsersRepository(UsersRepository localUsers) {
+        this.localUsers = localUsers;
     }
 
     /**
      * The user repository for this mail server. Contains all the users with
      * inboxes on this server.
      */
-    private UsersRepository localusers;
+    private UsersRepository localUsers;
 
     private MailetContextLog log;
 
@@ -90,9 +90,8 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
      * recipient is a known user in the local server.<br>
      * If a subclass overrides this method it should "and"
      * <code>super.isRecipientChecked</code> to its check.
-     * 
-     * @param recipient
-     *            the recipient to check
+     *
+     * @param recipient the recipient to check
      */
     protected boolean isRecipientChecked(MailAddress recipient) throws MessagingException {
         MailetContext mailetContext = getMailetContext();
@@ -109,9 +108,8 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
 
     /**
      * Gets the storage used in the recipient's inbox.
-     * 
-     * @param recipient
-     *            the recipient to check
+     *
+     * @param recipient the recipient to check
      */
     protected long getUsed(MailAddress recipient, Mail _) throws MessagingException {
         long size = 0;
@@ -121,7 +119,7 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
             try {
                 // see if we need use the full email address as username or not.
                 // See JAMES-1197
-                if (localusers.supportVirtualHosting()) {
+                if (localUsers.supportVirtualHosting()) {
                     username = recipient.toString().toLowerCase(Locale.US);
                 } else {
                     username = recipient.getLocalPart().toLowerCase(Locale.US);
@@ -133,11 +131,12 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
             manager.startProcessingRequest(session);
 
             // get all mailboxes for the user to calculate the size
-            // See JAMES-1198
-            List<MailboxMetaData> mList = manager.search(new MailboxQuery(MailboxPath.inbox(session), "", session.getPathDelimiter()), session);
-            for (int i = 0; i < mList.size(); i++) {
-                MessageManager mailbox = manager.getMailbox(mList.get(i).getPath(), session);
-                Iterator<MessageResult> results = mailbox.getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL,  session);
+            // TODO: See JAMES-1198
+            List<MailboxMetaData> mList = manager.search(new MailboxQuery(MailboxPath.inbox(session), "",
+                    session.getPathDelimiter()), session);
+            for (MailboxMetaData aMList : mList) {
+                MessageManager mailbox = manager.getMailbox(aMList.getPath(), session);
+                Iterator<MessageResult> results = mailbox.getMessages(MessageRange.all(), FetchGroupImpl.MINIMAL, session);
                 while (results.hasNext()) {
                     size += results.next().getSize();
                 }
@@ -151,7 +150,5 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
         }
 
         return size;
-
     }
-
 }

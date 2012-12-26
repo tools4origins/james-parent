@@ -19,18 +19,6 @@
 
 package org.apache.james.smtpserver;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
 import org.apache.james.core.MailImpl;
 import org.apache.james.core.MimeMessageCopyOnWriteProxy;
 import org.apache.james.core.MimeMessageInputStream;
@@ -50,13 +38,23 @@ import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.core.AbstractHookableCmdHandler;
 import org.apache.james.protocols.smtp.core.DataLineFilter;
 import org.apache.james.protocols.smtp.dsn.DSNStatus;
-import org.apache.james.protocols.smtp.hook.Hook;
 import org.apache.james.protocols.smtp.hook.HookResult;
 import org.apache.james.protocols.smtp.hook.HookResultHook;
 import org.apache.james.protocols.smtp.hook.MessageHook;
 import org.apache.james.smtpserver.model.MailetMailAddressAdapter;
 import org.apache.james.smtpserver.model.ProtocolMailAddressAdapter;
 import org.apache.mailet.Mail;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Handles the calling of JamesMessageHooks
@@ -69,15 +67,12 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
 
     private List<MessageHook> mHandlers;
 
-    /**
-     * @see
-     * org.apache.james.protocols.smtp.core.DataLineFilter#onLine(SMTPSession, byte[], LineHandler)
-     */
+    @Override
     public Response onLine(SMTPSession session, ByteBuffer lineByteBuffer, LineHandler<SMTPSession> next) {
-        
+
         byte[] line = new byte[lineByteBuffer.remaining()];
         lineByteBuffer.get(line, 0, line.length);
-        
+
         MimeMessageInputStreamSource mmiss = (MimeMessageInputStreamSource) session.getAttachment(SMTPConstants.DATA_MIMEMESSAGE_STREAMSOURCE, State.Transaction);
 
         try {
@@ -91,12 +86,12 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
 
                 List<MailAddress> recipientCollection = (List<MailAddress>) session.getAttachment(SMTPSession.RCPT_LIST, State.Transaction);
                 MailAddress mailAddress = (MailAddress) session.getAttachment(SMTPSession.SENDER, State.Transaction);
-                
+
                 List<org.apache.mailet.MailAddress> rcpts = new ArrayList<org.apache.mailet.MailAddress>();
-                for (MailAddress address: recipientCollection) {
+                for (MailAddress address : recipientCollection) {
                     rcpts.add(new MailetMailAddressAdapter(address));
                 }
-                
+
                 MailetMailAddressAdapter mailetMailAddressAdapter = null;
                 if (mailAddress != MailAddress.nullSender()) {
                     mailetMailAddressAdapter = new MailetMailAddressAdapter(mailAddress);
@@ -114,7 +109,7 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
 
                     Response response = processExtensions(session, mail);
 
-                    session.popLineHandler();      
+                    session.popLineHandler();
                     return response;
 
                 } catch (MessagingException e) {
@@ -151,9 +146,6 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
         return null;
     }
 
-    /**
-     * @param session
-     */
     protected Response processExtensions(SMTPSession session, Mail mail) {
         if (mail != null && messageHandlers != null) {
             try {
@@ -164,8 +156,7 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
                 } catch (FileNotFoundException e) {
                     session.getLogger().debug("Unable to obtain OutputStream for Mail " + mail, e);
                 }
-                for (int i = 0; i < mHandlers.size(); i++) {
-                    MessageHook rawHandler = mHandlers.get(i);
+                for (MessageHook rawHandler : mHandlers) {
                     session.getLogger().debug("executing james message handler " + rawHandler);
                     long start = System.currentTimeMillis();
 
@@ -173,10 +164,9 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
                     long executionTime = System.currentTimeMillis() - start;
 
                     if (rHooks != null) {
-                        for (int i2 = 0; i2 < rHooks.size(); i2++) {
-                            Object rHook = rHooks.get(i2);
+                        for (HookResultHook rHook : rHooks) {
                             session.getLogger().debug("executing hook " + rHook);
-                            hRes = ((HookResultHook) rHook).onHookResult(session, hRes, executionTime, rawHandler);
+                            hRes = rHook.onHookResult(session, hRes, executionTime, rawHandler);
                         }
                     }
 
@@ -189,18 +179,15 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
                     }
                 }
 
-                int count = messageHandlers.size();
-                for (int i = 0; i < count; i++) {
-                    Hook rawHandler = (Hook) messageHandlers.get(i);
-                    session.getLogger().debug("executing james message handler " + rawHandler);
+                for (JamesMessageHook messageHandler : messageHandlers) {
+                    session.getLogger().debug("executing james message handler " + messageHandler);
                     long start = System.currentTimeMillis();
-                    HookResult hRes = ((JamesMessageHook) rawHandler).onMessage(session, (Mail) mail);
+                    HookResult hRes = messageHandler.onMessage(session, mail);
                     long executionTime = System.currentTimeMillis() - start;
                     if (rHooks != null) {
-                        for (int i2 = 0; i2 < rHooks.size(); i2++) {
-                            Object rHook = rHooks.get(i2);
+                        for (HookResultHook rHook : rHooks) {
                             session.getLogger().debug("executing hook " + rHook);
-                            hRes = ((HookResultHook) rHook).onHookResult(session, hRes, executionTime, rawHandler);
+                            hRes = rHook.onHookResult(session, hRes, executionTime, messageHandler);
                         }
                     }
 
@@ -225,10 +212,7 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
         return null;
     }
 
-    /**
-     * @see org.apache.james.protocols.api.handler.ExtensibleHandler#wireExtensions(java.lang.Class,
-     *      java.util.List)
-     */
+    @Override
     public void wireExtensions(Class interfaceName, List extension) throws WiringException {
         if (JamesMessageHook.class.equals(interfaceName)) {
             this.messageHandlers = extension;
@@ -243,9 +227,7 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
         }
     }
 
-    /**
-     * @see org.apache.james.protocols.api.handler.ExtensibleHandler#getMarkerInterfaces()
-     */
+    @Override
     public List<Class<?>> getMarkerInterfaces() {
         List<Class<?>> classes = new LinkedList<Class<?>>();
         classes.add(JamesMessageHook.class);
@@ -255,17 +237,15 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
     }
 
     protected class MailToMailEnvelopeWrapper implements MailEnvelope {
-        private Mail mail;
-        private OutputStream out;
+        private final Mail mail;
+        private final OutputStream out;
 
         public MailToMailEnvelopeWrapper(Mail mail, OutputStream out) {
             this.mail = mail;
             this.out = out;
         }
 
-        /**
-         * @see org.apache.james.protocols.smtp.MailEnvelope#getMessageInputStream()
-         */
+        @Override
         public InputStream getMessageInputStream() throws IOException {
             try {
                 return new MimeMessageInputStream(mail.getMessage());
@@ -274,43 +254,33 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
             }
         }
 
-        /**
-         * @see
-         * org.apache.james.protocols.smtp.MailEnvelope#getMessageOutputStream()
-         */
+        @Override
         public OutputStream getMessageOutputStream() throws IOException {
             return out;
         }
 
-        /**
-         * @see org.apache.james.protocols.smtp.MailEnvelope#getRecipients()
-         */
+        @Override
         public List<MailAddress> getRecipients() {
             return new ArrayList<MailAddress>(mail.getRecipients());
         }
 
-        /**
-         * @see org.apache.james.protocols.smtp.MailEnvelope#getSender()
-         */
+        @Override
         public MailAddress getSender() {
             try {
-                return new ProtocolMailAddressAdapter( mail.getSender());
+                return new ProtocolMailAddressAdapter(mail.getSender());
             } catch (MailAddressException e) {
                 // should not occur here, cause it should have happened before
                 throw new RuntimeException(e);
             }
         }
 
-        /**
-         * @see org.apache.james.protocols.smtp.MailEnvelope#getSize()
-         */
+        @Override
         public long getSize() {
             try {
-                return (long) mail.getMessageSize();
+                return mail.getMessageSize();
             } catch (MessagingException e) {
                 return -1;
             }
         }
-
     }
 }

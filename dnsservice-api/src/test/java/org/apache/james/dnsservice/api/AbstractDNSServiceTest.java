@@ -18,13 +18,14 @@
  ****************************************************************/
 package org.apache.james.dnsservice.api;
 
+import org.apache.james.dnsservice.api.mock.MockDNSService;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import org.apache.james.dnsservice.api.mock.MockDNSService;
-
-import static org.junit.Assert.*;
-import org.junit.Test;
 
 /**
  * Basic tests for AbstractDNSServer. The goal is to verify that the interface
@@ -60,7 +61,7 @@ public class AbstractDNSServiceTest {
 
     /**
      * Simple localhost resolution.
-     * 
+     *
      * @throws UnknownHostException
      */
     @Test
@@ -72,16 +73,17 @@ public class AbstractDNSServiceTest {
         // We only can check if the returned localhost is not empty. Its value
         // depends on the hosts file.
         assertTrue(localHost.length() > 0);
-
     }
 
     /**
      * Simple apache.org resolution.
-     * 
+     *
      * @throws UnknownHostException
      */
     @Test
+    @Ignore(value = "It requires internet connection!")
     public void testApache() throws UnknownHostException {
+        //TODO: move to some sort of Live tests
         assertEquals(true, DNS_SERVER.getByName("www.apache.org").toString().startsWith("www.apache.org"));
     }
 }
