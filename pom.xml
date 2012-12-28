@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-15"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements. See the NOTICE file
@@ -20,14 +20,15 @@
 <!--
     Tag order follows model description at http://maven.apache.org/ref/3.0.3/maven-model/maven.html
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <artifactId>james-project</artifactId>
         <groupId>org.apache.james</groupId>
         <version>1.8.1</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <artifactId>james-server</artifactId>
@@ -40,38 +41,43 @@
     <inceptionYear>2002</inceptionYear>
 
     <modules>
+        <module>app</module>
+        <module>util</module>
+        <module>cli</module>
         <module>container-spring</module>
         <module>core</module>
-        <module>dnsservice-api</module>
-        <module>dnsservice-dnsjava</module>
-        <module>dnsservice-library</module>
-        <module>fetchmail</module>
-        <module>filesystem-api</module>
-        <module>data-api</module>
-        <module>data-library</module>
-        <!--<module>data-hbase</module>-->
-        <module>data-jpa</module>
-        <module>data-jcr</module>
-        <module>data-jdbc</module>
-        <module>data-file</module>
-        <module>data-ldap</module>
         <module>lifecycle-api</module>
         <module>lifecycle-spring</module>
         <module>mailbox-adapter</module>
         <module>mailetcontainer-api</module>
         <module>mailetcontainer-camel</module>
         <module>mailets</module>
-        <module>protocols-imap4</module>
-        <module>protocols-library</module>
-        <module>protocols-lmtp</module>
-        <module>protocols-pop3</module>
-        <module>protocols-smtp</module>
-        <module>queue-api</module>
-        <module>queue-file</module>
-        <module>queue-jms</module>
-        <module>queue-activemq</module>
-        <module>util</module>
-        <module>cli</module>
+        <module>fetchmail</module>
+        <module>filesystem-api</module>
+
+        <module>dns-service/dnsservice-api</module>
+        <module>dns-service/dnsservice-dnsjava</module>
+        <module>dns-service/dnsservice-library</module>
+
+        <module>data/data-api</module>
+        <module>data/data-library</module>
+        <module>data/data-jpa</module>
+        <module>data/data-jcr</module>
+        <module>data/data-jdbc</module>
+        <module>data/data-file</module>
+        <module>data/data-ldap</module>
+        <!--<module>data/data-hbase</module>-->
+
+        <module>protocols/protocols-imap4</module>
+        <module>protocols/protocols-library</module>
+        <module>protocols/protocols-lmtp</module>
+        <module>protocols/protocols-pop3</module>
+        <module>protocols/protocols-smtp</module>
+
+        <module>queue/queue-api</module>
+        <module>queue/queue-file</module>
+        <module>queue/queue-jms</module>
+        <module>queue/queue-activemq</module>
     </modules>
 
     <scm>
@@ -439,19 +445,19 @@
                 <artifactId>apache-james-mailbox-lucene</artifactId>
                 <version>${mailbox.version}</version>
             </dependency>
-<!--             
-            <dependency>
-                <groupId>org.apache.james</groupId>
-                <artifactId>apache-james-imap-message</artifactId>
-                <version>${imap.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
- -->            
+            <!--
+                       <dependency>
+                           <groupId>org.apache.james</groupId>
+                           <artifactId>apache-james-imap-message</artifactId>
+                           <version>${imap.version}</version>
+                           <exclusions>
+                               <exclusion>
+                                   <groupId>commons-logging</groupId>
+                                   <artifactId>commons-logging</artifactId>
+                               </exclusion>
+                           </exclusions>
+                       </dependency>
+            -->
             <dependency>
                 <groupId>org.apache.james.protocols</groupId>
                 <artifactId>protocols-imap</artifactId>
@@ -463,7 +469,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.james</groupId>
                 <artifactId>james-server-data-ldap</artifactId>
@@ -536,19 +542,19 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-<!--             
-            <dependency>
-                <groupId>org.apache.james</groupId>
-                <artifactId>apache-james-imap-processor</artifactId>
-                <version>${imap.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
- -->
+            <!--
+                       <dependency>
+                           <groupId>org.apache.james</groupId>
+                           <artifactId>apache-james-imap-processor</artifactId>
+                           <version>${imap.version}</version>
+                           <exclusions>
+                               <exclusion>
+                                   <groupId>commons-logging</groupId>
+                                   <artifactId>commons-logging</artifactId>
+                               </exclusion>
+                           </exclusions>
+                       </dependency>
+            -->
             <dependency>
                 <groupId>org.apache.james</groupId>
                 <artifactId>james-server-lifecycle-spring</artifactId>
@@ -561,19 +567,19 @@
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
-<!--             
-            <dependency>
-                <groupId>org.apache.james</groupId>
-                <artifactId>apache-james-imap-api</artifactId>
-                <version>${imap.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
- -->
+            <!--
+                       <dependency>
+                           <groupId>org.apache.james</groupId>
+                           <artifactId>apache-james-imap-api</artifactId>
+                           <version>${imap.version}</version>
+                           <exclusions>
+                               <exclusion>
+                                   <groupId>commons-logging</groupId>
+                                   <artifactId>commons-logging</artifactId>
+                               </exclusion>
+                           </exclusions>
+                       </dependency>
+            -->
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
@@ -1143,10 +1149,10 @@
         <profile>
             <id>oracle-javamail</id>
             <properties>
-              <javax.activation.groupId>javax.activation</javax.activation.groupId>
-              <javax.activation.artifactId>activation</javax.activation.artifactId>
-              <javax.mail.groupId>javax.mail</javax.mail.groupId>
-              <javax.mail.artifactId>mail</javax.mail.artifactId>
+                <javax.activation.groupId>javax.activation</javax.activation.groupId>
+                <javax.activation.artifactId>activation</javax.activation.artifactId>
+                <javax.mail.groupId>javax.mail</javax.mail.groupId>
+                <javax.mail.artifactId>mail</javax.mail.artifactId>
             </properties>
         </profile>
     </profiles>
