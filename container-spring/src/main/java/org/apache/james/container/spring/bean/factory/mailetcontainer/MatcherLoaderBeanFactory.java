@@ -34,8 +34,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 public class MatcherLoaderBeanFactory extends AbstractLoaderBeanFactory<Matcher> implements MatcherLoader {
 
     /**
-     * @see
-     * org.apache.james.mailetcontainer.api.MatcherLoader#getMatcher(org.apache.mailet.MatcherConfig)
+     * @see org.apache.james.mailetcontainer.api.MatcherLoader#getMatcher(org.apache.mailet.MatcherConfig)
      */
     public Matcher getMatcher(MatcherConfig config) throws MessagingException {
 
@@ -58,7 +57,7 @@ public class MatcherLoaderBeanFactory extends AbstractLoaderBeanFactory<Matcher>
 
     @Override
     protected String getStandardPackage() {
-        return "org.apache.james.transport.matchers";
+        return "org.apache.james.mailet.standard.matchers";
     }
 
 }

@@ -34,8 +34,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 public class MailetLoaderBeanFactory extends AbstractLoaderBeanFactory<Mailet> implements MailetLoader {
 
     /**
-     * @see
-     * org.apache.james.mailetcontainer.api.MailetLoader#getMailet(org.apache.mailet.MailetConfig)
+     * @see org.apache.james.mailetcontainer.api.MailetLoader#getMailet(org.apache.mailet.MailetConfig)
      */
     public Mailet getMailet(final MailetConfig config) throws MessagingException {
         String mailetName = config.getMailetName();
@@ -58,7 +57,7 @@ public class MailetLoaderBeanFactory extends AbstractLoaderBeanFactory<Mailet> i
 
     @Override
     protected String getStandardPackage() {
-        return "org.apache.james.transport.mailets";
+        return "org.apache.james.mailet.standard.mailets";
     }
 
 }
