@@ -107,7 +107,7 @@
         <jackrabbit.version>2.2.5</jackrabbit.version>
         <jsieve.version>0.6-SNAPSHOT</jsieve.version>
         <mailbox.version>0.5-SNAPSHOT</mailbox.version>
-        <mailet.version>2.5.0-SNAPSHOT</mailet.version>
+        <mailet.version>2.5.0</mailet.version>
         <productName>Apache-James Mail Server</productName>
         <protocols.version>1.6.3-SNAPSHOT</protocols.version>
         <spring.version>3.1.0.RELEASE</spring.version>
