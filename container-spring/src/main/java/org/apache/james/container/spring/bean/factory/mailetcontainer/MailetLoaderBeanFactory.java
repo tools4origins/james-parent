@@ -57,7 +57,7 @@ public class MailetLoaderBeanFactory extends AbstractLoaderBeanFactory<Mailet> i
 
     @Override
     protected String getStandardPackage() {
-        return "org.apache.james.mailet.standard.mailets";
+        return "org.apache.james.transport.mailets";
     }
 
 }

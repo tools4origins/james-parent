@@ -57,7 +57,7 @@ public class MatcherLoaderBeanFactory extends AbstractLoaderBeanFactory<Matcher>
 
     @Override
     protected String getStandardPackage() {
-        return "org.apache.james.mailet.standard.matchers";
+        return "org.apache.james.transport.matchers";
     }
 
 }
