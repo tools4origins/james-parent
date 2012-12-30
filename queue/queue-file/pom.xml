@@ -29,18 +29,10 @@
     </parent>
 
     <artifactId>james-server-queue-file</artifactId>
+    <packaging>bundle</packaging>
 
-    <name>Apache James Server File Mail Queue</name>
+    <name>Apache James :: Server :: Mail Queue :: File</name>
 
-    <properties>
-        <!-- OSGI stuff -->
-        <james.osgi.export>
-            org.apache.james.queue.file.*
-        </james.osgi.export>
-        <james.osgi.import>
-            *
-        </james.osgi.import>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -64,19 +56,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

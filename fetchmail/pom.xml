@@ -32,7 +32,7 @@
     <artifactId>james-server-fetchmail</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Apache James Server FetchMail</name>
+    <name>Apache James :: Server :: FetchMail</name>
 
     <dependencies>
         <dependency>

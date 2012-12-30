@@ -30,18 +30,9 @@
 
     <groupId>org.apache.james</groupId>
     <artifactId>james-server-protocols-lmtp</artifactId>
+    <packaging>bundle</packaging>
 
-    <name>Apache James Server LMTP</name>
-
-    <properties>
-        <!-- OSGI stuff -->
-        <james.osgi.export>
-            org.apache.james.lmtpserver.*
-        </james.osgi.export>
-        <james.osgi.import>
-            *
-        </james.osgi.import>
-    </properties>
+    <name>Apache James :: Server :: LMTP</name>
 
     <dependencies>
         <dependency>
@@ -128,19 +119,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

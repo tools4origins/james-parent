@@ -32,18 +32,7 @@
     <artifactId>james-server-mailetcontainer-camel</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Apache James Server Mailetcontainer Camel</name>
-
-    <properties>
-        <!-- OSGI stuff -->
-        <james.osgi.export>
-            org.apache.james.mailetcontainer.impl.*,
-            org.apache.james.mailetcontainer.lib.*
-        </james.osgi.export>
-        <james.osgi.import>
-            *
-        </james.osgi.import>
-    </properties>
+    <name>Apache James :: Server :: Mailetcontainer Camel</name>
 
     <dependencies>
         <dependency>

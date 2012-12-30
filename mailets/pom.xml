@@ -32,7 +32,7 @@
     <artifactId>james-server-mailets</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Apache James Server Mailets</name>
+    <name>Apache James :: Server :: Mailets</name>
 
     <dependencies>
         <dependency>

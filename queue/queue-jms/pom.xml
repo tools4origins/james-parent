@@ -32,17 +32,7 @@
     <artifactId>james-server-queue-jms</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Apache James Server JMS Mail Queue</name>
-
-    <properties>
-        <!-- OSGI stuff -->
-        <james.osgi.export>
-            org.apache.james.queue.jms*
-        </james.osgi.export>
-        <james.osgi.import>
-            *
-        </james.osgi.import>
-    </properties>
+    <name>Apache James :: Server :: Mail Queue :: JMS</name>
 
     <dependencies>
         <dependency>

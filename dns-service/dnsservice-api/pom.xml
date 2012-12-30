@@ -31,17 +31,7 @@
     <artifactId>james-server-dnsservice-api</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Apache James Server DNS Server API</name>
-
-    <properties>
-        <!-- OSGI stuff -->
-        <james.osgi.export>
-            org.apache.james.*
-        </james.osgi.export>
-        <james.osgi.import>
-            *
-        </james.osgi.import>
-    </properties>
+    <name>Apache James :: Server :: DNS Service :: API</name>
 
     <dependencies>
         <dependency>

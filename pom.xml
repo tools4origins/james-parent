@@ -35,7 +35,7 @@
     <version>3.0-beta5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Apache James Server</name>
+    <name>Apache James :: Server</name>
     <description>Apache James Mail Server</description>
     <url>http://james.apache.org/server/head/</url>
     <inceptionYear>2002</inceptionYear>

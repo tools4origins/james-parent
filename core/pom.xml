@@ -32,7 +32,7 @@
     <artifactId>james-server-core</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Apache James Server Core</name>
+    <name>Apache James :: Server :: Core</name>
 
     <dependencies>
         <dependency>

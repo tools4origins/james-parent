@@ -32,17 +32,7 @@
     <artifactId>james-server-protocols-library</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Apache James Server Protocols Library</name>
-
-    <properties>
-        <!-- OSGI stuff -->
-        <james.osgi.export>
-            org.apache.james.*
-        </james.osgi.export>
-        <james.osgi.import>
-            *
-        </james.osgi.import>
-    </properties>
+    <name>Apache James :: Server :: Protocols Library</name>
 
     <dependencies>
         <dependency>

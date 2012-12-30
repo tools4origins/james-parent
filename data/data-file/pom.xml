@@ -32,17 +32,7 @@
     <artifactId>james-server-data-file</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Apache James Server File Data Persistence</name>
-
-    <properties>
-        <!-- OSGI stuff -->
-        <james.osgi.export>
-            org.apache.james.*,
-        </james.osgi.export>
-        <james.osgi.import>
-            *
-        </james.osgi.import>
-    </properties>
+    <name>Apache James :: Server :: Data :: File Persistence</name>
 
     <dependencies>
         <dependency>
@@ -98,14 +88,6 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <!--
-            <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>james-server-core</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-            </dependency>
-        -->
         <dependency>
             <groupId>org.apache.james</groupId>
             <artifactId>james-server-filesystem-api</artifactId>
@@ -120,19 +102,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

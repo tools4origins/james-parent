@@ -32,17 +32,7 @@
     <artifactId>james-server-data-api</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Apache James Server Data API</name>
-
-    <properties>
-        <!-- OSGI stuff -->
-        <james.osgi.export>
-            org.apache.james.*
-        </james.osgi.export>
-        <james.osgi.import>
-            *
-        </james.osgi.import>
-    </properties>
+    <name>Apache James :: Server :: Data  :: API</name>
 
     <dependencies>
         <!-- only used by JamesUser (for MailAddress) -->
