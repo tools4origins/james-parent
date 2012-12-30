@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-15"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements. See the NOTICE file
@@ -25,11 +25,12 @@
         <artifactId>james-server</artifactId>
         <groupId>org.apache.james</groupId>
         <version>3.0-beta5-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.james</groupId>
     <artifactId>james-server-data-file</artifactId>
+    <packaging>bundle</packaging>
 
     <name>Apache James Server File Data Persistence</name>
 
@@ -124,17 +125,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <!--
-                    Inherit configuration from parent pom.
-                -->
                 <executions>
                     <execution>
                         <goals>
-                            <goal>jar</goal>
-                            <!--
-                                Allow tests to be used by other modules.
-                                Parent pom build failure prevents inheritance.
-                            -->
                             <goal>test-jar</goal>
                         </goals>
                     </execution>

@@ -29,17 +29,10 @@
     </parent>
 
     <artifactId>james-server-app</artifactId>
-    <version>3.0-beta5-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
 
     <name>Apache James Server App</name>
     <description>An advanced email server</description>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/james/app/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/james/app/trunk</developerConnection>
-        <url>http://svn.apache.org/repos/asf/james/app/trunk</url>
-    </scm>
 
     <properties>
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-15"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements. See the NOTICE file
@@ -17,18 +17,20 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <artifactId>james-server</artifactId>
         <groupId>org.apache.james</groupId>
         <version>3.0-beta5-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.james</groupId>
     <artifactId>james-server-data-jpa</artifactId>
+    <packaging>bundle</packaging>
 
     <name>Apache James Server JPA Data Persistence</name>
 
@@ -130,17 +132,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <!--
-                    Inherit configuration from parent pom.
-                -->
                 <executions>
                     <execution>
                         <goals>
-                            <goal>jar</goal>
-                            <!--
-                                Allow tests to be used by other modules.
-                                Parent pom build failure prevents inheritance.
-                            -->
                             <goal>test-jar</goal>
                         </goals>
                     </execution>
@@ -152,7 +146,9 @@
                 <artifactId>openjpa-maven-plugin</artifactId>
                 <version>1.2</version>
                 <configuration>
-                    <includes>org/apache/james/user/jpa/model/JPAUser.class,org/apache/james/rrt/jpa/model/JPARecipientRewrite.class,org/apache/james/domainlist/jpa/model/JPADomain.class</includes>
+                    <includes>
+                        org/apache/james/user/jpa/model/JPAUser.class,org/apache/james/rrt/jpa/model/JPARecipientRewrite.class,org/apache/james/domainlist/jpa/model/JPADomain.class
+                    </includes>
                     <addDefaultConstructor>true</addDefaultConstructor>
                     <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
                     <toolProperties>
@@ -162,7 +158,9 @@
                         </property>
                         <property>
                             <name>metaDataFactory</name>
-                            <value>jpa(Types=org.apache.james.user.jpa.model.JPAUser;org.apache.james.rrt.jpa.model.JPARecipientRewrite;org.apache.james.domainlist.jpa.model.JPADomain)</value>
+                            <value>
+                                jpa(Types=org.apache.james.user.jpa.model.JPAUser;org.apache.james.rrt.jpa.model.JPARecipientRewrite;org.apache.james.domainlist.jpa.model.JPADomain)
+                            </value>
                         </property>
                     </toolProperties>
                 </configuration>
@@ -175,32 +173,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <excludeDependencies>${james.osgi.exclude.dependencies}</excludeDependencies>
-                    <instructions>
-                        <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Export-Package>${james.osgi.export}</Export-Package>
-                        <Import-Package>${james.osgi.import}</Import-Package>
-                        <DynamicImport-Package>${james.osgi.dynamic}</DynamicImport-Package>
-                        <Implementation-Title>Apache James Server</Implementation-Title>
-                        <Implementation-Version>${project.version}</Implementation-Version>
-                        <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
-                    </instructions>
-                </configuration>
             </plugin>
         </plugins>
     </build>
