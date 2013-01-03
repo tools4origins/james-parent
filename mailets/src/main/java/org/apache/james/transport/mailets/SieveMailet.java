@@ -65,17 +65,20 @@ public class SieveMailet extends SieveMailboxMailet implements Poster {
     public void setFileSystem(FileSystem fileSystem) {
         this.fileSystem = fileSystem;
     }
-    
+
     public void setFolder(String folder) {
         this.folder = folder;
     }
-    
+
     public SieveMailet() {
         super();
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jsieve.mailet.SieveMailboxMailet#init(org.apache.mailet.MailetConfig)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jsieve.mailet.SieveMailboxMailet#init(org.apache.mailet.
+     * MailetConfig)
      */
     @Override
     public void init(MailetConfig config) throws MessagingException {
@@ -111,8 +114,12 @@ public class SieveMailet extends SieveMailboxMailet implements Poster {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.jsieve.mailet.SieveMailboxMailet#storeMail(org.apache.mailet.MailAddress, org.apache.mailet.MailAddress, org.apache.mailet.Mail)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.jsieve.mailet.SieveMailboxMailet#storeMail(org.apache.mailet
+     * .MailAddress, org.apache.mailet.MailAddress, org.apache.mailet.Mail)
      */
     @Override
     public void storeMail(MailAddress sender, MailAddress recipient, Mail mail) throws MessagingException {
@@ -123,22 +130,27 @@ public class SieveMailet extends SieveMailboxMailet implements Poster {
         } else {
             s = "<>";
         }
-        // If no exception was thrown the message was successfully stored in the mailbox
-        log("Local delivered mail " + mail.getName() + " sucessfully from " + s + " to " + recipient.toString() + " in folder " + this.folder);
+        // If no exception was thrown the message was successfully stored in the
+        // mailbox
+        log("Local delivered mail " + mail.getName() + " sucessfully from " + s + " to " + recipient.toString()
+                + " in folder " + this.folder);
     }
-    
-    /* (non-Javadoc)
-     * @see org.apache.jsieve.mailet.Poster#post(java.lang.String, javax.mail.internet.MimeMessage)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.jsieve.mailet.Poster#post(java.lang.String,
+     * javax.mail.internet.MimeMessage)
      */
     @Override
     public void post(String url, MimeMessage mail) throws MessagingException {
-        
+
         final int endOfScheme = url.indexOf(':');
-        
+
         if (endOfScheme < 0) {
             throw new MessagingException("Malformed URI");
-        } 
-        
+        }
+
         else {
 
             final String scheme = url.substring(0, endOfScheme);
@@ -149,7 +161,8 @@ public class SieveMailet extends SieveMailboxMailet implements Poster {
                     // TODO: When user missing, append to a default location
                     throw new MessagingException("Shared mailbox is not supported");
                 } else {
-                    // lowerCase the user - see https://issues.apache.org/jira/browse/JAMES-1369
+                    // lowerCase the user - see
+                    // https://issues.apache.org/jira/browse/JAMES-1369
                     String user = url.substring(startOfUser, endOfUser).toLowerCase();
                     final int startOfHost = endOfUser + 1;
                     final int endOfHost = url.indexOf('/', startOfHost);
@@ -192,9 +205,10 @@ public class SieveMailet extends SieveMailboxMailet implements Poster {
                     }
                     if (destination.startsWith(session.getPathDelimiter() + ""))
                         destination = destination.substring(1);
-                    
-                    // Use the MailboxSession to construct the MailboxPath - See JAMES-1326
-                    final MailboxPath path = new MailboxPath(MailboxConstants.USER_NAMESPACE, user, this.folder);
+
+                    // Use the MailboxSession to construct the MailboxPath - See
+                    // JAMES-1326
+                    final MailboxPath path = new MailboxPath(MailboxConstants.USER_NAMESPACE, user, destination);
                     try {
                         if (this.folder.equalsIgnoreCase(destination) && !(mailboxManager.mailboxExists(path, session))) {
                             mailboxManager.createMailbox(path, session);
@@ -206,7 +220,7 @@ public class SieveMailet extends SieveMailboxMailet implements Poster {
                         }
 
                         mailbox.appendMessage(new MimeMessageInputStream(mail), new Date(), session, true, null);
-                    
+
                     } catch (MailboxException e) {
                         throw new MessagingException("Unable to access mailbox.", e);
                     } finally {
@@ -222,9 +236,9 @@ public class SieveMailet extends SieveMailboxMailet implements Poster {
 
                     }
                 }
-                
-            } 
-            
+
+            }
+
             else {
                 // TODO: add support for more protocols
                 // TODO: - for example mailto: for forwarding over SMTP
