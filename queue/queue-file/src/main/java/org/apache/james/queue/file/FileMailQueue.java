@@ -41,13 +41,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.mail.MessagingException;
 import javax.mail.util.SharedFileInputStream;
 
+import org.slf4j.Logger;
 import org.apache.james.core.MimeMessageCopyOnWriteProxy;
 import org.apache.james.core.MimeMessageSource;
 import org.apache.james.lifecycle.api.Disposable;
 import org.apache.james.lifecycle.api.LifecycleUtil;
 import org.apache.james.queue.api.ManageableMailQueue;
 import org.apache.mailet.Mail;
-import org.slf4j.Logger;
 
 /**
  * {@link ManageableMailQueue} implementation which use the fs to store {@link Mail}'s
@@ -171,7 +171,9 @@ public class FileMailQueue implements ManageableMailQueue {
             String name = queueDirName + "/" + i + "/" + key;
             
             final FileItem item = new FileItem(name + OBJECT_EXTENSION, name + MSG_EXTENSION);
-
+            if (delay > 0) {
+                mail.setAttribute(NEXT_DELIVERY, System.currentTimeMillis() + unit.toMillis(delay));
+            }
             foout = new FileOutputStream(item.getObjectFile());
             oout = new ObjectOutputStream(foout);
             oout.writeObject(mail);
@@ -186,8 +188,7 @@ public class FileMailQueue implements ManageableMailQueue {
             keyMappings.put(key, item);
 
             if (delay > 0) {
-                mail.setAttribute(NEXT_DELIVERY, System.currentTimeMillis() + unit.toMillis(delay));
-                // The message should get delayed so schedule it for later 
+                // The message should get delayed so schedule it for later
                 scheduler.schedule(new Runnable() {
                     
                     @Override
@@ -286,6 +287,7 @@ public class FileMailQueue implements ManageableMailQueue {
                             }
                         } else {
                             fitem.delete();
+                            keyMappings.remove(key);
                         }
 
                         LifecycleUtil.dispose(mail);
