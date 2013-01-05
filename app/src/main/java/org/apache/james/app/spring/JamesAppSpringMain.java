@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JamesAppSpringMain implements Daemon {
 
-    private static Logger log = LoggerFactory.getLogger(JamesAppSpringMain.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(JamesAppSpringMain.class.getName());
     private JamesServerApplicationContext context;
 
     public static void main(String[] args) throws Exception {
