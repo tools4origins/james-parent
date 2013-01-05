@@ -19,14 +19,6 @@
 
 package org.apache.james.smtpserver.fastfail;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.james.dnsservice.api.DNSService;
@@ -43,13 +35,21 @@ import org.apache.james.protocols.smtp.hook.RcptHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
 /**
  * This class can be used to reject email with bogus MX which is send from a
  * authorized user or an authorized network.
  */
 public class ValidRcptMX implements InitializingLifecycleAwareProtocolHandler, RcptHook {
 
-    /** This log is the fall back shared by all instances */
+    /**
+     * This log is the fall back shared by all instances
+     */
     private static final Logger FALLBACK_LOG = LoggerFactory.getLogger(ValidRcptMX.class);
 
     /**
@@ -67,9 +67,8 @@ public class ValidRcptMX implements InitializingLifecycleAwareProtocolHandler, R
     /**
      * Sets the service log.<br>
      * Where available, a context sensitive log should be used.
-     * 
-     * @param log
-     *            not null
+     *
+     * @param log not null
      */
     public void setLog(Logger log) {
         this.serviceLog = log;
@@ -77,7 +76,7 @@ public class ValidRcptMX implements InitializingLifecycleAwareProtocolHandler, R
 
     /**
      * Gets the DNS service.
-     * 
+     *
      * @return the dnsService
      */
     public final DNSService getDNSService() {
@@ -86,9 +85,8 @@ public class ValidRcptMX implements InitializingLifecycleAwareProtocolHandler, R
 
     /**
      * Sets the DNS service.
-     * 
-     * @param dnsService
-     *            the dnsService to set
+     *
+     * @param dnsService the dnsService to set
      */
     @Resource(name = "dnsservice")
     public final void setDNSService(DNSService dnsService) {
@@ -98,11 +96,9 @@ public class ValidRcptMX implements InitializingLifecycleAwareProtocolHandler, R
 
     /**
      * Set the banned networks
-     * 
-     * @param networks
-     *            Collection of networks
-     * @param dnsServer
-     *            The DNSServer
+     *
+     * @param networks  Collection of networks
+     * @param dnsServer The DNSServer
      */
     public void setBannedNetworks(Collection<String> networks, DNSService dnsServer) {
         bNetwork = new NetMatcher(networks, dnsServer) {
@@ -112,10 +108,6 @@ public class ValidRcptMX implements InitializingLifecycleAwareProtocolHandler, R
         };
     }
 
-    /**
-     * @see org.apache.james.protocols.smtp.hook.RcptHook#doRcpt(org.apache.james.protocols.smtp.SMTPSession,
-     *      org.apache.mailet.MailAddress, org.apache.mailet.MailAddress)
-     */
     public HookResult doRcpt(SMTPSession session, MailAddress sender, MailAddress rcpt) {
 
         String domain = rcpt.getDomain();
@@ -150,18 +142,15 @@ public class ValidRcptMX implements InitializingLifecycleAwareProtocolHandler, R
         return new HookResult(HookReturnCode.DECLINED);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void init(Configuration config) throws ConfigurationException {
 
-        List<String> networks = config.getList("invalidMXNetworks");
+        String[] networks = config.getStringArray("invalidMXNetworks");
 
-        if (networks.isEmpty() == false) {
+        if (networks.length == 0) {
 
             Collection<String> bannedNetworks = new ArrayList<String>();
-
-            for (int i = 0; i < networks.size(); i++) {
-                String network = networks.get(i);
+            for (String network : networks) {
                 bannedNetworks.add(network.trim());
             }
 

@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.james.rrt.file;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
 import org.apache.james.rrt.api.RecipientRewriteTable;
 import org.apache.james.rrt.api.RecipientRewriteTableException;
@@ -30,12 +27,16 @@ import org.apache.james.rrt.lib.RecipientRewriteTableUtil;
 import org.junit.Before;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Test the XML Virtual User Table implementation.
  */
 public class XMLRecipientRewriteTableTest extends AbstractRecipientRewriteTableTest {
 
-    private DefaultConfigurationBuilder defaultConfiguration = new DefaultConfigurationBuilder();
+    private final DefaultConfigurationBuilder defaultConfiguration = new DefaultConfigurationBuilder();
 
     @Before
     @Override
@@ -51,11 +52,6 @@ public class XMLRecipientRewriteTableTest extends AbstractRecipientRewriteTableT
         return localVirtualUserTable;
     }
 
-    /**
-     * @throws RecipientRewriteTableException
-     * @see org.apache.james.rrt.lib.AbstractRecipientRewriteTableTest#addMapping(java.lang.String,
-     *      java.lang.String, java.lang.String, int)
-     */
     @Override
     protected boolean addMapping(String user, String domain, String mapping, int type) throws
             RecipientRewriteTableException {
@@ -86,22 +82,13 @@ public class XMLRecipientRewriteTableTest extends AbstractRecipientRewriteTableT
         try {
             virtualUserTable.configure(defaultConfiguration);
         } catch (Exception e) {
-            if (mappings.size() > 0) {
-                return false;
-            } else {
-                return true;
-            }
+            return mappings.size() <= 0;
         }
 
         return true;
 
     }
 
-    /**
-     * @throws RecipientRewriteTableException
-     * @see org.apache.james.rrt.lib.AbstractRecipientRewriteTableTest#removeMapping(java.lang.String,
-     *      java.lang.String, java.lang.String, int)
-     */
     @Override
     protected boolean removeMapping(String user, String domain, String mapping, int type) throws
             RecipientRewriteTableException {
@@ -132,25 +119,15 @@ public class XMLRecipientRewriteTableTest extends AbstractRecipientRewriteTableT
         try {
             virtualUserTable.configure(defaultConfiguration);
         } catch (Exception e) {
-            if (mappings.size() > 0) {
-                return false;
-            } else {
-                return true;
-            }
+            return mappings.size() <= 0;
         }
-
         return true;
-
     }
 
-    @SuppressWarnings("unchecked")
     private void removeMappingsFromConfig(String user, String domain, Collection<String> mappings) {
-        List<String> confs = defaultConfiguration.getList("mapping");
         List<String> stored = new ArrayList<String>();
-        for (int i = 0; i < confs.size(); i++) {
-            String c = confs.get(i);
+        for (String c : defaultConfiguration.getStringArray("mapping")) {
             String mapping = user + "@" + domain + "=" + RecipientRewriteTableUtil.CollectionToMapping(mappings);
-
             if (!c.equalsIgnoreCase(mapping)) {
                 stored.add(c);
             }
@@ -158,8 +135,8 @@ public class XMLRecipientRewriteTableTest extends AbstractRecipientRewriteTableT
         // clear old values
         defaultConfiguration.clear();
         // add stored mappings
-        for (int i = 0; i < stored.size(); i++) {
-            defaultConfiguration.addProperty("mapping", stored.get(i));
+        for (String aStored : stored) {
+            defaultConfiguration.addProperty("mapping", aStored);
         }
     }
 }

@@ -84,8 +84,7 @@ public class JMSMailQueueTest {
         Logger log = LoggerFactory.getLogger("MockLog");
         // slf4j can't set programmatically any log level. It's just a facade
         // log.setLevel(SimpleLog.LOG_LEVEL_DEBUG);
-        JMSMailQueue aQueue = new JMSMailQueue(factory, queueName, log);
-        return aQueue;
+        return new JMSMailQueue(factory, queueName, log);
     }
 
     @After

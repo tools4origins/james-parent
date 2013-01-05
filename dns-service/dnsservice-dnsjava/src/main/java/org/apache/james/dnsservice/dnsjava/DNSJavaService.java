@@ -18,22 +18,10 @@
  ****************************************************************/
 package org.apache.james.dnsservice.dnsjava;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.james.dnsservice.api.DNSServiceMBean;
 import org.apache.james.dnsservice.api.DNSService;
+import org.apache.james.dnsservice.api.DNSServiceMBean;
 import org.apache.james.dnsservice.api.TemporaryResolutionException;
 import org.apache.james.lifecycle.api.Configurable;
 import org.apache.james.lifecycle.api.LogEnabled;
@@ -54,6 +42,16 @@ import org.xbill.DNS.ReverseMap;
 import org.xbill.DNS.TXTRecord;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
+
+import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Provides DNS client functionality to services running inside James
@@ -85,7 +83,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
     /**
      * The DNS servers to be used by this service
      */
-    private List<String> dnsServers = new ArrayList<String>();
+    private final List<String> dnsServers = new ArrayList<String>();
 
     /**
      * The search paths to be used
@@ -95,7 +93,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
     /**
      * The MX Comparator used in the MX sort.
      */
-    private Comparator<MXRecord> mxComparator = new MXRecordComparator();
+    private final Comparator<MXRecord> mxComparator = new MXRecordComparator();
 
     /**
      * If true register this service as the default resolver/cache for DNSJava
@@ -119,8 +117,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
     }
 
     /**
-     * @see
-     * org.apache.james.lifecycle.api.Configurable#configure(org.apache.commons.configuration.HierarchicalConfiguration)
+     * @see org.apache.james.lifecycle.api.Configurable#configure(org.apache.commons.configuration.HierarchicalConfiguration)
      */
     @SuppressWarnings("unchecked")
     public void configure(HierarchicalConfiguration configuration) throws ConfigurationException {
@@ -132,9 +129,9 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
             logger.info("Autodiscovery is enabled - trying to discover your system's DNS Servers");
             String[] serversArray = ResolverConfig.getCurrentConfig().servers();
             if (serversArray != null) {
-                for (int i = 0; i < serversArray.length; i++) {
-                    dnsServers.add(serversArray[i]);
-                    logger.info("Adding autodiscovered server " + serversArray[i]);
+                for (String aServersArray : serversArray) {
+                    dnsServers.add(aServersArray);
+                    logger.info("Adding autodiscovered server " + aServersArray);
                 }
             }
             Name[] systemSearchPath = ResolverConfig.getCurrentConfig().searchPath();
@@ -142,8 +139,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
                 sPaths.addAll(Arrays.asList(systemSearchPath));
             }
             if (logger.isInfoEnabled()) {
-                for (Iterator<Name> i = sPaths.iterator(); i.hasNext();) {
-                    Name searchPath = i.next();
+                for (Name searchPath : sPaths) {
                     logger.info("Adding autodiscovered search path " + searchPath.toString());
                 }
             }
@@ -154,24 +150,18 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
         setAsDNSJavaDefault = configuration.getBoolean("setAsDNSJavaDefault", true);
 
         // Get the DNS servers that this service will use for lookups
-        final List<String> serversConfigurations = configuration.getList("servers.server");
-
-        for (int i = 0; i < serversConfigurations.size(); i++) {
-            dnsServers.add(serversConfigurations.get(i));
-        }
+        Collections.addAll(dnsServers, configuration.getStringArray("servers.server"));
 
         // Get the DNS servers that this service will use for lookups
-        final List<String> searchPathsConfiguration = configuration.getList("searchpaths.searchpath");
-
-        for (int i = 0; i < searchPathsConfiguration.size(); i++) {
+        for (String aSearchPathsConfiguration : configuration.getStringArray("searchpaths.searchpath")) {
             try {
-                sPaths.add(Name.fromString(searchPathsConfiguration.get(i)));
+                sPaths.add(Name.fromString(aSearchPathsConfiguration));
             } catch (TextParseException e) {
-                throw new ConfigurationException("Unable to parse searchpath host: " + searchPathsConfiguration.get(i), e);
+                throw new ConfigurationException("Unable to parse searchpath host: " + aSearchPathsConfiguration, e);
             }
         }
 
-        searchPaths = (Name[]) sPaths.toArray(new Name[0]);
+        searchPaths = sPaths.toArray(new Name[sPaths.size()]);
 
         if (dnsServers.isEmpty()) {
             logger.info("No DNS servers have been specified or found by autodiscovery - adding 127.0.0.1");
@@ -201,11 +191,11 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
         }
 
         // Create the extended resolver...
-        final String[] serversArray = (String[]) dnsServers.toArray(new String[0]);
+        final String[] serversArray = dnsServers.toArray(new String[dnsServers.size()]);
 
         if (logger.isInfoEnabled()) {
-            for (int c = 0; c < serversArray.length; c++) {
-                logger.info("DNS Server is: " + serversArray[c]);
+            for (String aServersArray : serversArray) {
+                logger.info("DNS Server is: " + aServersArray);
             }
         }
 
@@ -240,16 +230,16 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
 
     /**
      * Return the list of DNS servers in use by this service
-     * 
+     *
      * @return an array of DNS server names
      */
     public String[] getDNSServers() {
-        return (String[]) dnsServers.toArray(new String[0]);
+        return dnsServers.toArray(new String[dnsServers.size()]);
     }
 
     /**
      * Return the list of DNS servers in use by this service
-     * 
+     *
      * @return an array of DNS server names
      */
     public Name[] getSearchPaths() {
@@ -259,13 +249,10 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
     /**
      * Return a prioritized unmodifiable list of MX records obtained from the
      * server.
-     * 
-     * @param hostname
-     *            domain name to look up
-     * 
+     *
+     * @param hostname domain name to look up
      * @return a list of MX records corresponding to this mail domain
-     * @throws TemporaryResolutionException
-     *             get thrown on temporary problems
+     * @throws TemporaryResolutionException get thrown on temporary problems
      */
     private List<String> findMXRecordsRaw(String hostname) throws TemporaryResolutionException {
         Record answers[] = lookup(hostname, Type.MX, "MX");
@@ -294,13 +281,9 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
             if (i == 0) {
                 currentPrio = mx.getPriority();
             } else {
-                if (currentPrio == mx.getPriority()) {
-                    same = true;
-                } else {
-                    same = false;
-                }
+                same = currentPrio == mx.getPriority();
             }
-            
+
             String mxRecord = mx.getTarget().toString();
             if (same) {
                 samePrio.add(mxRecord);
@@ -309,19 +292,19 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
                 // JAMES-913
                 Collections.shuffle(samePrio);
                 servers.addAll(samePrio);
-                    
+
                 samePrio.clear();
                 samePrio.add(mxRecord);
-                
+
             }
-            
+
             if (lastItem) {
                 // shuffle entries with same prio
                 // JAMES-913
                 Collections.shuffle(samePrio);
                 servers.addAll(samePrio);
             }
-            logger.debug(new StringBuffer("Found MX record ").append(mxRecord).toString());
+            logger.debug("Found MX record " + mxRecord);
         }
         return servers;
     }
@@ -356,15 +339,12 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
 
     /**
      * Looks up DNS records of the specified type for the specified name.
-     * 
+     * <p/>
      * This method is a public wrapper for the private implementation method
-     * 
-     * @param namestr
-     *            the name of the host to be looked up
-     * @param type
-     *            the type of record desired
-     * @param typeDesc
-     *            the description of the record type, for debugging purpose
+     *
+     * @param namestr  the name of the host to be looked up
+     * @param type     the type of record desired
+     * @param typeDesc the description of the record type, for debugging purpose
      */
     protected Record[] lookup(String namestr, int type, String typeDesc) throws TemporaryResolutionException {
         // Name name = null;
@@ -481,11 +461,11 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
         try {
             // Check if its local
             if (name.equalsIgnoreCase(localHostName) || name.equalsIgnoreCase(localCanonicalHostName) || name.equals(localAddress)) {
-                return new InetAddress[] { getLocalHost() };
+                return new InetAddress[]{getLocalHost()};
             }
 
             InetAddress addr = org.xbill.DNS.Address.getByAddress(name);
-            return new InetAddress[] { addr };
+            return new InetAddress[]{addr};
         } catch (UnknownHostException e) {
             Record[] records = lookupNoException(name, Type.A, "A");
 
@@ -509,8 +489,8 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
         Record[] records = lookupNoException(hostname, Type.TXT, "TXT");
 
         if (records != null) {
-            for (int i = 0; i < records.length; i++) {
-                TXTRecord txt = (TXTRecord) records[i];
+            for (Record record : records) {
+                TXTRecord txt = (TXTRecord) record;
                 txtR.add(txt.rdataToString());
             }
 
@@ -522,7 +502,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
      * @see org.apache.james.dnsservice.api.DNSService#getHostName(java.net.InetAddress)
      */
     public String getHostName(InetAddress addr) {
-        String result = null;
+        String result;
         Name name = ReverseMap.fromAddress(addr);
         Record[] records = lookupNoException(name.toString(), Type.PTR, "PTR");
 
@@ -543,16 +523,14 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
     }
 
     /**
-     * @see
-     * org.apache.james.dnsservice.api.DNSServiceMBean#getMaximumCacheSize()
+     * @see org.apache.james.dnsservice.api.DNSServiceMBean#getMaximumCacheSize()
      */
     public int getMaximumCacheSize() {
         return maxCacheSize;
     }
 
     /**
-     * @see
-     * org.apache.james.dnsservice.api.DNSServiceMBean#getCurrentCacheSize()
+     * @see org.apache.james.dnsservice.api.DNSServiceMBean#getCurrentCacheSize()
      */
     public int getCurrentCacheSize() {
         return cache.getSize();

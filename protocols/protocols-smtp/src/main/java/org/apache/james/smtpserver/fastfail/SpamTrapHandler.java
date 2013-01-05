@@ -19,32 +19,29 @@
 
 package org.apache.james.smtpserver.fastfail;
 
-import java.util.List;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.james.protocols.lib.lifecycle.InitializingLifecycleAwareProtocolHandler;
 
+import java.util.Arrays;
+
 public class SpamTrapHandler extends org.apache.james.protocols.smtp.core.fastfail.SpamTrapHandler implements InitializingLifecycleAwareProtocolHandler {
 
-    @SuppressWarnings("unchecked")
     @Override
     public void init(Configuration config) throws ConfigurationException {
-        List<String> rcpts = config.getList("spamTrapRecip");
+        String[] rcpts = config.getStringArray("spamTrapRecip");
 
-        if (rcpts.isEmpty() == false) {
-            setSpamTrapRecipients(rcpts);
+        if (rcpts.length == 0) {
+            setSpamTrapRecipients(Arrays.asList(rcpts));
         } else {
             throw new ConfigurationException("Please configure a spamTrapRecip.");
         }
 
-        setBlockTime(config.getLong("blockTime", blockTime));        
+        setBlockTime(config.getLong("blockTime", blockTime));
     }
 
     @Override
     public void destroy() {
         // nothing to-do
     }
-
-
 }

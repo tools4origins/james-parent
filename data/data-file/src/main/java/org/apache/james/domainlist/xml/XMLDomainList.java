@@ -19,64 +19,50 @@
 
 package org.apache.james.domainlist.xml;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.domainlist.api.DomainListException;
 import org.apache.james.domainlist.lib.AbstractDomainList;
 import org.apache.james.lifecycle.api.Configurable;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 /**
  * Mimic the old behavior of JAMES
  */
 public class XMLDomainList extends AbstractDomainList implements Configurable {
 
-    private List<String> domainNames = new ArrayList<String>();
+    private final List<String> domainNames = new ArrayList<String>();
 
     private boolean managementDisabled = false;
 
-    /**
-     * @see
-     * org.apache.james.lifecycle.api.Configurable#configure(org.apache.commons.configuration.HierarchicalConfiguration)
-     */
-    @SuppressWarnings("unchecked")
+    @Override
     public void configure(HierarchicalConfiguration config) throws ConfigurationException {
         super.configure(config);
-        List<String> serverNameConfs = config.getList("domainnames.domainname");
-        for (int i = 0; i < serverNameConfs.size(); i++) {
+        for (String serverNameConf : config.getStringArray("domainnames.domainname")) {
             try {
-                addDomain(serverNameConfs.get(i));
+                addDomain(serverNameConf);
             } catch (DomainListException e) {
                 throw new ConfigurationException("Unable to add domain to memory", e);
             }
         }
 
         managementDisabled = true;
-
     }
 
-    /**
-     * @see org.apache.james.domainlist.lib.AbstractDomainList#getDomainListInternal()
-     */
+    @Override
     protected List<String> getDomainListInternal() {
-
         return new ArrayList<String>(domainNames);
     }
 
-    /**
-     * @see org.apache.james.domainlist.api.DomainList#containsDomain(java.lang.String)
-     */
+    @Override
     public boolean containsDomain(String domains) throws DomainListException {
         return domainNames.contains(domains);
     }
 
-    /**
-     * @see
-     * org.apache.james.domainlist.api.DomainList#addDomain(java.lang.String)
-     */
+    @Override
     public void addDomain(String domain) throws DomainListException {
         // TODO: Remove later. Temporary fix to get sure no domains can be added
         // to the XMLDomainList
@@ -87,13 +73,9 @@ public class XMLDomainList extends AbstractDomainList implements Configurable {
         if (containsDomain(newDomain) == false) {
             domainNames.add(newDomain);
         }
-
     }
 
-    /**
-     * @see
-     * org.apache.james.domainlist.api.DomainList#removeDomain(java.lang.String)
-     */
+    @Override
     public void removeDomain(String domain) throws DomainListException {
         // TODO: Remove later. Temporary fix to get sure no domains can be added
         // to the XMLDomainList

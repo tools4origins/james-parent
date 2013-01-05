@@ -19,18 +19,17 @@
 
 package org.apache.james.smtpserver.fastfail;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.dnsservice.api.DNSService;
 import org.apache.james.protocols.lib.lifecycle.InitializingLifecycleAwareProtocolHandler;
+
+import javax.annotation.Resource;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class DNSRBLHandler extends org.apache.james.protocols.smtp.core.fastfail.DNSRBLHandler implements InitializingLifecycleAwareProtocolHandler {
 
@@ -41,52 +40,40 @@ public class DNSRBLHandler extends org.apache.james.protocols.smtp.core.fastfail
     public void setDNSService(DNSService dns) {
         this.dns = dns;
     }
+
     @SuppressWarnings("unchecked")
     @Override
     public void init(Configuration config) throws ConfigurationException {
         boolean validConfig = false;
-        HierarchicalConfiguration handlerConfiguration = (HierarchicalConfiguration)config;
+        HierarchicalConfiguration handlerConfiguration = (HierarchicalConfiguration) config;
         ArrayList<String> rblserverCollection = new ArrayList<String>();
-        List<String> whiteList = handlerConfiguration.getList("rblservers.whitelist");
-        if (whiteList != null) {
-            for (int i = 0; i < whiteList.size(); i++) {
-                String rblServerName = whiteList.get(i);
-                rblserverCollection.add(rblServerName);
 
-            }
-            if (rblserverCollection != null && rblserverCollection.size() > 0) {
-                setWhitelist((String[]) rblserverCollection.toArray(new String[rblserverCollection.size()]));
-                rblserverCollection.clear();
-                validConfig = true;
-            }
+        Collections.addAll(rblserverCollection, handlerConfiguration.getStringArray("rblservers.whitelist"));
+        if (rblserverCollection.size() > 0) {
+            setWhitelist(rblserverCollection.toArray(new String[rblserverCollection.size()]));
+            rblserverCollection.clear();
+            validConfig = true;
         }
-        List<String> blackList = handlerConfiguration.getList("rblservers.blacklist");
-        if (blackList != null) {
-
-            for (int i = 0; i < blackList.size(); i++) {
-                String rblServerName = blackList.get(i);
-                rblserverCollection.add(rblServerName);
-
-            }
-            if (rblserverCollection != null && rblserverCollection.size() > 0) {
-                setBlacklist((String[]) rblserverCollection.toArray(new String[rblserverCollection.size()]));
-                rblserverCollection.clear();
-                validConfig = true;
-            }
+        Collections.addAll(rblserverCollection, handlerConfiguration.getStringArray("rblservers.blacklist"));
+        if (rblserverCollection.size() > 0) {
+            setBlacklist(rblserverCollection.toArray(new String[rblserverCollection.size()]));
+            rblserverCollection.clear();
+            validConfig = true;
         }
 
         // Throw an ConfiigurationException on invalid config
-        if (validConfig == false) {
+        if (!validConfig) {
             throw new ConfigurationException("Please configure whitelist or blacklist");
         }
 
-        setGetDetail(handlerConfiguration.getBoolean("getDetail", false));        
+        setGetDetail(handlerConfiguration.getBoolean("getDetail", false));
     }
 
     @Override
     public void destroy() {
         // Do nothing
     }
+
     @Override
     protected boolean resolve(String ip) {
         try {
@@ -96,10 +83,9 @@ public class DNSRBLHandler extends org.apache.james.protocols.smtp.core.fastfail
             return false;
         }
     }
+
     @Override
     protected Collection<String> resolveTXTRecords(String ip) {
         return dns.findTXTRecords(ip);
     }
-    
-    
 }

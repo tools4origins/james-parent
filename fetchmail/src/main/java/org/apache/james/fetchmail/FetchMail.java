@@ -19,22 +19,10 @@
 
 package org.apache.james.fetchmail;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.mail.MessagingException;
-import javax.mail.Session;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.commons.configuration.HierarchicalConfiguration.Node;
+import org.apache.commons.configuration.tree.ConfigurationNode;
 import org.apache.james.dnsservice.api.DNSService;
 import org.apache.james.domainlist.api.DomainList;
 import org.apache.james.lifecycle.api.Configurable;
@@ -44,25 +32,36 @@ import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
 import org.slf4j.Logger;
 
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * <p>
  * Class <code>FetchMail</code> is an Avalon task that is periodically triggered
  * to fetch mail from a JavaMail Message Store.
  * </p>
- * 
+ * <p/>
  * <p>
  * The lifecycle of an instance of <code>FetchMail</code> is managed by Avalon.
  * The <code>configure(Configuration)</code> method is invoked to parse and
  * validate Configuration properties. The targetTriggered(String) method is
  * invoked to execute the task.
  * </p>
- * 
+ * <p/>
  * <p>
  * When triggered, a sorted list of Message Store Accounts to be processed is
  * built. Each Message Store Account is processed by delegating to
  * <code>StoreProcessor</code>.
  * </p>
- * 
+ * <p/>
  * <p>
  * There are two kinds of Message Store Accounts, static and dynamic. Static
  * accounts are expliciltly declared in the Configuration. Dynamic accounts are
@@ -72,7 +71,7 @@ import org.slf4j.Logger;
  * allow <code>FetchMail</code> to fetch mail for all James users without
  * modifying the Configuration parameters or restarting the Avalon server.
  * </p>
- * 
+ * <p/>
  * <p>
  * To fully understand the operations supported by this task, read the Class
  * documention for each Class in the delegation chain starting with this class'
@@ -130,7 +129,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Returns the sequenceNumber.
-         * 
+         *
          * @return int
          */
         public int getSequenceNumber() {
@@ -139,7 +138,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Returns the userName.
-         * 
+         *
          * @return String
          */
         public String getUserName() {
@@ -148,9 +147,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Sets the sequenceNumber.
-         * 
-         * @param sequenceNumber
-         *            The sequenceNumber to set
+         *
+         * @param sequenceNumber The sequenceNumber to set
          */
         protected void setSequenceNumber(int sequenceNumber) {
             fieldSequenceNumber = sequenceNumber;
@@ -158,9 +156,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Sets the userName.
-         * 
-         * @param userName
-         *            The userName to set
+         *
+         * @param userName The userName to set
          */
         protected void setUserName(String userName) {
             fieldUserName = userName;
@@ -205,7 +202,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Returns the custom recipient header.
-         * 
+         *
          * @return String
          */
         public String getCustomRecipientHeader() {
@@ -214,7 +211,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Returns the recipientprefix.
-         * 
+         *
          * @return String
          */
         public String getRecipientPrefix() {
@@ -223,7 +220,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Returns the recipientsuffix.
-         * 
+         *
          * @return String
          */
         public String getRecipientSuffix() {
@@ -232,7 +229,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Returns the userprefix.
-         * 
+         *
          * @return String
          */
         public String getUserPrefix() {
@@ -241,7 +238,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Returns the userSuffix.
-         * 
+         *
          * @return String
          */
         public String getUserSuffix() {
@@ -250,9 +247,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Sets the custom recipient header.
-         * 
-         * @param customRecipientHeader
-         *            The header to be used
+         *
+         * @param customRecipientHeader The header to be used
          */
         public void setCustomRecipientHeader(String customRecipientHeader) {
             this.customRecipientHeader = customRecipientHeader;
@@ -260,9 +256,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Sets the recipientprefix.
-         * 
-         * @param recipientprefix
-         *            The recipientprefix to set
+         *
+         * @param recipientprefix The recipientprefix to set
          */
         protected void setRecipientPrefix(String recipientprefix) {
             fieldRecipientPrefix = recipientprefix;
@@ -270,9 +265,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Sets the recipientsuffix.
-         * 
-         * @param recipientsuffix
-         *            The recipientsuffix to set
+         *
+         * @param recipientsuffix The recipientsuffix to set
          */
         protected void setRecipientSuffix(String recipientsuffix) {
             fieldRecipientSuffix = recipientsuffix;
@@ -280,9 +274,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Sets the userprefix.
-         * 
-         * @param userprefix
-         *            The userprefix to set
+         *
+         * @param userprefix The userprefix to set
          */
         protected void setUserPrefix(String userprefix) {
             fieldUserPrefix = userprefix;
@@ -290,9 +283,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Sets the userSuffix.
-         * 
-         * @param userSuffix
-         *            The userSuffix to set
+         *
+         * @param userSuffix The userSuffix to set
          */
         protected void setUserSuffix(String userSuffix) {
             fieldUserSuffix = userSuffix;
@@ -300,7 +292,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Returns the password.
-         * 
+         *
          * @return String
          */
         public String getPassword() {
@@ -309,9 +301,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Sets the ignoreRecipientHeader.
-         * 
-         * @param ignoreRecipientHeader
-         *            The ignoreRecipientHeader to set
+         *
+         * @param ignoreRecipientHeader The ignoreRecipientHeader to set
          */
         protected void setIgnoreRecipientHeader(boolean ignoreRecipientHeader) {
             fieldIgnoreRecipientHeader = ignoreRecipientHeader;
@@ -319,9 +310,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Sets the password.
-         * 
-         * @param password
-         *            The password to set
+         *
+         * @param password The password to set
          */
         protected void setPassword(String password) {
             fieldPassword = password;
@@ -329,7 +319,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Returns the ignoreRecipientHeader.
-         * 
+         *
          * @return boolean
          */
         public boolean isIgnoreRecipientHeader() {
@@ -338,7 +328,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Returns the sequenceNumber.
-         * 
+         *
          * @return int
          */
         public int getSequenceNumber() {
@@ -347,9 +337,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         /**
          * Sets the sequenceNumber.
-         * 
-         * @param sequenceNumber
-         *            The sequenceNumber to set
+         *
+         * @param sequenceNumber The sequenceNumber to set
          */
         protected void setSequenceNumber(int sequenceNumber) {
             fieldSequenceNumber = sequenceNumber;
@@ -357,9 +346,6 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     }
 
-    /**
-     * @see org.apache.avalon.cornerstone.services.scheduler.Target#targetTriggered(String)
-     */
     private boolean fieldFetching = false;
 
     /**
@@ -419,7 +405,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
      * a new <code>ParsedConfiguration</code>, an <code>Account</code> for each
      * configured static account and a
      * <code>ParsedDynamicAccountParameters</code> for each dynamic account.
-     * 
+     *
      * @see org.apache.james.lifecycle.api.Configurable#configure(HierarchicalConfiguration)
      */
     @SuppressWarnings("unchecked")
@@ -443,11 +429,9 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
         if (accounts.getKeys().hasNext() == false)
             throw new ConfigurationException("Missing <account> section.");
 
-        List<Node> accountsChildren = accounts.getRoot().getChildren();
         int i = 0;
-
         // Create an Account for every configured account
-        for (Node accountsChild : accountsChildren) {
+        for (ConfigurationNode accountsChild : accounts.getRoot().getChildren()) {
 
             String accountsChildName = accountsChild.getName();
 
@@ -475,7 +459,6 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Method target triggered fetches mail for each configured account.
-     * 
      */
     public void run() {
         // if we are already fetching then just return
@@ -510,10 +493,9 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
             logger.info(logMessage.toString());
 
             // Fetch each account
-            Iterator<Account> accounts = mergedAccounts.iterator();
-            while (accounts.hasNext()) {
+            for (Account mergedAccount : mergedAccounts) {
                 try {
-                    new StoreProcessor(accounts.next()).process();
+                    new StoreProcessor(mergedAccount).process();
                 } catch (MessagingException ex) {
                     logger.error("A MessagingException has terminated processing of this Account", ex);
                 }
@@ -550,7 +532,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the fetching.
-     * 
+     *
      * @return boolean
      */
     protected boolean isFetching() {
@@ -559,9 +541,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Sets the fetching.
-     * 
-     * @param fetching
-     *            The fetching to set
+     *
+     * @param fetching The fetching to set
      */
     protected void setFetching(boolean fetching) {
         fieldFetching = fetching;
@@ -569,7 +550,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the configuration.
-     * 
+     *
      * @return ParsedConfiguration
      */
     protected ParsedConfiguration getConfiguration() {
@@ -578,9 +559,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Sets the configuration.
-     * 
-     * @param configuration
-     *            The configuration to set
+     *
+     * @param configuration The configuration to set
      */
     protected void setParsedConfiguration(ParsedConfiguration configuration) {
         fieldConfiguration = configuration;
@@ -588,7 +568,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the localUsers.
-     * 
+     *
      * @return UsersRepository
      */
     protected UsersRepository getLocalUsers() {
@@ -597,7 +577,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the DNSService.
-     * 
+     *
      * @return DNSService
      */
     protected DNSService getDNSService() {
@@ -618,7 +598,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the accounts. Initializes if required.
-     * 
+     *
      * @return List
      */
     protected List<Account> getStaticAccounts() {
@@ -631,7 +611,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the staticAccounts.
-     * 
+     *
      * @return List
      */
     private List<Account> getStaticAccountsBasic() {
@@ -640,9 +620,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Sets the accounts.
-     * 
-     * @param accounts
-     *            The accounts to set
+     *
+     * @param accounts The accounts to set
      */
     protected void setStaticAccounts(List<Account> accounts) {
         fieldStaticAccounts = accounts;
@@ -701,7 +680,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
         // Process each ParsedDynamicParameters
         while (parameterIterator.hasNext()) {
-            Map<DynamicAccountKey, DynamicAccount> accounts = computeDynamicAccounts(oldAccounts, (ParsedDynamicAccountParameters) parameterIterator.next());
+            Map<DynamicAccountKey, DynamicAccount> accounts = computeDynamicAccounts(oldAccounts, parameterIterator.next());
             // Remove accounts from oldAccounts.
             // This avoids an average 2*N increase in heapspace used as the
             // newAccounts are created.
@@ -718,7 +697,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the dynamicAccounts. Initializes if required.
-     * 
+     *
      * @return Map
      */
     protected Map<DynamicAccountKey, DynamicAccount> getDynamicAccounts() throws ConfigurationException {
@@ -731,7 +710,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the dynamicAccounts.
-     * 
+     *
      * @return Map
      */
     private Map<DynamicAccountKey, DynamicAccount> getDynamicAccountsBasic() {
@@ -740,9 +719,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Sets the dynamicAccounts.
-     * 
-     * @param dynamicAccounts
-     *            The dynamicAccounts to set
+     *
+     * @param dynamicAccounts The dynamicAccounts to set
      */
     protected void setDynamicAccounts(Map<DynamicAccountKey, DynamicAccount> dynamicAccounts) {
         fieldDynamicAccounts = dynamicAccounts;
@@ -751,7 +729,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
     /**
      * Compute the dynamicAccounts for the passed parameters. Accounts for
      * existing users are copied and accounts for new users are created.
-     * 
+     *
      * @param oldAccounts
      * @param parameters
      * @return Map - The current Accounts
@@ -791,7 +769,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the ParsedDynamicAccountParameters.
-     * 
+     *
      * @return List
      */
     protected List<ParsedDynamicAccountParameters> getParsedDynamicAccountParameters() {
@@ -804,7 +782,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the ParsedDynamicAccountParameters.
-     * 
+     *
      * @return List
      */
     private List<ParsedDynamicAccountParameters> getParsedDynamicAccountParametersBasic() {
@@ -813,9 +791,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Sets the ParsedDynamicAccountParameters.
-     * 
-     * @param parsedDynamicAccountParameters
-     *            The ParsedDynamicAccountParameters to set
+     *
+     * @param parsedDynamicAccountParameters The ParsedDynamicAccountParameters to set
      */
     protected void setParsedDynamicAccountParameters(List<ParsedDynamicAccountParameters> parsedDynamicAccountParameters) {
         fieldParsedDynamicAccountParameters = parsedDynamicAccountParameters;
@@ -823,11 +800,11 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the session, lazily initialized if required.
-     * 
+     *
      * @return Session
      */
     protected Session getSession() {
-        Session session = null;
+        Session session;
         if (null == (session = getSessionBasic())) {
             updateSession();
             return getSession();
@@ -837,7 +814,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Returns the session.
-     * 
+     *
      * @return Session
      */
     private Session getSessionBasic() {
@@ -846,7 +823,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Answers a new Session.
-     * 
+     *
      * @return Session
      */
     protected Session computeSession() {
@@ -865,9 +842,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Sets the session.
-     * 
-     * @param session
-     *            The session to set
+     *
+     * @param session The session to set
      */
     protected void setSession(Session session) {
         fieldSession = session;
@@ -875,9 +851,8 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
 
     /**
      * Propagate any Session parameters in the configuration to the Session.
-     * 
-     * @param configuration
-     *            The configuration containing the parameters
+     *
+     * @param configuration The configuration containing the parameters
      * @throws ConfigurationException
      */
     @SuppressWarnings("unchecked")
@@ -886,8 +861,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
         if (configuration.getKeys("javaMailProperties.property").hasNext()) {
             Properties properties = getSession().getProperties();
             List<HierarchicalConfiguration> allProperties = configuration.configurationsAt("javaMailProperties.property");
-            for (int i = 0; i < allProperties.size(); i++) {
-                HierarchicalConfiguration propConf = allProperties.get(i);
+            for (HierarchicalConfiguration propConf : allProperties) {
                 properties.setProperty(propConf.getString("[@name]"), propConf.getString("[@value]"));
                 if (logger.isDebugEnabled()) {
                     StringBuilder messageBuffer = new StringBuilder("Set property name: ");

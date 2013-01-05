@@ -52,12 +52,6 @@ public class DefaultUsersJdbcRepositoryTest extends AbstractUsersJdbcRepositoryT
         return res;
     }
 
-    /**
-     * @param res
-     * @param tableString
-     * @throws Exception
-     * @throws ConfigurationException
-     */
     protected void configureAbstractJdbcUsersRepository(AbstractJdbcUsersRepository res, String tableString) throws Exception, ConfigurationException {
         res.setFileSystem(new MockFileSystem());
         DataSource dataSource = getDataSource();
@@ -81,13 +75,7 @@ public class DefaultUsersJdbcRepositoryTest extends AbstractUsersJdbcRepositoryT
         return ds;
     }
 
-    /**
-     * @return
-     */
-    protected boolean getCheckCase() {
-        return true;
-    }
-
+    @Override
     protected void disposeUsersRepository() throws UsersRepositoryException {
         Iterator<String> i = this.usersRepository.list();
         while (i.hasNext()) {

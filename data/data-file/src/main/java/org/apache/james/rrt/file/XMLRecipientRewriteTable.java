@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.james.rrt.file;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.rrt.api.RecipientRewriteTableException;
 import org.apache.james.rrt.lib.AbstractRecipientRewriteTable;
 import org.apache.james.rrt.lib.RecipientRewriteTableUtil;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Class responsible to implement the Virtual User Table in XML disk file.
@@ -40,30 +40,20 @@ public class XMLRecipientRewriteTable extends AbstractRecipientRewriteTable {
      */
     private Map<String, String> mappings;
 
-    /**
-     * @see org.apache.james.rrt.lib.AbstractRecipientRewriteTable#doConfigure(org.apache.commons.configuration.HierarchicalConfiguration)
-     */
-    @SuppressWarnings("unchecked")
+    @Override
     protected void doConfigure(HierarchicalConfiguration arg0) throws ConfigurationException {
-
-        List<String> mapConf = arg0.getList("mapping");
-
-        mappings = new HashMap<String, String>();
-
-        if (mapConf != null && mapConf.size() > 0) {
-            for (int i = 0; i < mapConf.size(); i++) {
-                mappings.putAll(RecipientRewriteTableUtil.getXMLMappings(mapConf.get(i)));
+        String[] mapConf = arg0.getStringArray("mapping");
+        mappings = Maps.newHashMap();
+        if (mapConf != null && mapConf.length > 0) {
+            for (String aMapConf : mapConf) {
+                mappings.putAll(RecipientRewriteTableUtil.getXMLMappings(aMapConf));
             }
         } else {
             throw new ConfigurationException("No mapping configured");
         }
-
     }
 
-    /**
-     * @see org.apache.james.rrt.lib.AbstractRecipientRewriteTable#mapAddressInternal(java.lang.String,
-     *      java.lang.String)
-     */
+    @Override
     protected String mapAddressInternal(String user, String domain) throws RecipientRewriteTableException {
         if (mappings == null) {
             return null;
@@ -72,10 +62,7 @@ public class XMLRecipientRewriteTable extends AbstractRecipientRewriteTable {
         }
     }
 
-    /**
-     * @see org.apache.james.rrt.lib.AbstractRecipientRewriteTable#getUserDomainMappingsInternal(java.lang.String,
-     *      java.lang.String)
-     */
+    @Override
     protected Collection<String> getUserDomainMappingsInternal(String user, String domain) throws RecipientRewriteTableException {
         if (mappings == null) {
             return null;
@@ -89,9 +76,7 @@ public class XMLRecipientRewriteTable extends AbstractRecipientRewriteTable {
         }
     }
 
-    /**
-     * @see org.apache.james.rrt.lib.AbstractRecipientRewriteTable#getAllMappingsInternal()
-     */
+    @Override
     protected Map<String, Collection<String>> getAllMappingsInternal() throws RecipientRewriteTableException {
         if (mappings != null && mappings.size() > 0) {
             Map<String, Collection<String>> mappingsNew = new HashMap<String, Collection<String>>();
@@ -115,5 +100,4 @@ public class XMLRecipientRewriteTable extends AbstractRecipientRewriteTable {
     protected void removeMappingInternal(String user, String domain, String mapping) throws RecipientRewriteTableException {
         throw new RecipientRewriteTableException("Read-Only implementation");
     }
-
 }

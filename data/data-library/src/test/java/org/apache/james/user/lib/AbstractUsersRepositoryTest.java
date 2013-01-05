@@ -200,7 +200,7 @@ public abstract class AbstractUsersRepositoryTest {
      *
      * @throws UsersRepositoryException
      */
-    private void disposeUsersRepository() throws UsersRepositoryException {
+    protected void disposeUsersRepository() throws UsersRepositoryException {
         if (usersRepository != null) {
             LifecycleUtil.dispose(this.usersRepository);
         }

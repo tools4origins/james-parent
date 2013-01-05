@@ -19,11 +19,6 @@
 
 package org.apache.james.user.jdbc;
 
-import java.util.Iterator;
-
-import javax.sql.DataSource;
-
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
@@ -33,6 +28,9 @@ import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
+import java.util.Iterator;
+
 /**
  * Test basic behaviors of UsersFileRepository
  */
@@ -40,7 +38,7 @@ public class JamesUsersJdbcRepositoryTest extends AbstractUsersJdbcRepositoryTes
 
     /**
      * Create the repository to be tested.
-     * 
+     *
      * @return the user repository
      * @throws Exception
      */
@@ -52,13 +50,7 @@ public class JamesUsersJdbcRepositoryTest extends AbstractUsersJdbcRepositoryTes
         return res;
     }
 
-    /**
-     * @param res
-     * @param tableString
-     * @throws Exception
-     * @throws ConfigurationException
-     */
-    protected void configureAbstractJdbcUsersRepository(AbstractJdbcUsersRepository res, String tableString) throws Exception, ConfigurationException {
+    protected void configureAbstractJdbcUsersRepository(AbstractJdbcUsersRepository res, String tableString) throws Exception {
         res.setFileSystem(new MockFileSystem());
         DataSource dataSource = getDataSource();
         res.setDatasource(dataSource);
@@ -79,17 +71,11 @@ public class JamesUsersJdbcRepositoryTest extends AbstractUsersJdbcRepositoryTes
         return ds;
     }
 
-    /**
-     * @return
-     */
-    protected boolean getCheckCase() {
-        return true;
-    }
-
+    @Override
     protected void disposeUsersRepository() throws UsersRepositoryException {
         Iterator<String> i = this.usersRepository.list();
         while (i.hasNext()) {
-            this.usersRepository.removeUser((String) i.next());
+            this.usersRepository.removeUser(i.next());
         }
         LifecycleUtil.dispose(this.usersRepository);
     }

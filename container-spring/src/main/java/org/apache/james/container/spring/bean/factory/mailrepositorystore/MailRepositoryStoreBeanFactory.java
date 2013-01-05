@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.james.container.spring.bean.factory.mailrepositorystore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -37,6 +30,12 @@ import org.apache.james.mailrepository.api.MailRepository;
 import org.apache.james.mailrepository.api.MailRepositoryStore;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provides a registry of mail repositories. A mail repository is uniquely
@@ -70,8 +69,7 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
     private Logger logger;
 
     /**
-     * @see
-     * org.apache.james.lifecycle.api.Configurable#configure(org.apache.commons.configuration.HierarchicalConfiguration)
+     * @see org.apache.james.lifecycle.api.Configurable#configure(org.apache.commons.configuration.HierarchicalConfiguration)
      */
     public void configure(HierarchicalConfiguration configuration) throws ConfigurationException {
         this.configuration = configuration;
@@ -87,8 +85,8 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
         classes = new HashMap<String, String>();
         defaultConfigs = new HashMap<String, HierarchicalConfiguration>();
         List<HierarchicalConfiguration> registeredClasses = configuration.configurationsAt("mailrepositories.mailrepository");
-        for (int i = 0; i < registeredClasses.size(); i++) {
-            registerRepository(registeredClasses.get(i));
+        for (HierarchicalConfiguration registeredClass : registeredClasses) {
+            registerRepository(registeredClass);
         }
 
     }
@@ -98,16 +96,14 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
      * Registers a new mail repository type in the mail store's registry based
      * upon a passed in <code>Configuration</code> object.
      * </p>
-     * 
+     * <p/>
      * <p>
      * This is presumably synchronized to prevent corruption of the internal
      * registry.
      * </p>
-     * 
-     * @param repConf
-     *            the Configuration object used to register the repository
-     * @throws ConfigurationException
-     *             if an error occurs accessing the Configuration object
+     *
+     * @param repConf the Configuration object used to register the repository
+     * @throws ConfigurationException if an error occurs accessing the Configuration object
      */
     @SuppressWarnings("unchecked")
     public synchronized void registerRepository(HierarchicalConfiguration repConf) throws ConfigurationException {
@@ -116,12 +112,7 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
 
         boolean infoEnabled = getLogger().isInfoEnabled();
 
-        List<String> protocols = repConf.getList("protocols.protocol");
-
-        for (int i = 0; i < protocols.size(); i++) {
-
-            String protocol = protocols.get(i);
-
+        for (String protocol : repConf.getStringArray("protocols.protocol")) {
             HierarchicalConfiguration defConf = null;
 
             if (repConf.getKeys("config").hasNext()) {
@@ -130,21 +121,25 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
                 defConf = repConf.configurationAt("config");
             }
 
-            String key = protocol;
-
             if (infoEnabled) {
-                StringBuffer infoBuffer = new StringBuffer(128).append("Registering Repository instance of class ").append(className).append(" to handle ").append(protocol).append(" protocol requests for repositories with key ").append(key);
+                StringBuilder infoBuffer = new StringBuilder(128);
+                infoBuffer.append("Registering Repository instance of class ");
+                infoBuffer.append(className);
+                infoBuffer.append(" to handle ");
+                infoBuffer.append(protocol);
+                infoBuffer.append(" protocol requests for repositories with key ");
+                infoBuffer.append(protocol);
                 getLogger().info(infoBuffer.toString());
             }
 
-            if (classes.get(key) != null) {
+            if (classes.get(protocol) != null) {
                 throw new ConfigurationException("The combination of protocol and type comprise a unique key for repositories.  This constraint has been violated.  Please check your repository configuration.");
             }
 
-            classes.put(key, className);
+            classes.put(protocol, className);
 
             if (defConf != null) {
-                defaultConfigs.put(key, defConf);
+                defaultConfigs.put(protocol, defConf);
             }
         }
 
@@ -153,7 +148,7 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
     /**
      * This method accept a Configuration object as hint and return the
      * corresponding MailRepository. The Configuration must be in the form of:
-     * 
+     * <p/>
      * <pre>
      * &lt;repository destinationURL="[URL of this mail repository]"
      *             type="[repository type ex. OBJECT or STREAM or MAIL etc.]"
@@ -161,26 +156,21 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
      *   [addition configuration]
      * &lt;/repository&gt;
      * </pre>
-     * 
-     * @param destination
-     *            the destinationURL used to look up the repository
+     *
+     * @param destination the destinationURL used to look up the repository
      * @return the selected repository
-     * @throws MailRepositoryStoreException
-     *             if any error occurs while parsing the Configuration or
-     *             retrieving the MailRepository
+     * @throws MailRepositoryStoreException if any error occurs while parsing the Configuration or
+     *                                      retrieving the MailRepository
      */
     public synchronized MailRepository select(String destination) throws MailRepositoryStoreException {
-
-        String protocol = null;
-
         int idx = destination.indexOf(':');
         if (idx == -1)
             throw new MailRepositoryStoreException("Destination is malformed. Must be a valid URL: " + destination);
-        protocol = destination.substring(0, idx);
+        String protocol = destination.substring(0, idx);
 
         String repID = destination;
         MailRepository reply = repositories.get(repID);
-        StringBuffer logBuffer = null;
+        StringBuffer logBuffer;
         if (reply != null) {
             if (getLogger().isDebugEnabled()) {
                 logBuffer = new StringBuffer(128).append("obtained repository: ").append(repID).append(",").append(reply.getClass());
@@ -188,10 +178,9 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
             }
             return reply;
         } else {
-            String key = protocol;
-            String repClass = (String) classes.get(key);
+            String repClass = classes.get(protocol);
             if (getLogger().isDebugEnabled()) {
-                logBuffer = new StringBuffer(128).append("obtained repository: ").append(repClass).append(" to handle: ").append(protocol).append(" with key ").append(key);
+                logBuffer = new StringBuffer(128).append("obtained repository: ").append(repClass).append(" to handle: ").append(protocol).append(" with key ").append(protocol);
                 getLogger().debug(logBuffer.toString());
             }
 
@@ -200,7 +189,7 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
             // and the values in the selector.
             // If no default values, just use the selector.
             final CombinedConfiguration config = new CombinedConfiguration();
-            HierarchicalConfiguration defConf = defaultConfigs.get(key);
+            HierarchicalConfiguration defConf = defaultConfigs.get(protocol);
             if (defConf != null) {
                 config.addConfiguration(defConf);
             }
@@ -221,7 +210,7 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
                     ((Configurable) reply).configure(config);
                 }
 
-                reply = (MailRepository) getBeanFactory().initializeBean(reply, key);
+                reply = (MailRepository) getBeanFactory().initializeBean(reply, protocol);
 
                 repositories.put(repID, reply);
                 if (getLogger().isInfoEnabled()) {

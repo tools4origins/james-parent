@@ -18,20 +18,19 @@
  ****************************************************************/
 package org.apache.james.user.ldap;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.configuration.HierarchicalConfiguration;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.ldap.LdapContext;
-
-import org.apache.commons.configuration.HierarchicalConfiguration;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -40,7 +39,7 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
  * <code>&lt;users-store&gt;</code> configuration child-element
  * <code>&lt;restriction&gt;<code>.
  * </p>
- * 
+ *
  * @see ReadOnlyUsersLDAPRepository
  * @see ReadOnlyLDAPUser
  */
@@ -62,18 +61,15 @@ public class ReadOnlyLDAPGroupRestriction {
 
     /**
      * Initialises an instance from the contents of a
-     * <code>&lt;restriction&gt;<code> configuration XML 
+     * <code>&lt;restriction&gt;<code> configuration XML
      * element.
-     * 
-     * @param configuration
-     *            The avalon configuration instance that encapsulates the
-     *            contents of the <code>&lt;restriction&gt;<code> XML element.
-     * 
-     * @throws ConfigurationException
-     *             If an error occurs extracting values from the configuration
-     *             element.
+     *
+     * @param configuration The avalon configuration instance that encapsulates the
+     *                      contents of the <code>&lt;restriction&gt;<code> XML element.
+     * @throws org.apache.commons.configuration.ConfigurationException
+     *          If an error occurs extracting values from the configuration
+     *          element.
      */
-    @SuppressWarnings("unchecked")
     public ReadOnlyLDAPGroupRestriction(HierarchicalConfiguration configuration) {
         groupDNs = new ArrayList<String>();
 
@@ -81,11 +77,7 @@ public class ReadOnlyLDAPGroupRestriction {
             memberAttribute = configuration.getString("[@memberAttribute]");
 
             if (configuration.getKeys("group").hasNext()) {
-                List<String> groupNames = configuration.getList("group");
-
-                for (int i = 0; i < groupNames.size(); i++) {
-                    groupDNs.add(groupNames.get(i));
-                }
+                Collections.addAll(groupDNs, configuration.getStringArray("group"));
             }
         }
     }
@@ -93,7 +85,7 @@ public class ReadOnlyLDAPGroupRestriction {
     /**
      * Indicates if group/role-based restriction is enabled for the the
      * user-store, based on the information encapsulated in the instance.
-     * 
+     *
      * @return <code>True</code> If there list of group/role distinguished names
      *         is not empty, and <code>false</code> otherwise.
      */
@@ -103,7 +95,7 @@ public class ReadOnlyLDAPGroupRestriction {
 
     /**
      * Converts an instance of this type to a string.
-     * 
+     *
      * @return A string representation of the instance.
      */
     public String toString() {
@@ -116,23 +108,15 @@ public class ReadOnlyLDAPGroupRestriction {
      * of <code>&quot;&lt;groupDN&gt;=&lt;
      * [userDN1,userDN2,...,userDNn]&gt;&quot;</code>. Put differently, each
      * <code>groupDN</code> is associated to a list of <code>userDNs</code>.
-     * 
-     * @param connection
-     *            The connection to the LDAP directory server.
+     *
      * @return Returns a map of groupDNs to userDN lists.
-     * @throws NamingException
-     *             Propagated from underlying LDAP communication layer.
+     * @throws NamingException Propagated from underlying LDAP communication layer.
      */
     protected Map<String, Collection<String>> getGroupMembershipLists(LdapContext ldapContext) throws NamingException {
         Map<String, Collection<String>> result = new HashMap<String, Collection<String>>();
 
-        Iterator<String> groupDNsIterator = groupDNs.iterator();
-
-        Attributes groupAttributes;
-        while (groupDNsIterator.hasNext()) {
-            String groupDN = (String) groupDNsIterator.next();
-            groupAttributes = ldapContext.getAttributes(groupDN);
-            result.put(groupDN, extractMembers(groupAttributes));
+        for (String groupDN : groupDNs) {
+            result.put(groupDN, extractMembers(ldapContext.getAttributes(groupDN)));
         }
 
         return result;
@@ -143,13 +127,11 @@ public class ReadOnlyLDAPGroupRestriction {
      * attributes. This is achieved by extracting all the values of the LDAP
      * attribute, with name equivalent to the field value
      * {@link #memberAttribute}, from the attributes collection.
-     * 
-     * @param groupAttributes
-     *            The attributes taken from the group's LDAP context.
+     *
+     * @param groupAttributes The attributes taken from the group's LDAP context.
      * @return A collection of distinguished-names for the users belonging to
      *         the group with the specified attributes.
-     * @throws NamingException
-     *             Propagated from underlying LDAP communication layer.
+     * @throws NamingException Propagated from underlying LDAP communication layer.
      */
     private Collection<String> extractMembers(Attributes groupAttributes) throws NamingException {
         Collection<String> result = new ArrayList<String>();
