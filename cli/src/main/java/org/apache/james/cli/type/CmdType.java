@@ -38,8 +38,8 @@ public enum CmdType {
 	SETPASSWORD("setpassword", 3), //
 	COPYMAILBOX("copymailbox", 3) //
 	;
-	private String command;
-	private int arguments;
+	private final String command;
+	private final int arguments;
 
 	private CmdType(String command, int arguments) {
 		this.command = command;
@@ -54,11 +54,9 @@ public enum CmdType {
 	 * @return true if values match, false otherwise.
 	 */
 	public boolean hasCorrectArguments(int arguments) {
-		if (this.arguments == arguments)
-			return true;
+        return this.arguments == arguments;
 
-		return false;
-	}
+    }
 
 	/**
 	 * Return a CmdType enumeration that matches the passed command.

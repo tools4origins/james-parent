@@ -56,8 +56,8 @@ public class JmxServerProbe implements ServerProbe {
 
 	private static final String fmtUrl = "service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi";
 	private static final int defaultPort = 9999;
-	private String host;
-	private int port;
+	private final String host;
+	private final int port;
 
 	/**
 	 * Creates a ServerProbe using the specified JMX host and port.
@@ -102,16 +102,16 @@ public class JmxServerProbe implements ServerProbe {
 
 		try {
 			ObjectName name = new ObjectName(DOMAINLIST_OBJECT_NAME);
-			domainListProcxy = (DomainListManagementMBean) MBeanServerInvocationHandler.newProxyInstance(
+			domainListProcxy = MBeanServerInvocationHandler.newProxyInstance(
 			        mbeanServerConn, name, DomainListManagementMBean.class, true);
 			name = new ObjectName(VIRTUALUSERTABLE_OBJECT_NAME);
-			virtualUserTableProxy = (RecipientRewriteTableManagementMBean) MBeanServerInvocationHandler
-			        .newProxyInstance(mbeanServerConn, name, RecipientRewriteTableManagementMBean.class, true);
+			virtualUserTableProxy = MBeanServerInvocationHandler
+                    .newProxyInstance(mbeanServerConn, name, RecipientRewriteTableManagementMBean.class, true);
 			name = new ObjectName(USERSREPOSITORY_OBJECT_NAME);
-			usersRepositoryProxy = (UsersRepositoryManagementMBean) MBeanServerInvocationHandler.newProxyInstance(
+			usersRepositoryProxy = MBeanServerInvocationHandler.newProxyInstance(
 			        mbeanServerConn, name, UsersRepositoryManagementMBean.class, true);
 			name = new ObjectName(MAILBOXCOPIER_OBJECT_NAME);
-			mailboxCopierManagement = (MailboxCopierManagementMBean) MBeanServerInvocationHandler.newProxyInstance(
+			mailboxCopierManagement = MBeanServerInvocationHandler.newProxyInstance(
 			        mbeanServerConn, name, MailboxCopierManagementMBean.class, true);
 		} catch (MalformedObjectNameException e) {
 			throw new RuntimeException("Invalid ObjectName? Please report this as a bug.", e);
