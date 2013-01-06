@@ -46,7 +46,7 @@ public class StoreProcessor extends ProcessorAbstract {
      */
     public void process() throws MessagingException {
         Store store = null;
-        Folder folder = null;
+        Folder folder;
 
         StringBuilder logMessageBuffer = new StringBuilder("Starting fetching mail from server '");
         logMessageBuffer.append(getHost());

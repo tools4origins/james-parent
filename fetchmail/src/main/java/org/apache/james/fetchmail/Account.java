@@ -292,7 +292,7 @@ class Account implements Comparable<Account> {
      * @return List
      */
     public List<String> getDeferredRecipientNotFoundMessageIDs() {
-        List<String> messageIDs = null;
+        List<String> messageIDs;
         if (null == (messageIDs = getDeferredRecipientNotFoundMessageIDsBasic())) {
             updateDeferredRecipientNotFoundMessageIDs();
             return getDeferredRecipientNotFoundMessageIDs();

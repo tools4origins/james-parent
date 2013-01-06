@@ -62,7 +62,7 @@ public class FetchScheduler implements FetchSchedulerMBean, LogEnabled, Configur
      */
     private volatile boolean enabled = false;
 
-    private List<ScheduledFuture<?>> schedulers = new ArrayList<ScheduledFuture<?>>();
+    private final List<ScheduledFuture<?>> schedulers = new ArrayList<ScheduledFuture<?>>();
 
     private DNSService dns;
 
@@ -123,9 +123,8 @@ public class FetchScheduler implements FetchSchedulerMBean, LogEnabled, Configur
             queue = queueFactory.getQueue(MailQueueFactory.SPOOL);
 
             List<HierarchicalConfiguration> fetchConfs = conf.configurationsAt("fetch");
-            for (int i = 0; i < fetchConfs.size(); i++) {
+            for (HierarchicalConfiguration fetchConf : fetchConfs) {
                 // read configuration
-                HierarchicalConfiguration fetchConf = fetchConfs.get(i);
                 Long interval = fetchConf.getLong("interval");
 
                 FetchMail fetcher = new FetchMail();
@@ -154,9 +153,8 @@ public class FetchScheduler implements FetchSchedulerMBean, LogEnabled, Configur
     public void dispose() {
         if (enabled) {
             logger.info("FetchMail dispose...");
-            Iterator<ScheduledFuture<?>> schedulersIt = schedulers.iterator();
-            while (schedulersIt.hasNext()) {
-                schedulersIt.next().cancel(false);
+            for (ScheduledFuture<?> scheduler1 : schedulers) {
+                scheduler1.cancel(false);
             }
             logger.info("FetchMail ...dispose end");
         }

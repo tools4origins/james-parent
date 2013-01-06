@@ -142,8 +142,8 @@ public class FolderProcessor extends ProcessorAbstract {
             // folder contains subfolders...
             Folder folders[] = getFolder().list();
 
-            for (int i = 0; i < folders.length; i++) {
-                new FolderProcessor(folders[i], getAccount()).process();
+            for (Folder folder : folders) {
+                new FolderProcessor(folder, getAccount()).process();
             }
 
         }
@@ -180,8 +180,8 @@ public class FolderProcessor extends ProcessorAbstract {
      * @throws MessagingException
      */
     protected boolean isSeen(MimeMessage aMessage) throws MessagingException {
-        boolean isSeen = false;
-        if (isMarkSeenPermanent().booleanValue())
+        boolean isSeen;
+        if (isMarkSeenPermanent())
             isSeen = aMessage.isSet(Flags.Flag.SEEN);
         else
             isSeen = handleMarkSeenNotPermanent(aMessage);
@@ -194,7 +194,7 @@ public class FolderProcessor extends ProcessorAbstract {
      * @return Boolean
      */
     protected Boolean computeMarkSeenPermanent() {
-        return Boolean.valueOf(getFolder().getPermanentFlags().contains(Flags.Flag.SEEN));
+        return getFolder().getPermanentFlags().contains(Flags.Flag.SEEN);
     }
 
     /**
@@ -233,7 +233,7 @@ public class FolderProcessor extends ProcessorAbstract {
      * @return Boolean
      */
     protected Boolean isMarkSeenPermanent() {
-        Boolean markSeenPermanent = null;
+        Boolean markSeenPermanent;
         if (null == (markSeenPermanent = isMarkSeenPermanentBasic())) {
             updateMarkSeenPermanent();
             return isMarkSeenPermanent();

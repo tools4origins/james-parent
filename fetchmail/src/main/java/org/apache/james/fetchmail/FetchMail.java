@@ -115,9 +115,9 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
         public boolean equals(Object obj) {
             if (null == obj)
                 return false;
-            if (!(obj.getClass() == getClass()))
-                return false;
-            return (getUserName().equals(((DynamicAccountKey) obj).getUserName()) && getSequenceNumber() == ((DynamicAccountKey) obj).getSequenceNumber());
+            return obj.getClass() == getClass()
+                    && (getUserName().equals(((DynamicAccountKey) obj).getUserName())
+                    && getSequenceNumber() == ((DynamicAccountKey) obj).getSequenceNumber());
         }
 
         /**
@@ -426,7 +426,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
             throw new ConfigurationException("Too many <accounts> sections, there must be exactly one");
         HierarchicalConfiguration accounts = allAccounts.get(0);
 
-        if (accounts.getKeys().hasNext() == false)
+        if (!accounts.getKeys().hasNext())
             throw new ConfigurationException("Missing <account> section.");
 
         int i = 0;
@@ -676,11 +676,9 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
         if (null == oldAccounts)
             oldAccounts = new HashMap<DynamicAccountKey, DynamicAccount>(0);
 
-        Iterator<ParsedDynamicAccountParameters> parameterIterator = getParsedDynamicAccountParameters().iterator();
-
         // Process each ParsedDynamicParameters
-        while (parameterIterator.hasNext()) {
-            Map<DynamicAccountKey, DynamicAccount> accounts = computeDynamicAccounts(oldAccounts, parameterIterator.next());
+        for (ParsedDynamicAccountParameters parsedDynamicAccountParameters : getParsedDynamicAccountParameters()) {
+            Map<DynamicAccountKey, DynamicAccount> accounts = computeDynamicAccounts(oldAccounts, parsedDynamicAccountParameters);
             // Remove accounts from oldAccounts.
             // This avoids an average 2*N increase in heapspace used as the
             // newAccounts are created.

@@ -759,7 +759,7 @@ class ParsedConfiguration {
      * @return String
      */
     public String getDefaultDomainName() {
-        String defaultDomainName = null;
+        String defaultDomainName;
         if (null == (defaultDomainName = getDefaultDomainNameBasic())) {
             updateDefaultDomainName();
             return getDefaultDomainName();
@@ -817,7 +817,7 @@ class ParsedConfiguration {
      * Computes the defaultDomainName.
      */
     protected String computeDefaultDomainName() {
-        String hostName = null;
+        String hostName;
         try {
             hostName = getDNSServer().getLocalHost().getCanonicalHostName();
         } catch (UnknownHostException ue) {

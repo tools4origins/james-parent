@@ -500,7 +500,7 @@ abstract public class ProcessorAbstract {
      * @return String
      */
     protected String getAttributePrefix() {
-        String value = null;
+        String value;
         if (null == (value = getAttributePrefixBasic())) {
             updateAttributePrefix();
             return getAttributePrefix();

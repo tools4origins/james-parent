@@ -19,12 +19,12 @@
 
 package org.apache.james.fetchmail;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.StringTokenizer;
+import org.apache.james.core.MailImpl;
+import org.apache.james.domainlist.api.DomainListException;
+import org.apache.james.user.api.UsersRepositoryException;
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
+import org.apache.mailet.base.RFC2822Headers;
 
 import javax.mail.Address;
 import javax.mail.Flags;
@@ -32,20 +32,19 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.ParseException;
-
-import org.apache.james.core.MailImpl;
-import org.apache.james.domainlist.api.DomainListException;
-import org.apache.james.user.api.UsersRepositoryException;
-import org.apache.mailet.base.RFC2822Headers;
-import org.apache.mailet.Mail;
-import org.apache.mailet.MailAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.StringTokenizer;
 
 /**
  * <p>
  * Class <code>MessageProcessor</code> handles the delivery of
  * <code>MimeMessages</code> to the James input spool.
  * </p>
- * 
+ * <p/>
  * <p>
  * Messages written to the input spool always have the following Mail Attributes
  * set:
@@ -56,7 +55,7 @@ import org.apache.mailet.MailAddress;
  * <dt>org.apache.james.fetchmail.folderName (java.lang.String)</dt>
  * <dd>The name of the folder from which the message was fetched</dd>
  * </dl>
- * 
+ * <p/>
  * <p>
  * Messages written to the input spool have the following Mail Attributes set if
  * the corresponding condition is satisfied:
@@ -88,14 +87,14 @@ import org.apache.mailet.MailAddress;
  * <dd>The remote address could not be determined. The default value
  * (localhost/127.0.0.1)has been used.</dd>
  * </dl>
- * 
+ * <p/>
  * <p>
  * Configuration settings - see
  * <code>org.apache.james.fetchmail.ParsedConfiguration</code> - control the
  * messages that are written to the James input spool, those that are rejected
  * and what happens to messages that are rejected.
  * </p>
- * 
+ * <p/>
  * <p>
  * Rejection processing is based on the following filters:
  * </p>
@@ -113,14 +112,14 @@ import org.apache.mailet.MailAddress;
  * <dt>RejectRemoteReceievedHeaderInvalid</dt>
  * <dd>Rejects messages whose Received header is invalid.</dd>
  * </dl>
- * 
+ * <p/>
  * <p>
  * Rejection processing is intentionally limited to managing the status of the
  * messages that are rejected on the server from which they were fetched. View
  * it as a simple automation of the manual processing an end-user would perform
  * through a mail client. Messages may be marked as seen or be deleted.
  * </p>
- * 
+ * <p/>
  * <p>
  * Further processing can be achieved by configuring to disable rejection for
  * one or more filters. This enables Messages that would have been rejected to
@@ -129,7 +128,7 @@ import org.apache.mailet.MailAddress;
  * be used to perform any further processing required, such as notifying the
  * Postmaster and/or sender, marking the message for error processing, etc.
  * </p>
- * 
+ * <p/>
  * <p>
  * Note that in the case of a message exceeding the message size limit, the
  * message that is written to the input spool has no content. This enables
@@ -137,24 +136,24 @@ import org.apache.mailet.MailAddress;
  * delivered due to its size while maintaining the purpose of the filter which
  * is to avoid injecting excessively large messages into the input spool.
  * </p>
- * 
+ * <p/>
  * <p>
  * Delivery is to a sole intended recipient. The recipient is determined in the
  * following manner:
  * </p>
- * 
+ * <p/>
  * <ol>
  * <li>If isIgnoreIntendedRecipient(), use the configured recipient</li>
  * <li>If the Envelope contains a for: stanza, use the recipient in the stanza</li>
  * <li>If the Message has a sole intended recipient, use this recipient</li>
  * <li>If not rejectRecipientNotFound(), use the configured recipient</li>
  * </ol>
- * 
+ * <p/>
  * <p>
  * If a recipient cannot be determined after these steps, the message is
  * rejected.
  * </p>
- * 
+ * <p/>
  * <p>
  * Every delivered message CURRENTLY has an "X-fetched-from" header added
  * containing the name of the fetch task. Its primary uses are to detect
@@ -163,7 +162,7 @@ import org.apache.mailet.MailAddress;
  * Matcher/Mailet chain. This header is DEPRECATED and WILL BE REMOVED in a
  * future version of fetchmail. Use the Mail Attribute
  * <code>org.apache.james.fetchmail.taskName</code> instead.
- * 
+ * <p/>
  * <p>
  * <code>MessageProcessor</code> is as agnostic as it can be about the format
  * and contents of the messages it delivers. There are no RFCs that govern its
@@ -175,14 +174,14 @@ import org.apache.mailet.MailAddress;
  * implementation) to manage and validate the injected mail just as it would
  * when receiving mail from an upstream MTA.
  * </p>
- * 
+ * <p/>
  * <p>
  * The only correction applied by <code>MessageProcessor</code> is to correct a
  * missing or partial sender address. If the sender address can not be obtained,
  * the default local part and default domain part is added. If the sender domain
  * part is absent, the default domain part is added.
  * </p>
- * 
+ * <p/>
  * <p>
  * Mail with corrections applied to the sender address will most likely pass
  * Matcher tests on the sender that they might otherwise fail. The Mail
@@ -191,7 +190,7 @@ import org.apache.mailet.MailAddress;
  * added to the injected mail to enable such mail to be detected and processed
  * accordingly.
  * </p>
- * 
+ * <p/>
  * <p>
  * The status of messages on the server from which they were fetched that cannot
  * be injected into the input spool due to non-correctable errors is determined
@@ -268,7 +267,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Constructor for MessageProcessor.
-     * 
+     *
      * @param account
      */
     private MessageProcessor(Account account) {
@@ -277,7 +276,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Constructor for MessageProcessor.
-     * 
+     *
      * @param messageIn
      * @param account
      */
@@ -289,7 +288,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method process attempts to deliver a fetched message.
-     * 
+     *
      * @see org.apache.james.fetchmail.ProcessorAbstract#process()
      */
     public void process() throws MessagingException {
@@ -362,12 +361,12 @@ public class MessageProcessor extends ProcessorAbstract {
             return;
         }
 
-        if (isRejectMaxMessageSizeExceeded() && isMaxMessageSizeExceeded().booleanValue()) {
+        if (isRejectMaxMessageSizeExceeded() && isMaxMessageSizeExceeded()) {
             rejectMaxMessageSizeExceeded(getMessageIn().getSize());
             return;
         }
 
-        if (isRejectRemoteReceivedHeaderInvalid() && isRemoteReceivedHeaderInvalid().booleanValue()) {
+        if (isRejectRemoteReceivedHeaderInvalid() && isRemoteReceivedHeaderInvalid()) {
             rejectRemoteReceivedHeaderInvalid();
             return;
         }
@@ -380,7 +379,7 @@ public class MessageProcessor extends ProcessorAbstract {
         // In both cases, we log the problem and
         // return. The message disposition is defined by the
         // <undeliverable> attributes.
-        Mail mail = null;
+        Mail mail;
         try {
             mail = createMail(createMessage(), intendedRecipient);
         } catch (ParseException ex) {
@@ -406,7 +405,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method rejectRemoteRecipient.
-     * 
+     *
      * @param recipient
      * @throws MessagingException
      */
@@ -426,7 +425,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method rejectBlacklistedRecipient.
-     * 
+     *
      * @param recipient
      * @throws MessagingException
      */
@@ -445,7 +444,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method rejectRecipientNotFound.
-     * 
+     *
      * @throws MessagingException
      */
     protected void rejectRecipientNotFound() throws MessagingException {
@@ -459,8 +458,8 @@ public class MessageProcessor extends ProcessorAbstract {
         StringBuilder messageBuffer = new StringBuilder("Rejected mail for which a sole intended recipient could not be found.");
         messageBuffer.append(" Recipients: ");
         Address[] allRecipients = getMessageIn().getAllRecipients();
-        for (int i = 0; i < allRecipients.length; i++) {
-            messageBuffer.append(allRecipients[i]);
+        for (Address allRecipient : allRecipients) {
+            messageBuffer.append(allRecipient);
             messageBuffer.append(' ');
         }
         messageBuffer.append('.');
@@ -469,7 +468,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method rejectUserUndefined.
-     * 
+     *
      * @param recipient
      * @throws MessagingException
      */
@@ -489,9 +488,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method rejectMaxMessageSizeExceeded.
-     * 
-     * @param messageSize
-     *            size
+     *
+     * @param messageSize size
      * @throws MessagingException
      */
     protected void rejectMaxMessageSizeExceeded(int messageSize) throws MessagingException {
@@ -510,7 +508,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method rejectRemoteReceivedHeaderInvalid.
-     * 
+     *
      * @throws MessagingException
      */
     protected void rejectRemoteReceivedHeaderInvalid() throws MessagingException {
@@ -532,19 +530,19 @@ public class MessageProcessor extends ProcessorAbstract {
      * Method createMessage answers a new <code>MimeMessage</code> from the
      * fetched message.
      * </p>
-     * 
+     * <p/>
      * <p>
      * If the maximum message size is exceeded, an empty message is created,
      * else the new message is a copy of the received message.
      * </p>
-     * 
+     *
      * @return MimeMessage
      * @throws MessagingException
      */
     protected MimeMessage createMessage() throws MessagingException {
         // Create a new messsage from the received message
-        MimeMessage messageOut = null;
-        if (isMaxMessageSizeExceeded().booleanValue())
+        MimeMessage messageOut;
+        if (isMaxMessageSizeExceeded())
             messageOut = createEmptyMessage();
         else
             messageOut = new MimeMessage(getMessageIn());
@@ -560,7 +558,7 @@ public class MessageProcessor extends ProcessorAbstract {
     /**
      * Method createEmptyMessage answers a new <code>MimeMessage</code> from the
      * fetched message with the message contents removed.
-     * 
+     *
      * @return MimeMessage
      * @throws MessagingException
      */
@@ -586,7 +584,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method createMail creates a new <code>Mail</code>.
-     * 
+     *
      * @param message
      * @param recipient
      * @return Mail
@@ -604,7 +602,7 @@ public class MessageProcessor extends ProcessorAbstract {
         } catch (UnknownHostException e) {
             // check if we should ignore this
             // See: JAMES-795
-            if (isRejectRemoteReceivedHeaderInvalid() == false) {
+            if (!isRejectRemoteReceivedHeaderInvalid()) {
                 // Ensure the mail is created with non-null remote host name and
                 // address,
                 // otherwise the Mailet chain may go splat!
@@ -629,9 +627,8 @@ public class MessageProcessor extends ProcessorAbstract {
             messageBuffer.append(", sender: ");
             messageBuffer.append(mail.getSender());
             messageBuffer.append(", recipients: ");
-            Iterator recipientIterator = mail.getRecipients().iterator();
-            while (recipientIterator.hasNext()) {
-                messageBuffer.append(recipientIterator.next());
+            for (Object o : mail.getRecipients()) {
+                messageBuffer.append(o);
                 messageBuffer.append(' ');
             }
             messageBuffer.append(", remote address: ");
@@ -650,13 +647,13 @@ public class MessageProcessor extends ProcessorAbstract {
      * mail, default values are used. The flags 'defaultSenderLocalPart' and
      * 'defaultSenderDomainPart' are set accordingly.
      * </p>
-     * 
+     *
      * @return MailAddress
      * @throws MessagingException
      */
     protected MailAddress getSender() throws MessagingException {
-        String from = null;
-        InternetAddress internetAddress = null;
+        String from;
+        InternetAddress internetAddress;
 
         try {
             from = ((InternetAddress) getMessageIn().getFrom()[0]).getAddress().trim();
@@ -698,7 +695,7 @@ public class MessageProcessor extends ProcessorAbstract {
      * RFC2822 compliant "Received : from" domain extracted from the message
      * being processed for the remote domain that sent the message.
      * </p>
-     * 
+     * <p/>
      * <p>
      * Often the remote domain is the domain that sent the message to the host
      * of the message store, the second "received" header, which has an index of
@@ -720,7 +717,7 @@ public class MessageProcessor extends ProcessorAbstract {
      * local machine is used as the domain. Finally, if the local domain cannot
      * be determined, the local address 127.0.0.1 is used.
      * </p>
-     * 
+     *
      * @return String An RFC2822 compliant "Received : from" domain name
      */
     protected String computeRemoteDomain() throws MessagingException {
@@ -732,7 +729,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
         // There are RECEIVED headers if the array is not null
         // and its length at is greater than 0
-        boolean hasHeaders = (null == headers ? false : headers.length > 0);
+        boolean hasHeaders = (null != headers && headers.length > 0);
 
         // If there are RECEIVED headers try and extract the domain
         if (hasHeaders) {
@@ -749,7 +746,7 @@ public class MessageProcessor extends ProcessorAbstract {
                 // field is encountered or there are no more tokens
                 while (inFrom && tokenizer.hasMoreTokens()) {
                     String token = tokenizer.nextToken();
-                    inFrom = (getRFC2822RECEIVEDHeaderFields().indexOf(token) == -1);
+                    inFrom = (!getRFC2822RECEIVEDHeaderFields().contains(token));
                     if (inFrom) {
                         domainBuffer.append(token);
                         domainBuffer.append(' ');
@@ -775,7 +772,7 @@ public class MessageProcessor extends ProcessorAbstract {
     /**
      * Method handleBouncing sets the Mail state to ERROR and delete from the
      * message store.
-     * 
+     *
      * @param mail
      */
     protected void handleBouncing(Mail mail) throws MessagingException {
@@ -788,7 +785,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method handleParseException.
-     * 
+     *
      * @param ex
      * @throws MessagingException
      */
@@ -808,7 +805,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method handleUnknownHostException.
-     * 
+     *
      * @param ex
      * @throws MessagingException
      */
@@ -830,7 +827,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method isLocalRecipient.
-     * 
+     *
      * @param recipient
      * @return boolean
      * @throws UsersRepositoryException
@@ -851,7 +848,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method isLocalServer.
-     * 
+     *
      * @param recipient
      * @return boolean
      */
@@ -866,7 +863,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method isBlacklistedRecipient.
-     * 
+     *
      * @param recipient
      * @return boolean
      */
@@ -877,12 +874,12 @@ public class MessageProcessor extends ProcessorAbstract {
     /**
      * Check if this mail has been bouncing by counting the X-fetched-from
      * headers for this task
-     * 
+     *
      * @return boolean
      */
     @SuppressWarnings("unchecked")
     protected boolean isBouncing() throws MessagingException {
-        Enumeration enumeration = getMessageIn().getMatchingHeaderLines(new String[] { "X-fetched-from" });
+        Enumeration enumeration = getMessageIn().getMatchingHeaderLines(new String[]{"X-fetched-from"});
         int count = 0;
         while (enumeration.hasMoreElements()) {
             String header = (String) enumeration.nextElement();
@@ -894,7 +891,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method sendMail.
-     * 
+     *
      * @param mail
      * @throws MessagingException
      */
@@ -912,9 +909,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
         // Log the status
         StringBuilder messageBuffer = new StringBuilder("Spooled message to recipients: ");
-        Iterator recipientIterator = mail.getRecipients().iterator();
-        while (recipientIterator.hasNext()) {
-            messageBuffer.append(recipientIterator.next());
+        for (MailAddress address : mail.getRecipients()) {
+            messageBuffer.append(address);
             messageBuffer.append(' ');
         }
         messageBuffer.append('.');
@@ -923,11 +919,11 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Method getEnvelopeRecipient answers the recipient if found else null.
-     * 
+     * <p/>
      * Try and parse the "for" parameter from a Received header.<br>
      * Maybe not the most accurate parsing in the world but it should do.<br>
      * I opted not to use ORO (maybe I should have).
-     * 
+     *
      * @param msg
      * @return String
      */
@@ -945,7 +941,7 @@ public class MessageProcessor extends ProcessorAbstract {
             }
         } else {
             try {
-                Enumeration enumeration = msg.getMatchingHeaderLines(new String[] { "Received" });
+                Enumeration enumeration = msg.getMatchingHeaderLines(new String[]{"Received"});
                 while (enumeration.hasMoreElements()) {
                     String received = (String) enumeration.nextElement();
 
@@ -953,10 +949,8 @@ public class MessageProcessor extends ProcessorAbstract {
                     int i = 0;
                     int start = 0;
                     int end = 0;
-                    boolean hasBracket = false;
                     boolean usableAddress = false;
                     while (!usableAddress && (i != -1)) {
-                        hasBracket = false;
                         i = received.indexOf("for ", nextSearchAt);
                         if (i > 0) {
                             start = i + 4;
@@ -965,18 +959,17 @@ public class MessageProcessor extends ProcessorAbstract {
                             for (int c = start; c < received.length(); c++) {
                                 char ch = received.charAt(c);
                                 switch (ch) {
-                                case '<':
-                                    hasBracket = true;
-                                    continue;
-                                case '@':
-                                    usableAddress = true;
-                                    continue;
-                                case ' ':
-                                    end = c;
-                                    break;
-                                case ';':
-                                    end = c;
-                                    break;
+                                    case '<':
+                                        continue;
+                                    case '@':
+                                        usableAddress = true;
+                                        continue;
+                                    case ' ':
+                                        end = c;
+                                        break;
+                                    case ';':
+                                        end = c;
+                                        break;
                                 }
                                 if (end > 0)
                                     break;
@@ -1004,7 +997,7 @@ public class MessageProcessor extends ProcessorAbstract {
     /**
      * Method getIntendedRecipient answers the sole intended recipient else
      * null.
-     * 
+     *
      * @return MailAddress
      * @throws MessagingException
      */
@@ -1053,7 +1046,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the messageIn.
-     * 
+     *
      * @return MimeMessage
      */
     protected MimeMessage getMessageIn() {
@@ -1062,9 +1055,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the messageIn.
-     * 
-     * @param messageIn
-     *            The messageIn to set
+     *
+     * @param messageIn The messageIn to set
      */
     protected void setMessageIn(MimeMessage messageIn) {
         fieldMessageIn = messageIn;
@@ -1072,7 +1064,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the localRecipient.
-     * 
+     *
      * @return boolean
      */
     protected boolean isRemoteRecipient() {
@@ -1082,7 +1074,7 @@ public class MessageProcessor extends ProcessorAbstract {
     /**
      * Returns <code>boolean</code> indicating if the message to be delivered
      * was unprocessed in a previous delivery attempt.
-     * 
+     *
      * @return boolean
      */
     protected boolean isPreviouslyUnprocessed() {
@@ -1091,7 +1083,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Log the status of the current message as INFO.
-     * 
+     *
      * @param detailMsg
      */
     protected void logStatusInfo(String detailMsg) throws MessagingException {
@@ -1100,7 +1092,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Log the status the current message as WARN.
-     * 
+     *
      * @param detailMsg
      */
     protected void logStatusWarn(String detailMsg) throws MessagingException {
@@ -1109,7 +1101,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Log the status the current message as ERROR.
-     * 
+     *
      * @param detailMsg
      */
     protected void logStatusError(String detailMsg) throws MessagingException {
@@ -1119,7 +1111,7 @@ public class MessageProcessor extends ProcessorAbstract {
     /**
      * Answer a <code>StringBuilder</code> containing a message reflecting the
      * current status of the message being processed.
-     * 
+     *
      * @param detailMsg
      * @return StringBuilder
      */
@@ -1139,7 +1131,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the userUndefined.
-     * 
+     *
      * @return boolean
      */
     protected boolean isUserUndefined() {
@@ -1148,7 +1140,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Is the DELETED flag set?
-     * 
+     *
      * @throws MessagingException
      */
     protected boolean isMessageDeleted() throws MessagingException {
@@ -1157,7 +1149,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Is the SEEN flag set?
-     * 
+     *
      * @throws MessagingException
      */
     protected boolean isMessageSeen() throws MessagingException {
@@ -1166,7 +1158,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Set the DELETED flag.
-     * 
+     *
      * @throws MessagingException
      */
     protected void setMessageDeleted() throws MessagingException {
@@ -1175,7 +1167,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Set the SEEN flag.
-     * 
+     *
      * @throws MessagingException
      */
     protected void setMessageSeen() throws MessagingException {
@@ -1192,11 +1184,11 @@ public class MessageProcessor extends ProcessorAbstract {
      * Handler for when the folder does not support the SEEN flag. The default
      * behaviour implemented here is to log a warning and set the flag anyway.
      * </p>
-     * 
+     * <p/>
      * <p>
      * Subclasses may choose to override this and implement their own solutions.
      * </p>
-     * 
+     *
      * @throws MessagingException
      */
     protected void handleMarkSeenNotPermanent() throws MessagingException {
@@ -1206,7 +1198,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the Blacklisted.
-     * 
+     *
      * @return boolean
      */
     protected boolean isBlacklistedRecipient() {
@@ -1215,9 +1207,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the localRecipient.
-     * 
-     * @param localRecipient
-     *            The localRecipient to set
+     *
+     * @param localRecipient The localRecipient to set
      */
     protected void setRemoteRecipient(boolean localRecipient) {
         fieldRemoteRecipient = localRecipient;
@@ -1225,9 +1216,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the userUndefined.
-     * 
-     * @param userUndefined
-     *            The userUndefined to set
+     *
+     * @param userUndefined The userUndefined to set
      */
     protected void setUserUndefined(boolean userUndefined) {
         fieldUserUndefined = userUndefined;
@@ -1235,9 +1225,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Adds the mail attributes to a <code>Mail</code>.
-     * 
-     * @param aMail
-     *            a Mail instance
+     *
+     * @param aMail a Mail instance
      */
     protected void addMailAttributes(Mail aMail) throws MessagingException {
         aMail.setAttribute(getAttributePrefix() + "taskName", getFetchTaskName());
@@ -1256,10 +1245,10 @@ public class MessageProcessor extends ProcessorAbstract {
         if (isRecipientNotFound())
             aMail.setAttribute(getAttributePrefix() + "isRecipientNotFound", true);
 
-        if (isMaxMessageSizeExceeded().booleanValue())
+        if (isMaxMessageSizeExceeded())
             aMail.setAttribute(getAttributePrefix() + "isMaxMessageSizeExceeded", Integer.toString(getMessageIn().getSize()));
 
-        if (isRemoteReceivedHeaderInvalid().booleanValue())
+        if (isRemoteReceivedHeaderInvalid())
             aMail.setAttribute(getAttributePrefix() + "isRemoteReceivedHeaderInvalid", true);
 
         if (isDefaultSenderLocalPart())
@@ -1274,12 +1263,11 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Adds any required error messages to a <code>Mail</code>.
-     * 
-     * @param mail
-     *            a Mail instance
+     *
+     * @param mail a Mail instance
      */
     protected void addErrorMessages(Mail mail) throws MessagingException {
-        if (isMaxMessageSizeExceeded().booleanValue()) {
+        if (isMaxMessageSizeExceeded()) {
             StringBuilder msgBuffer = new StringBuilder("550 - Rejected - This message has been rejected as the message size of ");
             msgBuffer.append(getMessageIn().getSize() * 1000 / 1024 / 1000f);
             msgBuffer.append("KB exceeds the maximum permitted size of ");
@@ -1291,9 +1279,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the Blacklisted.
-     * 
-     * @param blacklisted
-     *            The blacklisted to set
+     *
+     * @param blacklisted The blacklisted to set
      */
     protected void setBlacklistedRecipient(boolean blacklisted) {
         fieldBlacklistedRecipient = blacklisted;
@@ -1301,7 +1288,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the recipientNotFound.
-     * 
+     *
      * @return boolean
      */
     protected boolean isRecipientNotFound() {
@@ -1310,9 +1297,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the recipientNotFound.
-     * 
-     * @param recipientNotFound
-     *            The recipientNotFound to set
+     *
+     * @param recipientNotFound The recipientNotFound to set
      */
     protected void setRecipientNotFound(boolean recipientNotFound) {
         fieldRecipientNotFound = recipientNotFound;
@@ -1320,7 +1306,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the remoteDomain, lazily initialised as required.
-     * 
+     *
      * @return String
      */
     protected String getRemoteDomain() throws MessagingException {
@@ -1334,7 +1320,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the remoteDomain.
-     * 
+     *
      * @return String
      */
     private String getRemoteDomainBasic() {
@@ -1343,9 +1329,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the remoteDomain.
-     * 
-     * @param remoteDomain
-     *            The remoteDomain to set
+     *
+     * @param remoteDomain The remoteDomain to set
      */
     protected void setRemoteDomain(String remoteDomain) {
         fieldRemoteDomain = remoteDomain;
@@ -1361,15 +1346,15 @@ public class MessageProcessor extends ProcessorAbstract {
     /**
      * Answer the IP Address of the remote server for the message being
      * processed.
-     * 
+     *
      * @return String
      * @throws MessagingException
      * @throws UnknownHostException
      */
     protected String computeRemoteAddress() throws MessagingException, UnknownHostException {
         String domain = getRemoteDomain();
-        String address = null;
-        String validatedAddress = null;
+        String address;
+        String validatedAddress;
         int ipAddressStart = domain.indexOf('[');
         int ipAddressEnd = -1;
 
@@ -1399,7 +1384,7 @@ public class MessageProcessor extends ProcessorAbstract {
     /**
      * Answer the Canonical host name of the remote server for the message being
      * processed.
-     * 
+     *
      * @return String
      * @throws MessagingException
      * @throws UnknownHostException
@@ -1410,7 +1395,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the remoteAddress, lazily initialised as required.
-     * 
+     *
      * @return String
      */
     protected String getRemoteAddress() throws MessagingException, UnknownHostException {
@@ -1424,7 +1409,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the remoteAddress.
-     * 
+     *
      * @return String
      */
     private String getRemoteAddressBasic() {
@@ -1433,7 +1418,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the remoteHostName, lazily initialised as required.
-     * 
+     *
      * @return String
      */
     protected String getRemoteHostName() throws MessagingException, UnknownHostException {
@@ -1447,7 +1432,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the remoteHostName.
-     * 
+     *
      * @return String
      */
     private String getRemoteHostNameBasic() {
@@ -1456,9 +1441,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the remoteAddress.
-     * 
-     * @param remoteAddress
-     *            The remoteAddress to set
+     *
+     * @param remoteAddress The remoteAddress to set
      */
     protected void setRemoteAddress(String remoteAddress) {
         fieldRemoteAddress = remoteAddress;
@@ -1473,9 +1457,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the remoteHostName.
-     * 
-     * @param remoteHostName
-     *            The remoteHostName to set
+     *
+     * @param remoteHostName The remoteHostName to set
      */
     protected void setRemoteHostName(String remoteHostName) {
         fieldRemoteHostName = remoteHostName;
@@ -1490,7 +1473,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the rFC2822RECEIVEDHeaderFields.
-     * 
+     *
      * @return String
      */
     public static String getRFC2822RECEIVEDHeaderFields() {
@@ -1499,11 +1482,11 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the maxMessageSizeExceeded, lazily initialised as required.
-     * 
+     *
      * @return Boolean
      */
     protected Boolean isMaxMessageSizeExceeded() throws MessagingException {
-        Boolean isMaxMessageSizeExceeded = null;
+        Boolean isMaxMessageSizeExceeded;
         if (null == (isMaxMessageSizeExceeded = isMaxMessageSizeExceededBasic())) {
             updateMaxMessageSizeExceeded();
             return isMaxMessageSizeExceeded();
@@ -1520,18 +1503,18 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Compute the maxMessageSizeExceeded.
-     * 
+     *
      * @return Boolean
      */
     protected Boolean computeMaxMessageSizeExceeded() throws MessagingException {
         if (0 == getMaxMessageSizeLimit())
             return Boolean.FALSE;
-        return Boolean.valueOf(getMessageIn().getSize() > getMaxMessageSizeLimit());
+        return getMessageIn().getSize() > getMaxMessageSizeLimit();
     }
 
     /**
      * Returns the maxMessageSizeExceeded.
-     * 
+     *
      * @return Boolean
      */
     private Boolean isMaxMessageSizeExceededBasic() {
@@ -1540,9 +1523,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the maxMessageSizeExceeded.
-     * 
-     * @param maxMessageSizeExceeded
-     *            The maxMessageSizeExceeded to set
+     *
+     * @param maxMessageSizeExceeded The maxMessageSizeExceeded to set
      */
     protected void setMaxMessageSizeExceeded(Boolean maxMessageSizeExceeded) {
         fieldMaxMessageSizeExceeded = maxMessageSizeExceeded;
@@ -1550,11 +1532,11 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the remoteReceivedHeaderInvalid, lazily initialised.
-     * 
+     *
      * @return Boolean
      */
     protected Boolean isRemoteReceivedHeaderInvalid() throws MessagingException {
-        Boolean isInvalid = null;
+        Boolean isInvalid;
         if (null == (isInvalid = isRemoteReceivedHeaderInvalidBasic())) {
             updateRemoteReceivedHeaderInvalid();
             return isRemoteReceivedHeaderInvalid();
@@ -1564,7 +1546,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Computes the remoteReceivedHeaderInvalid.
-     * 
+     *
      * @return Boolean
      */
     protected Boolean computeRemoteReceivedHeaderInvalid() throws MessagingException {
@@ -1579,7 +1561,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the remoteReceivedHeaderInvalid.
-     * 
+     *
      * @return Boolean
      */
     private Boolean isRemoteReceivedHeaderInvalidBasic() {
@@ -1588,9 +1570,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the remoteReceivedHeaderInvalid.
-     * 
-     * @param remoteReceivedHeaderInvalid
-     *            The remoteReceivedHeaderInvalid to set
+     *
+     * @param remoteReceivedHeaderInvalid The remoteReceivedHeaderInvalid to set
      */
     protected void setRemoteReceivedHeaderInvalid(Boolean remoteReceivedHeaderInvalid) {
         fieldRemoteReceivedHeaderInvalid = remoteReceivedHeaderInvalid;
@@ -1605,7 +1586,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the defaultSenderDomainPart.
-     * 
+     *
      * @return boolean
      */
     protected boolean isDefaultSenderDomainPart() {
@@ -1614,7 +1595,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the defaultSenderLocalPart.
-     * 
+     *
      * @return boolean
      */
     protected boolean isDefaultSenderLocalPart() {
@@ -1623,9 +1604,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the defaultSenderDomainPart.
-     * 
-     * @param defaultSenderDomainPart
-     *            The defaultSenderDomainPart to set
+     *
+     * @param defaultSenderDomainPart The defaultSenderDomainPart to set
      */
     protected void setDefaultSenderDomainPart(boolean defaultSenderDomainPart) {
         fieldDefaultSenderDomainPart = defaultSenderDomainPart;
@@ -1633,9 +1613,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the defaultSenderLocalPart.
-     * 
-     * @param defaultSenderLocalPart
-     *            The defaultSenderLocalPart to set
+     *
+     * @param defaultSenderLocalPart The defaultSenderLocalPart to set
      */
     protected void setDefaultSenderLocalPart(boolean defaultSenderLocalPart) {
         fieldDefaultSenderLocalPart = defaultSenderLocalPart;
@@ -1643,7 +1622,7 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Returns the defaultRemoteAddress.
-     * 
+     *
      * @return boolean
      */
     protected boolean isDefaultRemoteAddress() {
@@ -1652,9 +1631,8 @@ public class MessageProcessor extends ProcessorAbstract {
 
     /**
      * Sets the defaultRemoteAddress.
-     * 
-     * @param defaultRemoteAddress
-     *            The defaultRemoteAddress to set
+     *
+     * @param defaultRemoteAddress The defaultRemoteAddress to set
      */
     protected void setDefaultRemoteAddress(boolean defaultRemoteAddress) {
         fieldDefaultRemoteAddress = defaultRemoteAddress;

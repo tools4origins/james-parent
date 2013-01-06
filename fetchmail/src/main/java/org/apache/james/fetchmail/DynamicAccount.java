@@ -60,12 +60,12 @@ public class DynamicAccount extends Account {
             throws ConfigurationException {
         this(sequenceNumber, parsedConfiguration, null, password, null, ignoreRecipientHeader, customRecipientHeader, session);
 
-        StringBuffer userBuffer = new StringBuffer(userPrefix);
+        StringBuilder userBuffer = new StringBuilder(userPrefix);
         userBuffer.append(userName);
         userBuffer.append(userSuffix);
         setUser(userBuffer.toString());
 
-        StringBuffer recipientBuffer = new StringBuffer(recipientPrefix);
+        StringBuilder recipientBuffer = new StringBuilder(recipientPrefix);
         recipientBuffer.append(userName);
         recipientBuffer.append(recipientSuffix);
         setRecipient(recipientBuffer.toString());
