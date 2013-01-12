@@ -40,6 +40,18 @@
     <url>http://james.apache.org/server/head/</url>
     <inceptionYear>2002</inceptionYear>
 
+    <repositories>
+      <!-- apache.snapshot is needed for james-project SNAPSHOT, see JAMES-1470 -->
+      <repository>
+        <id>apache.snapshots</id>
+        <name>Apache Snapshot Repository</name>
+        <url>http://repository.apache.org/snapshots</url>
+        <releases>
+          <enabled>false</enabled>
+        </releases>
+      </repository>
+    </repositories>
+
     <modules>
         <module>app</module>
         <module>util</module>
