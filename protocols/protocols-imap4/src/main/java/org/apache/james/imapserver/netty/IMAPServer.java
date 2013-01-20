@@ -40,7 +40,6 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
 import org.jboss.netty.handler.codec.frame.Delimiters;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.jboss.netty.handler.execution.ExecutionHandler;
@@ -70,11 +69,9 @@ public class IMAPServer extends AbstractConfigurableAsyncServer implements ImapC
 
     private boolean plainAuthDisallowed;
     
-    
     private int timeout;
     
     private int literalSizeLimit;
-
 
     // Use a big default
     public final static int DEFAULT_MAX_LINE_LENGTH = 65536;
@@ -155,7 +152,8 @@ public class IMAPServer extends AbstractConfigurableAsyncServer implements ImapC
 
                 // Add the text line decoder which limit the max line length,
                 // don't strip the delimiter and use CRLF as delimiter
-                pipeline.addLast(FRAMER, new DelimiterBasedFrameDecoder(maxLineLength, false, Delimiters.lineDelimiter()));
+                // Use a SwitchableDelimiterBasedFrameDecoder, see JAMES-1436
+                pipeline.addLast(FRAMER, new SwitchableDelimiterBasedFrameDecoder(maxLineLength, false, Delimiters.lineDelimiter()));
                
                 Encryption secure = getEncryption();
                 if (secure != null && !secure.isStartTLS()) {

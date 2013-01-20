@@ -39,6 +39,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
@@ -174,10 +175,15 @@ public class ImapRequestFrameDecoder extends FrameDecoder implements NettyConsta
                     reader.consumeLine();
                 }
                 
-                ChannelHandler handler = (ChannelHandler) attachment.remove(FRAMER);
-                if (handler != null) {
-                    channel.getPipeline().addFirst(FRAMER, handler);
-                }
+                // Code portion commented further to JAMES-1436.
+                // TODO Remove if no negative feedback on JAMES-1436.
+//                ChannelHandler handler = (ChannelHandler) attachment.remove(FRAMER);
+//                if (handler != null) {
+//                    channel.getPipeline().addFirst(FRAMER, handler);
+//                }
+                
+                ((SwitchableDelimiterBasedFrameDecoder) channel.getPipeline().get(FRAMER)).enableFraming();
+                
                 attachment.clear();
                 return message;
             } catch (NettyImapRequestLineReader.NotEnoughDataException e) {
@@ -187,9 +193,17 @@ public class ImapRequestFrameDecoder extends FrameDecoder implements NettyConsta
                 // store the needed data size for later usage
                 attachment.put(NEEDED_DATA, neededData);
                 
+                final ChannelPipeline pipeline = channel.getPipeline();
+                final ChannelHandlerContext framerContext = pipeline.getContext(FRAMER);
+                
+                // Code portion commented further to JAMES-1436.
+                // TODO Remove if no negative feedback on JAMES-1436.
+//                ChannelHandler handler = channel.getPipeline().remove(FRAMER);
+//                attachment.put(FRAMER, handler);
 
-                ChannelHandler handler = channel.getPipeline().remove(FRAMER);
-                attachment.put(FRAMER, handler);
+                // SwitchableDelimiterBasedFrameDecoder added further to JAMES-1436.
+                final SwitchableDelimiterBasedFrameDecoder framer = (SwitchableDelimiterBasedFrameDecoder) pipeline.get(FRAMER);
+                framer.disableFraming(framerContext);
                 
                 buffer.resetReaderIndex();
                 return null;
