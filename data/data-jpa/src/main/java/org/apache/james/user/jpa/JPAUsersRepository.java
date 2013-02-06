@@ -52,7 +52,7 @@ public class JPAUsersRepository extends AbstractUsersRepository {
      * @param entityManagerFactory
      *            the entityManager to set
      */
-    @PersistenceUnit
+    @PersistenceUnit(unitName="James")
     public final void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }
