@@ -25,17 +25,18 @@ import org.apache.james.pop3server.core.CoreCmdHandlerLoader;
 @SuppressWarnings("serial")
 public class POP3TestConfiguration extends DefaultConfigurationBuilder {
 
-    private int m_pop3ListenerPort;
+    private int pop3ListenerPort;
 
     public POP3TestConfiguration(int pop3ListenerPort) {
-        m_pop3ListenerPort = pop3ListenerPort;
+        this.pop3ListenerPort = pop3ListenerPort;
     }
 
     public void init() {
         addProperty("[@enabled]", true);
-        addProperty("bind", "127.0.0.1:" + m_pop3ListenerPort);
+        addProperty("bind", "127.0.0.1:" + this.pop3ListenerPort);
         addProperty("helloName", "myMailServer");
         addProperty("connectiontimeout", "360000");
         addProperty("handlerchain.[@coreHandlersPackage]", CoreCmdHandlerLoader.class.getName());
     }
+
 }
