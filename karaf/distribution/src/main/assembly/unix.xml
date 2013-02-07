@@ -30,6 +30,7 @@
                 <exclude>**/demos/**</exclude>
                 <exclude>lib/karaf-version.jar</exclude>
                 <exclude>bin/**</exclude>
+                <exclude>etc/custom.properties</exclude>
                 <exclude>etc/org.apache.karaf.features.cfg</exclude>
                 <exclude>readme.txt</exclude>
                 <exclude>LICENSE</exclude>
@@ -68,20 +69,9 @@
         </fileSet>
     </fileSets>
 
-    <files>
-        <file>
-            <source>${basedir}/target/dependencies/unix/apache-karaf-${karaf.version}/bin/karaf</source>
-            <outputDirectory>/bin/</outputDirectory>
-            <destName>provisionr</destName>
-            <fileMode>0755</fileMode>
-            <lineEnding>unix</lineEnding>
-        </file>
-    </files>
-
     <dependencySets>
         <dependencySet>
             <outputDirectory>/lib</outputDirectory>
-            <outputFileNameMapping>james-version.jar</outputFileNameMapping>
             <fileMode>0644</fileMode>
             <useTransitiveDependencies>false</useTransitiveDependencies>
         </dependencySet>

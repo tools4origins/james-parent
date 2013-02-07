@@ -20,13 +20,13 @@
         <dependency>
             <groupId>org.apache.karaf</groupId>
             <artifactId>apache-karaf</artifactId>
-            <version>${apache-karaf.version}</version>
+            <version>${karaf.version}</version>
             <type>tar.gz</type>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.assemblies.features</groupId>
             <artifactId>standard</artifactId>
-            <version>${apache-karaf.version}</version>
+            <version>${karaf.version}</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
@@ -36,7 +36,7 @@
     <build>
         <resources>
             <resource>
-                <directory>/x1/asf/kar230/manual/src/main/filtered-resources</directory>
+                <directory>src/main/filtered-resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*</include>
@@ -44,6 +44,25 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <useDefaultDelimiters>false</useDefaultDelimiters>
+                    <delimiters>
+                        <delimiter>${*}</delimiter>
+                    </delimiters>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>filter</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -60,9 +79,9 @@
                                 <artifactItem>
                                     <groupId>org.apache.karaf</groupId>
                                     <artifactId>apache-karaf</artifactId>
-                                    <version>${apache-karaf.version}</version>
+                                    <version>${karaf.version}</version>
                                     <type>tar.gz</type>
-                                    <outputDirectory>target/dependencies</outputDirectory>
+                                    <outputDirectory>target/dependencies/unix</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -86,6 +105,41 @@
                             <appendAssemblyId>false</appendAssemblyId>
                             <tarLongFileMode>gnu</tarLongFileMode>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>features-maven-plugin</artifactId>
+                <version>${karaf.version}</version>
+                <executions>
+                    <execution>
+                        <id>add-features-to-repo</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>add-features-to-repo</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>
+                                    mvn:org.apache.karaf.assemblies.features/standard/${karaf.version}/xml/features
+                                </descriptor>
+                                <descriptor>
+                                    mvn:org.apache.karaf.assemblies.features/enterprise/${karaf.version}/xml/features
+                                </descriptor>
+                                <descriptor>
+                                    mvn:org.apache.james.karaf/james-karaf-features/${project.version}/xml/features
+                                </descriptor>
+                            </descriptors>
+                            <features>
+                                <feature>config</feature>
+                                <feature>management</feature>
+                                <feature>webconsole</feature>
+                            </features>
+                            <includeMvnBasedDescriptors>true</includeMvnBasedDescriptors>
+                            <repository>target/features-repo</repository>
+                        </configuration>
+                        <inherited>false</inherited>
                     </execution>
                 </executions>
             </plugin>

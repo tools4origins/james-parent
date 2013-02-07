@@ -155,8 +155,13 @@
                     <skip>false</skip>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
+
     <profiles>
         <profile>
             <id>noTest</id>
