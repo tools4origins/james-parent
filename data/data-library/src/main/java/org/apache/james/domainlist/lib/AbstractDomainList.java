@@ -61,9 +61,7 @@ public abstract class AbstractDomainList implements DomainList, LogEnabled, Conf
         return logger;
     }
 
-    /**
-     * @see org.apache.james.lifecycle.api.Configurable#configure(HierarchicalConfiguration)
-     */
+    @Override
     public void configure(HierarchicalConfiguration config) throws ConfigurationException {
         defaultDomain = config.getString("defaultDomain", "localhost");
 
@@ -71,16 +69,12 @@ public abstract class AbstractDomainList implements DomainList, LogEnabled, Conf
         setAutoDetectIP(config.getBoolean("autodetectIP", true));
     }
 
-    /**
-     * @see org.apache.james.domainlist.api.DomainList#getDefaultDomain()
-     */
+    @Override
     public String getDefaultDomain() throws DomainListException {
         return defaultDomain;
     }
 
-    /**
-     * @see org.apache.james.domainlist.api.DomainList#getDomains()
-     */
+    @Override
     public String[] getDomains() throws DomainListException {
         List<String> domains = getDomainListInternal();
         if (domains != null) {

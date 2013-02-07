@@ -68,8 +68,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.commons-configuration</artifactId>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>

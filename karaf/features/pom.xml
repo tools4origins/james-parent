@@ -47,24 +47,25 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <!-- validate the feature -->
-                <groupId>org.apache.karaf.tooling</groupId>
-                <artifactId>features-maven-plugin</artifactId>
-                <version>2.2.9</version>
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>validate</goal>
-                        </goals>
-                        <configuration>
-                            <file>${project.build.directory}/features.xml</file>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!-- TODO: enable after we make sure all components are OSGi ready -->
+            <!--<plugin>-->
+                <!--&lt;!&ndash; validate the feature &ndash;&gt;-->
+                <!--<groupId>org.apache.karaf.tooling</groupId>-->
+                <!--<artifactId>features-maven-plugin</artifactId>-->
+                <!--<version>2.2.9</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>validate</id>-->
+                        <!--<phase>process-resources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>validate</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<file>${project.build.directory}/features.xml</file>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
 
             <!--
              TODO: karaf-tooling project makes things easier - need to inspect !
