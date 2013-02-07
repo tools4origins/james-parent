@@ -16,6 +16,17 @@
     <name>Apache James :: Karaf :: Intetgration tests</name>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.james</groupId>
+            <artifactId>james-server-dnsservice-dnsjava</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
         <!-- Pax-Exam dependencies -->
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>

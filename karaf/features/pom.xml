@@ -20,6 +20,7 @@
         <mime4j.version>0.7.2</mime4j.version>
         <jutf7.version>1.0.0</jutf7.version>
         <commons-dbcp-bundle.version>1.4_3</commons-dbcp-bundle.version>
+        <commons-configuration-osgi.version>1.9_1</commons-configuration-osgi.version>
     </properties>
 
     <build>
@@ -67,12 +68,6 @@
                 <!--</executions>-->
             <!--</plugin>-->
 
-            <!--
-             TODO: karaf-tooling project makes things easier - need to inspect !
-             deploy the feature.xml file in maven repo, install in karaf with:
-             features:addurl mvn:com.axemblr.provisionr/provisionr-features/0.0.1-SNAPSHOT/xml/features
-             features:install <feature-name>
-             -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>

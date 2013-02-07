@@ -10,9 +10,14 @@
 
     <!-- james 3.0-beta5 features -->
     <feature name="james-server-lifecycle-api" version="${project.version}">
+<<<<<<< HEAD
         <bundle>mvn:org.apache.james/james-server-lifecycle-api/${project.version}</bundle>
         <feature version="${commons-configuration-osgi.version}">commons-configuration</feature>
         <bundle>mvn:org.slf4j/slf4j-api/${slf4j.version}</bundle>
+=======
+        <bundle dependency="true">mvn:org.apache.james/james-server-lifecycle-api/${project.version}</bundle>
+        <feature version="${commons-configuration-osgi.version}">commons-configuration</feature>
+>>>>>>> karafs
     </feature>
 
     <feature name="james-server-filesystem-api" version="${project.version}">
@@ -92,7 +97,13 @@
     </feature>
 
     <feature name="james-server-dnsservice-dnsjava" version="${project.version}">
+<<<<<<< HEAD
         <feature version="${commons-configuration-osgi.version}">commons-configuration</feature>
+=======
+        <feature>commons-configuration</feature>
+        <feature>dnsjava-2.1.1</feature>
+        <feature>james-server-dnsservice-library</feature>
+>>>>>>> karafs
         <bundle dependency="true">mvn:org.apache.james/james-server-dnsservice-api/${project.version}</bundle>
         <bundle dependency="true">mvn:org.apache.james/james-server-dnsservice-dnsjava/${project.version}</bundle>
         <bundle dependency="true">mvn:org.apache.james/apache-mailet-api/${mailet.version}</bundle>
@@ -103,10 +114,17 @@
     </feature>
 
     <feature name="james-server-dnsservice-library" version="${project.version}">
+<<<<<<< HEAD
         <bundle dependency="true">mvn:org.apache.james/james-server-dnsservice-library/${project.version}</bundle>
         <bundle dependency="true">mvn:org.apache.james/james-server-dnsservice-api/${project.version}</bundle>
         <bundle dependency="true">mvn:org.apache.james/apache-mailet-api/${mailet.version}</bundle>
         <bundle dependency="true">mvn:org.slf4j/slf4j-api/${slf4j.version}</bundle>
+=======
+        <feature>dnsjava-2.1.1</feature>
+        <bundle dependency="true">mvn:org.apache.james/james-server-dnsservice-library/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.james/james-server-dnsservice-api/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.james/apache-mailet-api/${mailet.version}</bundle>
+>>>>>>> karafs
         <bundle dependency="true">
             mvn:org.apache.geronimo.javamail/geronimo-javamail_1.4_mail/${geronimo-javamail.version}
         </bundle>
@@ -278,7 +296,6 @@
         <feature version="${commons-configuration-osgi.version}">commons-configuration</feature>
         <bundle>mvn:commons-io/commons-io/${commons-io.version}</bundle>
         <bundle>mvn:org.apache.james.protocols/protocols-netty/${protocols.version}</bundle>
-        <bundle>mvn:org.slf4j/slf4j-api/${slf4j.version}</bundle>
         <bundle>mvn:io.netty/netty/${netty.version}</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-annotation_1.1_spec/${geronimo-annotation-spec.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jutf7/1.0.0_0-SNAPSHOT</bundle>
@@ -325,15 +342,14 @@
         <bundle>mvn:org.apache.geronimo.javamail/geronimo-javamail_1.4_mail/${geronimo-javamail.version}</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-annotation_1.1_spec/${geronimo-annotation-spec.version}</bundle>
         <bundle>mvn:io.netty/netty/${netty.version}</bundle>
-        <bundle>mvn:org.slf4j/slf4j-api/${slf4j.version}</bundle>
     </feature>
 
     <feature name="commons-configuration" version="${commons-configuration-osgi.version}">
         <bundle>
-            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-configuration/${commons-configuration-osgi.version}
+            mvn:org.apache.servicemix.bundles/org.apache.servicemmix.bundles.commons-configuration/${commons-configuration-osgi.version}
         </bundle>
+        <feature>war</feature>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-beanutils/1.8.3_1</bundle>
-        <!--<bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-jxpath/1.2_5</bundle>-->
         <bundle>mvn:commons-jxpath/commons-jxpath/1.3</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlresolver/1.2_5</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/3.2.1_3</bundle>

@@ -17,19 +17,19 @@
   specific language governing permissions and limitations
   under the License.
 -->
-<beans:beans                                                                            
-   xmlns="http://www.springframework.org/schema/osgi"                                   
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xmlns:beans="http://www.springframework.org/schema/beans"             
-   xmlns:osgi="http://www.springframework.org/schema/osgi"                              
-   xsi:schemaLocation="http://www.springframework.org/schema/osgi  
+<beans:beans
+        xmlns="http://www.springframework.org/schema/osgi"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:beans="http://www.springframework.org/schema/beans"
+        xmlns:osgi="http://www.springframework.org/schema/osgi"
+        xsi:schemaLocation="http://www.springframework.org/schema/osgi
        http://www.springframework.org/schema/osgi/spring-osgi-1.2.xsd
        http://www.springframework.org/schema/beans   
-       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">                   
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <osgi:service ref="fetchmail">
-      <osgi:interfaces>
-       <beans:value> org.apache.james.fetchmail.FetchSchedulerMBean</beans:value>
-      </osgi:interfaces>
-    </osgi:service>                            
+        <osgi:interfaces>
+            <beans:value>org.apache.james.fetchmail.FetchSchedulerMBean</beans:value>
+        </osgi:interfaces>
+    </osgi:service>
 </beans:beans>
