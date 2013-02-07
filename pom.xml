@@ -116,6 +116,7 @@
         <hadoop.version>1.1.1</hadoop.version>
         <hbase.version>0.92.0</hbase.version>
         <imap.version>0.4-SNAPSHOT</imap.version>
+        <javax.inject.version>1</javax.inject.version>
         <javax.mail.groupId>org.apache.geronimo.javamail</javax.mail.groupId>
         <javax.mail.artifactId>geronimo-javamail_1.4_mail</javax.mail.artifactId>
         <javax.activation.groupId>org.apache.geronimo.specs</javax.activation.groupId>
@@ -675,6 +676,11 @@
                 </exclusions>
             </dependency>
             <dependency>
+              <groupId>javax.inject</groupId>
+              <artifactId>javax.inject</artifactId>
+              <version>${javax.inject.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
                 <version>${javax-activation.version}</version>
@@ -1225,6 +1231,36 @@
                 </configuration>
             </plugin>
         </plugins>
+        <pluginManagement>
+          <plugins>
+            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.ops4j.pax.exam</groupId>
+                        <artifactId>maven-paxexam-plugin</artifactId>
+                        <versionRange>[1.2.4,)</versionRange>
+                        <goals>
+                          <goal>generate-config</goal>
+                          <goal>generate-depends-file</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore></ignore>
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
     </build>
 
     <profiles>
