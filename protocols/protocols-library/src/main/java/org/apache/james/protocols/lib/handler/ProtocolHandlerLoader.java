@@ -25,8 +25,6 @@ import org.apache.james.protocols.api.handler.ProtocolHandler;
  * Implementations of this interface are responsible for loading instances
  * of {@link ProtocolHandler}. This includes to inject all needed resources and 
  * execute any lifecycle methods
- * 
- *
  */
 public interface ProtocolHandlerLoader {
 
@@ -34,14 +32,12 @@ public interface ProtocolHandlerLoader {
      * Load the {@link ProtocolHandler} and make sure all lifecycle methods are called and all
      * needed services injected.
      * 
-     * 
      * @param name
      * @param config
      * @return handler
      * @throws LoadingException
      */
     public ProtocolHandler load(String name, Configuration config) throws LoadingException;
-    
     
     /**
      * Exception which will get thrown if the loading of a {@link ProtocolHandler} failed 
@@ -61,5 +57,7 @@ public interface ProtocolHandlerLoader {
         public LoadingException(String msg) {
             super(msg);
         }
+
     }
+
 }

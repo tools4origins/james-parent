@@ -19,15 +19,6 @@
 
 package org.apache.james.user.jdbc;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.james.filesystem.api.FileSystem;
-import org.apache.james.user.api.UsersRepositoryException;
-import org.apache.james.user.api.model.User;
-import org.apache.james.user.lib.AbstractJamesUsersRepository;
-import org.apache.james.util.sql.JDBCUtil;
-import org.apache.james.util.sql.SqlResources;
-
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -43,8 +34,17 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.sql.DataSource;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.james.filesystem.api.FileSystem;
+import org.apache.james.user.api.UsersRepositoryException;
+import org.apache.james.user.api.model.User;
+import org.apache.james.user.lib.AbstractJamesUsersRepository;
+import org.apache.james.util.sql.JDBCUtil;
+import org.apache.james.util.sql.SqlResources;
 
 /**
  * An abstract base class for creating UserRepository implementations which use
@@ -219,7 +219,7 @@ public abstract class AbstractJdbcUsersRepository extends AbstractJamesUsersRepo
      * @param m_datasource
      *            the DataSourceSelector
      */
-    @Resource(name = "datasource")
+    @Inject
     public void setDatasource(DataSource m_datasource) {
         this.m_datasource = m_datasource;
     }
@@ -230,7 +230,7 @@ public abstract class AbstractJdbcUsersRepository extends AbstractJamesUsersRepo
      * @param system
      *            the new service
      */
-    @Resource(name = "filesystem")
+    @Inject
     public void setFileSystem(FileSystem system) {
         this.fileSystem = system;
     }

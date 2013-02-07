@@ -20,7 +20,8 @@ package org.apache.james.pop3server.core;
 
 import java.io.IOException;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
@@ -46,9 +47,8 @@ public class PassCmdHandler extends AbstractPassCmdHandler  {
 
     private MailboxManager manager;
 
-
-    @Resource(name = "mailboxmanager")
-    public void setMailboxManager(MailboxManager manager) {
+    @Inject
+    public void setMailboxManager(@Named("mailboxmanager") MailboxManager manager) {
         this.manager = manager;
     }
 

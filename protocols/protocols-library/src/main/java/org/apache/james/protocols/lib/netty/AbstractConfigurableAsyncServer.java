@@ -30,7 +30,8 @@ import java.util.concurrent.Executor;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.net.ssl.KeyManagerFactory;
@@ -42,10 +43,9 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.filesystem.api.FileSystem;
 import org.apache.james.lifecycle.api.Configurable;
 import org.apache.james.lifecycle.api.LogEnabled;
-
 import org.apache.james.protocols.api.Encryption;
-import org.apache.james.protocols.netty.AbstractAsyncServer;
 import org.apache.james.protocols.lib.jmx.ServerMBean;
+import org.apache.james.protocols.netty.AbstractAsyncServer;
 import org.apache.james.util.concurrent.JMXEnabledThreadPoolExecutor;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -116,10 +116,8 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
 
     private MBeanServer mbeanServer;
 
-    
-    
-    @Resource(name = "filesystem")
-    public final void setFileSystem(FileSystem filesystem) {
+    @Inject
+    public final void setFileSystem(@Named("filesystem") FileSystem filesystem) {
         this.fileSystem = filesystem;
     }
 

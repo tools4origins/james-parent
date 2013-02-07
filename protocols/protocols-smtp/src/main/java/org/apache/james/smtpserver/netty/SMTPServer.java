@@ -20,7 +20,7 @@ package org.apache.james.smtpserver.netty;
 
 
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -88,12 +88,10 @@ public class SMTPServer extends AbstractProtocolAsyncServer implements SMTPServe
     
     private SMTPChannelUpstreamHandler coreHandler;
 
-    @Resource(name = "dnsservice")
+    @Inject
     public void setDNSService(DNSService dns) {
         this.dns = dns;
     }
-    
-    
     
     @Override
     protected void preInit() throws Exception {

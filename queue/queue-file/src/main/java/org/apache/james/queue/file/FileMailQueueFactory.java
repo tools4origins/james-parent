@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.james.filesystem.api.FileSystem;
 import org.apache.james.lifecycle.api.LogEnabled;
@@ -32,8 +32,6 @@ import org.slf4j.Logger;
 
 /**
  * {@link MailQueueFactory} implementation which returns {@link FileMailQueue} instances
- * 
- *
  */
 public class FileMailQueueFactory implements MailQueueFactory, LogEnabled{
 
@@ -42,7 +40,7 @@ public class FileMailQueueFactory implements MailQueueFactory, LogEnabled{
     private Logger log;
     private boolean sync = true;
     
-    @Resource(name = "filesystem")
+    @Inject
     public void setFileSystem(FileSystem fs) {
         this.fs = fs;
     }

@@ -19,16 +19,16 @@
 
 package org.apache.james.transport.mailets;
 
+import java.util.Iterator;
+
+import javax.inject.Inject;
+import javax.mail.MessagingException;
+
 import org.apache.james.lifecycle.api.LifecycleUtil;
 import org.apache.james.mailrepository.api.MailRepository;
 import org.apache.james.mailrepository.api.MailRepositoryStore;
-import org.apache.mailet.base.GenericMailet;
 import org.apache.mailet.Mail;
-
-import javax.annotation.Resource;
-import javax.mail.MessagingException;
-
-import java.util.Iterator;
+import org.apache.mailet.base.GenericMailet;
 
 /**
  * Re-spools Mail found in the specified Repository.
@@ -57,7 +57,7 @@ public class FromRepository extends GenericMailet {
 
     private MailRepositoryStore mailStore;
 
-    @Resource(name = "mailrepositorystore")
+    @Inject
     public void setStore(MailRepositoryStore mailStore) {
         this.mailStore = mailStore;
     }

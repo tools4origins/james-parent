@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.dnsservice.api.DNSService;
@@ -32,25 +34,27 @@ import org.apache.james.protocols.lib.netty.AbstractConfigurableAsyncServer;
 import org.apache.james.protocols.lib.netty.AbstractServerFactory;
 import org.slf4j.Logger;
 
-public class SMTPServerFactory extends AbstractServerFactory{
+public class SMTPServerFactory extends AbstractServerFactory {
 
     private DNSService dns;
     private ProtocolHandlerLoader loader;
     private FileSystem fileSystem;
 
+    @Inject
     @Resource(name = "dnsservice")
-    public void setDNSService(DNSService dns) {
+    public void setDNSService(@Named("dnsservice") DNSService dns) {
         this.dns = dns;
     }
     
+    @Inject
     @Resource(name = "protocolhandlerloader")
-    public void setProtocolHandlerLoader(ProtocolHandlerLoader loader) {
+    public void setProtocolHandlerLoader(@Named("protocolhandlerloader") ProtocolHandlerLoader loader) {
         this.loader = loader;
     }
-    
 
+    @Inject
     @Resource(name = "filesystem")
-    public final void setFileSystem(FileSystem filesystem) {
+    public final void setFileSystem(@Named("filesystem") FileSystem filesystem) {
         this.fileSystem = filesystem;
     }
 
@@ -61,6 +65,7 @@ public class SMTPServerFactory extends AbstractServerFactory{
     @SuppressWarnings("unchecked")
     @Override
     protected List<AbstractConfigurableAsyncServer> createServers(Logger log, HierarchicalConfiguration config) throws Exception{
+        
         List<AbstractConfigurableAsyncServer> servers = new ArrayList<AbstractConfigurableAsyncServer>();
         List<HierarchicalConfiguration> configs = config.configurationsAt("smtpserver");
         

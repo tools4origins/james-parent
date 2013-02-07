@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.smtpserver;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.james.domainlist.api.DomainList;
 import org.apache.james.domainlist.api.DomainListException;
@@ -28,7 +28,7 @@ public class AuthRequiredToRelayRcptHook extends AbstractAuthRequiredToRelayRcpt
 
     private DomainList domains;
 
-    @Resource(name = "domainlist")
+    @Inject
     public void setDomainList(DomainList domains) {
         this.domains = domains;
     }

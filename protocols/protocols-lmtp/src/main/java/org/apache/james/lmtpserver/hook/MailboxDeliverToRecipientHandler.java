@@ -22,7 +22,7 @@ package org.apache.james.lmtpserver.hook;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
@@ -50,12 +50,12 @@ public class MailboxDeliverToRecipientHandler implements DeliverToRecipientHook 
     private UsersRepository users;
     private MailboxManager mailboxManager;
 
-    @Resource(name = "usersrepository")
+    @Inject
     public final void setUsersRepository(UsersRepository users) {
         this.users = users;
     }
 
-    @Resource(name = "mailboxmanager")
+    @Inject
     public final void setMailboxManager(MailboxManager mailboxManager) {
         this.mailboxManager = mailboxManager;
     }

@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -156,9 +156,8 @@ public class SieveFileRepository implements SieveRepository {
         setFileSystem(fileSystem);
     }
     
-    @Resource(name = "filesystem")
-    public void setFileSystem(FileSystem fileSystem)
-    {
+    @Inject
+    public void setFileSystem(FileSystem fileSystem) {
         _fileSystem = fileSystem;
     }
 

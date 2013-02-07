@@ -21,7 +21,7 @@ package org.apache.james.transport.matchers;
 import java.util.Collection;
 import java.util.StringTokenizer;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 
 import org.apache.james.dnsservice.api.DNSService;
@@ -98,7 +98,7 @@ public abstract class AbstractNetworkMatcher extends GenericMatcher {
      * 
      * @param dnsService
      */
-    @Resource(name = "dnsservice")
+    @Inject
     public void setDNSService(DNSService dnsService) {
         this.dnsServer = dnsService;
     }

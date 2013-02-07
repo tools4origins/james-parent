@@ -32,15 +32,12 @@ import org.slf4j.Logger;
 
 /**
  * Abstract base class for Factories that need to create {@link AbstractConfigurableAsyncServer}'s via configuration files
- * 
- *
  */
-public abstract class AbstractServerFactory implements Configurable, LogEnabled{
+public abstract class AbstractServerFactory implements Configurable, LogEnabled {
 
     private Logger log;
     private List<AbstractConfigurableAsyncServer> servers;
     private HierarchicalConfiguration config;
-
 
     /**
      * Create {@link AbstractConfigurableAsyncServer} servers, inject dependencies and configure them before return all fo them in a {@link List}
@@ -52,21 +49,15 @@ public abstract class AbstractServerFactory implements Configurable, LogEnabled{
      */
     protected abstract List<AbstractConfigurableAsyncServer> createServers(Logger log, HierarchicalConfiguration config) throws Exception;
     
-    
-    
     @Override
     public void configure(HierarchicalConfiguration config) throws ConfigurationException {
         this.config = config;
     }
 
-
-
     @Override
     public void setLog(Logger log) {
         this.log = log;
     }
-
-
 
     @PostConstruct
     public void init() throws Exception {
@@ -76,7 +67,6 @@ public abstract class AbstractServerFactory implements Configurable, LogEnabled{
         }
     }
     
-    
     /**
      * Return all {@link AbstractConfigurableAsyncServer} instances that was create via this Factory
      * @return
@@ -85,14 +75,11 @@ public abstract class AbstractServerFactory implements Configurable, LogEnabled{
         return servers;
     }
     
-    
     @PreDestroy
     public void destroy() {
         for (AbstractConfigurableAsyncServer server: servers) {
             server.destroy();
         }
     }
-    
  
-    
 }

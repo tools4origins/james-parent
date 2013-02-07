@@ -42,10 +42,10 @@ public class FileSystemBeanFactoryPostProcessor implements BeanFactoryPostProces
 
     private final FileSystemVisitor visitor = new FileSystemVisitor();
 
-    private FileSystem fs;
+    private FileSystem fileSystem;
 
-    public void setFileSystem(FileSystem fs) {
-        this.fs = fs;
+    public void setFileSystem(FileSystem fileSystem) {
+        this.fileSystem = fileSystem;
     }
 
     /**
@@ -65,7 +65,7 @@ public class FileSystemBeanFactoryPostProcessor implements BeanFactoryPostProces
         protected String resolveStringValue(String strVal) throws BeansException {
             if (strVal.startsWith(FS_PREFIX)) {
                 try {
-                    return fs.getFile(strVal.substring(FS_PREFIX.length())).toString();
+                    return fileSystem.getFile(strVal.substring(FS_PREFIX.length())).toString();
                 } catch (FileNotFoundException e) {
                     throw new FatalBeanException("Unable to convert value with filesystem service", e);
                 }

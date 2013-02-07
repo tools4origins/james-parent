@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.smtpserver;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.james.protocols.smtp.SMTPSession;
 import org.apache.james.protocols.smtp.hook.AuthHook;
@@ -49,7 +49,7 @@ public class UsersRepositoryAuthHook implements AuthHook {
      * @param users
      *            the users to set
      */
-    @Resource(name = "usersrepository")
+    @Inject
     public final void setUsers(UsersRepository users) {
         this.users = users;
     }

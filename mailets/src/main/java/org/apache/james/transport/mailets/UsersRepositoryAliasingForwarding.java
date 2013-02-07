@@ -22,13 +22,13 @@ package org.apache.james.transport.mailets;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.james.rrt.api.RecipientRewriteTable;
-import org.apache.james.rrt.api.RecipientRewriteTableException;
 import org.apache.james.rrt.api.RecipientRewriteTable.ErrorMappingException;
+import org.apache.james.rrt.api.RecipientRewriteTableException;
 import org.apache.james.user.api.UsersRepository;
 import org.apache.mailet.MailAddress;
 
@@ -65,7 +65,7 @@ public class UsersRepositoryAliasingForwarding extends AbstractRecipientRewriteT
         return "Local User Aliasing and Forwarding Mailet";
     }
 
-    @Resource(name = "usersrepository")
+    @Inject
     public void setUsersRepository(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }

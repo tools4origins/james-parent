@@ -22,7 +22,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.Flags;
 import javax.mail.MessagingException;
 
@@ -57,31 +58,36 @@ public class James23Importer implements LogEnabled {
     /**
      * James 3.0 users repository.
      */
-    @Resource(name = "usersrepository")
+    @Inject
+    @Named("usersrepository")
     private UsersRepository james30UsersRepository;
 
     /**
      * James 3.0 users repository.
      */
-    @Resource(name = "mailrepositorystore")
+    @Inject
+    @Named("mailrepositorystore")
     private MailRepositoryStore mailRepositoryStore;
 
     /**
      * James 3.0 domain list.
      */
-    @Resource(name = "domainlist")
+    @Inject
+    @Named("domainlist")
     private DomainList domainList;
 
     /**
      * The mailbox manager needed to copy the mails to.
      */
-    @Resource(name = "mailboxmanager")
+    @Inject
+    @Named("mailboxmanager")
     private MailboxManager mailboxManager;
 
     /**
      * James 2.3 user repository defined by configuration.
      */
-    @Resource(name = "usersrepository23")
+    @Inject
+    @Named("usersrepository23")
     private UsersRepository james23UsersRepository;
 
     /**

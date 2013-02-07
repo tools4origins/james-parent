@@ -19,32 +19,12 @@
 
 package org.apache.james.mailrepository.jdbc;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.DefaultConfigurationBuilder;
-import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.james.core.MailImpl;
-import org.apache.james.core.MimeMessageCopyOnWriteProxy;
-import org.apache.james.core.MimeMessageWrapper;
-import org.apache.james.filesystem.api.FileSystem;
-import org.apache.james.mailrepository.lib.AbstractMailRepository;
-import org.apache.james.repository.file.FilePersistentStreamRepository;
-import org.apache.james.util.sql.JDBCUtil;
-import org.apache.james.util.sql.SqlResources;
-import org.apache.mailet.Mail;
-import org.apache.mailet.MailAddress;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.sql.DataSource;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -60,6 +40,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.sql.DataSource;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.DefaultConfigurationBuilder;
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.james.core.MailImpl;
+import org.apache.james.core.MimeMessageCopyOnWriteProxy;
+import org.apache.james.core.MimeMessageWrapper;
+import org.apache.james.filesystem.api.FileSystem;
+import org.apache.james.mailrepository.lib.AbstractMailRepository;
+import org.apache.james.repository.file.FilePersistentStreamRepository;
+import org.apache.james.util.sql.JDBCUtil;
+import org.apache.james.util.sql.SqlResources;
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
 
 /**
  * Implementation of a MailRepository on a database.
@@ -147,13 +148,13 @@ public class JDBCMailRepository extends AbstractMailRepository {
 
     private String destination;
 
-    @Resource(name = "datasource")
+    @Inject
     public void setDatasource(DataSource datasource) {
         this.datasource = datasource;
     }
 
-    @Resource(name = "filesystem")
-    public void setFileSystem(FileSystem fileSystem) {
+    @Inject
+    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
         this.fileSystem = fileSystem;
     }
 

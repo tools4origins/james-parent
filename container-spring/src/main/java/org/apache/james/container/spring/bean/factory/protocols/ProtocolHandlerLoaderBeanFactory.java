@@ -26,6 +26,7 @@ import org.apache.james.protocols.api.handler.ProtocolHandler;
 import org.apache.james.protocols.lib.handler.ProtocolHandlerLoader;
 import org.apache.james.protocols.lib.lifecycle.InitializingLifecycleAwareProtocolHandler;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 public class ProtocolHandlerLoaderBeanFactory extends AbstractBeanFactory implements ProtocolHandlerLoader{
 
@@ -36,7 +37,7 @@ public class ProtocolHandlerLoaderBeanFactory extends AbstractBeanFactory implem
         try {
             // Use the classloader which is used for bean instance stuff
             Class<ProtocolHandler> c = (Class<ProtocolHandler>) getBeanFactory().getBeanClassLoader().loadClass(name);
-            ProtocolHandler handler =  (ProtocolHandler) getBeanFactory().createBean(c);
+            ProtocolHandler handler =  (ProtocolHandler) getBeanFactory().createBean(c, AutowireCapableBeanFactory.AUTOWIRE_AUTODETECT, true);
             if (handler instanceof LifecycleAwareProtocolHandler) {
                 ((InitializingLifecycleAwareProtocolHandler) handler).init(config);
             }
@@ -49,8 +50,6 @@ public class ProtocolHandlerLoaderBeanFactory extends AbstractBeanFactory implem
             throw new LoadingException("Unable to load handler", e);
         }
 
-
     }
-
     
 }

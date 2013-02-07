@@ -19,13 +19,14 @@
 
 package org.apache.james.transport.mailets;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 
 import org.apache.james.mailrepository.api.MailRepository;
 import org.apache.james.mailrepository.api.MailRepositoryStore;
-import org.apache.mailet.base.GenericMailet;
 import org.apache.mailet.Mail;
+import org.apache.mailet.base.GenericMailet;
 
 /**
  * Stores incoming Mail in the specified Repository.<br>
@@ -54,8 +55,8 @@ public class ToRepository extends GenericMailet {
 
     private MailRepositoryStore mailStore;
 
-    @Resource(name = "mailrepositorystore")
-    public void setStore(MailRepositoryStore mailStore) {
+    @Inject
+    public void setStore(@Named("mailrepositorystore") MailRepositoryStore mailStore) {
         this.mailStore = mailStore;
     }
 

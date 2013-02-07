@@ -22,7 +22,8 @@ package org.apache.james.user.file;
 import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
@@ -66,11 +67,11 @@ public class UsersFileRepository extends AbstractJamesUsersRepository {
      */
     private String destination;
 
-    private FileSystem fs;
+    private FileSystem fileSystem;
 
-    @Resource(name = "filesystem")
-    public void setFileSystem(FileSystem fs) {
-        this.fs = fs;
+    @Inject
+    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
+        this.fileSystem = fileSystem;
     }
 
     /**
@@ -96,7 +97,7 @@ public class UsersFileRepository extends AbstractJamesUsersRepository {
 
             objectRepository = new FilePersistentObjectRepository();
             objectRepository.setLog(getLogger());
-            objectRepository.setFileSystem(fs);
+            objectRepository.setFileSystem(fileSystem);
             objectRepository.configure(objectConfiguration);
             objectRepository.init();
             if (getLogger().isDebugEnabled()) {

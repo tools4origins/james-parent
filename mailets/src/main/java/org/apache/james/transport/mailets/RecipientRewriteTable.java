@@ -22,12 +22,12 @@ package org.apache.james.transport.mailets;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.james.rrt.api.RecipientRewriteTableException;
 import org.apache.james.rrt.api.RecipientRewriteTable.ErrorMappingException;
+import org.apache.james.rrt.api.RecipientRewriteTableException;
 import org.apache.mailet.MailAddress;
 
 /**
@@ -43,7 +43,7 @@ public class RecipientRewriteTable extends AbstractRecipientRewriteTableMailet {
      * @param vut
      *            the vutStore to set, possibly null
      */
-    @Resource(name = "recipientrewritetable")
+    @Inject
     public final void setRecipientRewriteTable(org.apache.james.rrt.api.RecipientRewriteTable vut) {
         this.vut = vut;
     }

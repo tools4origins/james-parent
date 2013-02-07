@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Vector;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -44,7 +44,7 @@ public abstract class AbstractRecipientRewriteTableMailet extends GenericMailet 
 
     private DomainList domainList;
 
-    @Resource(name = "domainlist")
+    @Inject
     public void setDomainList(DomainList domainList) {
         this.domainList = domainList;
     }

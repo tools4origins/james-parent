@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.smtpserver;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.james.domainlist.api.DomainList;
 import org.apache.james.domainlist.api.DomainListException;
@@ -28,7 +28,7 @@ public class JamesMailCmdHandler extends MailCmdHandler {
 
     private DomainList domainList;
 
-    @Resource(name = "domainlist")
+    @Inject
     public final void setDomainList(DomainList domainList) {
         this.domainList = domainList;
     }

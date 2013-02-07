@@ -44,6 +44,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.SendFailedException;
@@ -156,6 +158,7 @@ public class RemoteDelivery extends GenericMailet implements Runnable {
     private static Pattern PATTERN = null;
 
     /** The DNSService */
+    @Inject
     private DNSService dnsServer;
 
     /**
@@ -232,7 +235,11 @@ public class RemoteDelivery extends GenericMailet implements Runnable {
     /** The retry count dnsProblemErrors */
     private int dnsProblemRetry = 0;
 
+    @Inject
     private MailQueueFactory queueFactory;
+    public void setMailQueueFactory(@Named("mailqueuefactory") MailQueueFactory queueFactory) {
+        this.queueFactory = queueFactory;
+    }
 
     private MailQueue queue;
 
@@ -242,24 +249,14 @@ public class RemoteDelivery extends GenericMailet implements Runnable {
 
     private boolean usePriority;
     
-    @Resource(name = "mailqueuefactory")
-    public void setMailQueueFactory(MailQueueFactory queueFactory) {
-        this.queueFactory = queueFactory;
-    }
-
-    @Resource(name = "dnsservice")
-    public void setDNSService(DNSService dnsService) {
-        this.dnsServer = dnsService;
-    }
-
     private DomainList domainList;
 
     private boolean startTLS = false;
     
     private boolean isSSLEnable = false;
 
-    @Resource(name = "domainlist")
-    public void setDomainList(DomainList domainList) {
+    @Inject
+    public void setDomainList(@Named("domainlist") DomainList domainList) {
         this.domainList = domainList;
     }
 

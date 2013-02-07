@@ -21,7 +21,7 @@ package org.apache.james.smtpserver.fastfail;
 
 import java.net.UnknownHostException;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.james.dnsservice.api.DNSService;
 
@@ -29,7 +29,7 @@ public class ResolvableEhloHeloHandler extends org.apache.james.protocols.smtp.c
 
     private DNSService dns;
 
-    @Resource(name = "dnsservice")
+    @Inject
     public void setDNSService(DNSService dns) {
         this.dns = dns;
     }

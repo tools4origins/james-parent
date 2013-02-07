@@ -33,7 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import org.apache.commons.configuration.Configuration;
@@ -111,7 +111,7 @@ public class JDBCGreylistHandler extends AbstractGreylistHandler implements Init
      * @param system
      *            The filesystem service
      */
-    @Resource(name = "filesystem")
+    @Inject
     public void setFileSystem(FileSystem system) {
         this.fileSystem = system;
     }
@@ -122,7 +122,7 @@ public class JDBCGreylistHandler extends AbstractGreylistHandler implements Init
      * @param datasource
      *            The datasource
      */
-    @Resource(name = "datasource")
+    @Inject
     public void setDataSource(DataSource datasource) {
         this.datasource = datasource;
     }
@@ -169,7 +169,7 @@ public class JDBCGreylistHandler extends AbstractGreylistHandler implements Init
         setUnseenLifeTime(TimeConverter.getMilliSeconds(unseenLifeTime));
     }
 
-    @Resource(name = "dnsservice")
+    @Inject
     public final void setDNSService(DNSService dnsService) {
         this.dnsService = dnsService;
     }

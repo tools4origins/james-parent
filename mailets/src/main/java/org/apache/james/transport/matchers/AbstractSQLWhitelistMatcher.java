@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.sql.DataSource;
 
@@ -61,12 +61,12 @@ public abstract class AbstractSQLWhitelistMatcher extends GenericMatcher {
     /** Holds value of property sqlParameters. */
     private Map<String, String> sqlParameters = new HashMap<String, String>();
 
-    @Resource(name = "datasource")
+    @Inject
     public void setDataSource(DataSource datasource) {
         this.datasource = datasource;
     }
 
-    @Resource(name = "usersrepository")
+    @Inject
     public void setUsersRepository(UsersRepository localusers) {
         this.localusers = localusers;
     }
@@ -96,7 +96,7 @@ public abstract class AbstractSQLWhitelistMatcher extends GenericMatcher {
 
     private FileSystem fs;
 
-    @Resource(name = "filesystem")
+    @Inject
     public void setFilesystem(FileSystem fs) {
         this.fs = fs;
     }

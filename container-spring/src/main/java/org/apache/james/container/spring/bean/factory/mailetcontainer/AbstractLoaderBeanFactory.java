@@ -19,7 +19,9 @@
 package org.apache.james.container.spring.bean.factory.mailetcontainer;
 
 import org.apache.james.container.spring.bean.factory.AbstractBeanFactory;
+import org.apache.james.filesystem.api.FileSystem;
 import org.apache.mailet.MailetException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 public abstract class AbstractLoaderBeanFactory<T> extends AbstractBeanFactory {
 
@@ -42,7 +44,14 @@ public abstract class AbstractLoaderBeanFactory<T> extends AbstractBeanFactory {
         }
         // Use the classloader which is used for bean instance stuff
         Class<T> c = (Class<T>) getBeanFactory().getBeanClassLoader().loadClass(fullName);
-        return (T) getBeanFactory().createBean(c);
+        T t = (T) getBeanFactory().createBean(c, AutowireCapableBeanFactory.AUTOWIRE_AUTODETECT, true);
+        if (name.equals("LocalDelivery")) {
+            System.out.println(t);
+        }
+        if (name.equals("SieveMailet")) {
+            System.out.println(t);
+        }
+        return t;
 
     }
 

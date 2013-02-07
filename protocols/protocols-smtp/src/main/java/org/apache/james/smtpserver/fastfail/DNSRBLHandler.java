@@ -19,24 +19,24 @@
 
 package org.apache.james.smtpserver.fastfail;
 
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+import javax.inject.Inject;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.dnsservice.api.DNSService;
 import org.apache.james.protocols.lib.lifecycle.InitializingLifecycleAwareProtocolHandler;
 
-import javax.annotation.Resource;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 public class DNSRBLHandler extends org.apache.james.protocols.smtp.core.fastfail.DNSRBLHandler implements InitializingLifecycleAwareProtocolHandler {
-
 
     private DNSService dns;
 
-    @Resource(name = "dnsservice")
+    @Inject
     public void setDNSService(DNSService dns) {
         this.dns = dns;
     }

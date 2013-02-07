@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.domainlist.lib;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 
@@ -34,10 +34,9 @@ public class DomainListManagement extends StandardMBean implements DomainListMan
         super(DomainListManagementMBean.class);
     }
 
-    @Resource(name = "domainlist")
+    @Inject
     public void setDomainList(DomainList domainList) {
         this.domainList = domainList;
-
     }
 
     public void addDomain(String domain) throws Exception {

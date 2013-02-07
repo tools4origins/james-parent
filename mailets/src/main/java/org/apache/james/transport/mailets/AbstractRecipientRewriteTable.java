@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.PatternSyntaxException;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.internet.ParseException;
 
@@ -55,12 +55,12 @@ public abstract class AbstractRecipientRewriteTable extends GenericMailet {
     private DNSService dns;
     private DomainList domainList;
 
-    @Resource(name = "dnsservice")
+    @Inject
     public void setDNSService(DNSService dns) {
         this.dns = dns;
     }
 
-    @Resource(name = "domainlist")
+    @Inject
     public void setDomainList(DomainList domainList) {
         this.domainList = domainList;
     }

@@ -29,7 +29,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -68,11 +69,11 @@ public class FileMailRepository extends AbstractMailRepository {
     private boolean fifo;
     private boolean cacheKeys; // experimental: for use with write mostly
                                // repositories such as spam and error
-    private FileSystem fs;
+    private FileSystem fileSystem;
 
-    @Resource(name = "filesystem")
-    public void setFileSystem(FileSystem fs) {
-        this.fs = fs;
+    @Inject
+    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
+        this.fileSystem = fileSystem;
     }
 
     @Override
@@ -95,13 +96,13 @@ public class FileMailRepository extends AbstractMailRepository {
             reposConfiguration.addProperty("[@destinationURL]", destination);
             objectRepository = new FilePersistentObjectRepository();
             objectRepository.setLog(getLogger());
-            objectRepository.setFileSystem(fs);
+            objectRepository.setFileSystem(fileSystem);
             objectRepository.configure(reposConfiguration);
             objectRepository.init();
 
             streamRepository = new FilePersistentStreamRepository();
             streamRepository.setLog(getLogger());
-            streamRepository.setFileSystem(fs);
+            streamRepository.setFileSystem(fileSystem);
             streamRepository.configure(reposConfiguration);
             streamRepository.init();
 

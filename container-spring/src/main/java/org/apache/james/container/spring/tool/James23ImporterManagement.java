@@ -20,11 +20,11 @@ package org.apache.james.container.spring.tool;
 
 import java.io.IOException;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 
 import org.apache.james.domainlist.api.DomainListException;
-import org.apache.james.mailbox.exception.MailboxException;
 import org.apache.james.mailrepository.api.MailRepositoryStore.MailRepositoryStoreException;
 import org.apache.james.user.api.UsersRepositoryException;
 
@@ -36,7 +36,8 @@ public class James23ImporterManagement implements James23ImporterManagementMBean
     /**
      * 
      */
-    @Resource(name = "james23importer")
+    @Inject
+    @Named("james23importer")
     private James23Importer james23Importer;
 
     /**

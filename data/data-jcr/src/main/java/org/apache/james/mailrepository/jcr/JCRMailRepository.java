@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -77,7 +77,7 @@ public class JCRMailRepository extends AbstractMailRepository implements MailRep
 
     private Logger logger;
 
-    @Resource(name = "jcrRepository")
+    @Inject
     public void setRepository(Repository repository) {
         this.repository = repository;
     }

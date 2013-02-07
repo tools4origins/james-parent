@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.james.dnsservice.api.DNSService;
 import org.apache.james.filesystem.api.FileSystem;
 import org.apache.james.protocols.lib.handler.ProtocolHandlerLoader;
 import org.apache.james.protocols.lib.netty.AbstractConfigurableAsyncServer;
@@ -17,16 +20,18 @@ public class POP3ServerFactory extends AbstractServerFactory{
     private ProtocolHandlerLoader loader;
     private FileSystem fileSystem;
     
+    @Inject
     @Resource(name = "protocolhandlerloader")
-    public void setProtocolHandlerLoader(ProtocolHandlerLoader loader) {
+    public void setProtocolHandlerLoader(@Named("protocolhandlerloader") ProtocolHandlerLoader loader) {
         this.loader = loader;
     }
-    
+
+    @Inject
     @Resource(name = "filesystem")
-    public final void setFileSystem(FileSystem filesystem) {
+    public final void setFileSystem(@Named("filesystem") FileSystem filesystem) {
         this.fileSystem = filesystem;
     }
-    
+
     protected POP3Server createServer() {
        return new POP3Server();
     }

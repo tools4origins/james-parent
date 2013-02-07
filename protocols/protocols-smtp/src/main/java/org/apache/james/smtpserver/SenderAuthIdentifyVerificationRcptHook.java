@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.smtpserver;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.james.domainlist.api.DomainList;
 import org.apache.james.domainlist.api.DomainListException;
@@ -38,12 +38,12 @@ public class SenderAuthIdentifyVerificationRcptHook extends AbstractSenderAuthId
     private DomainList domains;
     private UsersRepository users;
 
-    @Resource(name = "usersrepository")
+    @Inject
     public final void setUsersRepository(UsersRepository users) {
         this.users = users;
     }
 
-    @Resource(name = "domainlist")
+    @Inject
     public void setDomainList(DomainList domains) {
         this.domains = domains;
     }

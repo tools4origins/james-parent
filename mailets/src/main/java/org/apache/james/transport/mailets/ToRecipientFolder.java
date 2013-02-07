@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 
 import org.apache.commons.collections.iterators.IteratorChain;
@@ -51,11 +51,14 @@ import org.apache.mailet.base.GenericMailet;
  * 
  */
 public class ToRecipientFolder extends GenericMailet {
-    @Resource(name = "mailboxmanager")
+
+    @Inject
     private MailboxManager mailboxManager;
-    @Resource(name = "usersrepository")
+    
+    @Inject
     private UsersRepository usersRepository;
-    @Resource(name = "filesystem")
+    
+    @Inject
     private FileSystem fileSystem;
 
     private SieveMailet sieveMailet;  // Mailet that actually stores the message

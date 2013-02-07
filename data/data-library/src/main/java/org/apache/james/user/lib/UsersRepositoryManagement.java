@@ -23,13 +23,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 
+import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
 import org.apache.james.user.api.UsersRepositoryManagementMBean;
-import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.model.JamesUser;
 import org.apache.james.user.api.model.User;
 
@@ -40,7 +40,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
      */
     private UsersRepository localUsers;
 
-    @Resource(name = "usersrepository")
+    @Inject
     public void setUsersRepository(UsersRepository localUsers) {
         this.localUsers = localUsers;
     }

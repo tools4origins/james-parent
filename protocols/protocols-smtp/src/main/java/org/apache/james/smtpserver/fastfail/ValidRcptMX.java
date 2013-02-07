@@ -19,6 +19,13 @@
 
 package org.apache.james.smtpserver.fastfail;
 
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.inject.Inject;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.james.dnsservice.api.DNSService;
@@ -34,12 +41,6 @@ import org.apache.james.protocols.smtp.hook.HookReturnCode;
 import org.apache.james.protocols.smtp.hook.RcptHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.Resource;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * This class can be used to reject email with bogus MX which is send from a
@@ -88,7 +89,7 @@ public class ValidRcptMX implements InitializingLifecycleAwareProtocolHandler, R
      *
      * @param dnsService the dnsService to set
      */
-    @Resource(name = "dnsservice")
+    @Inject
     public final void setDNSService(DNSService dnsService) {
         this.dnsService = dnsService;
     }

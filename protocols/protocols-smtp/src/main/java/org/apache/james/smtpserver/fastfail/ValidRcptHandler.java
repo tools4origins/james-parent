@@ -20,7 +20,7 @@ package org.apache.james.smtpserver.fastfail;
 
 import java.util.Collection;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -64,7 +64,7 @@ public class ValidRcptHandler extends AbstractValidRcptHandler implements Initia
      * @param users
      *            the users to set
      */
-    @Resource(name = "usersrepository")
+    @Inject
     public final void setUsers(UsersRepository users) {
         this.users = users;
     }
@@ -75,12 +75,12 @@ public class ValidRcptHandler extends AbstractValidRcptHandler implements Initia
      * @param vut
      *            the tableStore to set
      */
-    @Resource(name = "recipientrewritetable")
+    @Inject
     public final void setRecipientRewriteTable(RecipientRewriteTable vut) {
         this.vut = vut;
     }
 
-    @Resource(name = "domainlist")
+    @Inject
     public void setDomainList(DomainList domains) {
         this.domains = domains;
     }

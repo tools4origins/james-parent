@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -77,12 +77,12 @@ public class JamesMailSpooler implements Runnable, Configurable, LogEnabled, Mai
 
     private int numDequeueThreads;
 
-    @Resource(name = "mailqueuefactory")
+    @Inject
     public void setMailQueueFactory(MailQueueFactory queueFactory) {
         this.queueFactory = queueFactory;
     }
 
-    @Resource(name = "mailprocessor")
+    @Inject
     public void setMailProcessor(MailProcessor mailProcessor) {
         this.mailProcessor = mailProcessor;
     }

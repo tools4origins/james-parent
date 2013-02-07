@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.internet.ParseException;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -53,7 +53,7 @@ public abstract class AbstractRecipientRewriteTable implements RecipientRewriteT
 
     private DomainList domainList;
 
-    @Resource(name = "domainlist")
+    @Inject
     public void setDomainList(DomainList domainList) {
         this.domainList = domainList;
     }

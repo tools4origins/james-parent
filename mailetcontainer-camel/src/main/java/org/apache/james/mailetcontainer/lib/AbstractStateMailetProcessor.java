@@ -28,6 +28,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Qualifier;
 import javax.mail.MessagingException;
 import javax.management.NotCompliantMBeanException;
 
@@ -71,17 +73,16 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
     private List<MatcherMailetPair> pairs = new ArrayList<MatcherMailetPair>();
     private String state;
 
-    @Resource(name = "matcherloader")
     public void setMatcherLoader(MatcherLoader matcherLoader) {
         this.matcherLoader = matcherLoader;
     }
 
-    @Resource(name = "mailetcontext")
+    @Inject
     public void setMailetContext(MailetContext mailetContext) {
         this.mailetContext = mailetContext;
     }
 
-    @Resource(name = "mailetloader")
+    @Inject
     public void setMailetLoader(MailetLoader mailetLoader) {
         this.mailetLoader = mailetLoader;
     }

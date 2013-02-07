@@ -22,7 +22,7 @@ import static org.jboss.netty.channel.Channels.pipeline;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.net.ssl.SSLEngine;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -32,10 +32,10 @@ import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.encode.ImapEncoder;
 import org.apache.james.protocols.api.Encryption;
+import org.apache.james.protocols.lib.netty.AbstractConfigurableAsyncServer;
 import org.apache.james.protocols.netty.ChannelGroupHandler;
 import org.apache.james.protocols.netty.ConnectionLimitUpstreamHandler;
 import org.apache.james.protocols.netty.ConnectionPerIpLimitUpstreamHandler;
-import org.apache.james.protocols.lib.netty.AbstractConfigurableAsyncServer;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
@@ -84,17 +84,17 @@ public class IMAPServer extends AbstractConfigurableAsyncServer implements ImapC
 
     public final static int DEFAULT_LITERAL_SIZE_LIMIT = 0;
 
-    @Resource(name = "imapDecoder")
+    @Inject
     public void setImapDecoder(ImapDecoder decoder) {
         this.decoder = decoder;
     }
 
-    @Resource(name = "imapEncoder")
+    @Inject
     public void setImapEncoder(ImapEncoder encoder) {
         this.encoder = encoder;
     }
 
-    @Resource(name = "imapProcessor")
+    @Inject
     public void setImapProcessor(ImapProcessor processor) {
         this.processor = processor;
     }

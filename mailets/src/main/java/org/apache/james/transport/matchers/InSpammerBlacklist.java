@@ -23,13 +23,13 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.StringTokenizer;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 
 import org.apache.james.dnsservice.api.DNSService;
-import org.apache.mailet.base.GenericMatcher;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
+import org.apache.mailet.base.GenericMatcher;
 
 /**
  * Checks the network IP address of the sending server against a blacklist of
@@ -56,7 +56,7 @@ public class InSpammerBlacklist extends GenericMatcher {
 
     private DNSService dnsServer;
 
-    @Resource(name = "dnsservice")
+    @Inject
     public void setDNSService(DNSService dnsService) {
         this.dnsServer = dnsService;
     }

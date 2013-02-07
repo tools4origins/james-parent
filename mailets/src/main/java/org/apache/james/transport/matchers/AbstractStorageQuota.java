@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 
 import org.apache.james.mailbox.MailboxManager;
@@ -66,12 +66,12 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
 
     private MailboxManager manager;
 
-    @Resource(name = "mailboxmanager")
+    @Inject
     public void setMailboxManager(MailboxManager manager) {
         this.manager = manager;
     }
 
-    @Resource(name = "usersrepository")
+    @Inject
     public void setUsersRepository(UsersRepository localUsers) {
         this.localUsers = localUsers;
     }

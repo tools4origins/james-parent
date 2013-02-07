@@ -78,7 +78,9 @@ public abstract class AbstractMailQueueFactory implements MailQueueFactory, LogE
      * org.apache.james.queue.api.MailQueueFactory#getQueue(java.lang.String)
      */
     public synchronized final MailQueue getQueue(String name) {
+        
         MailQueue queue = queues.get(name);
+
         if (queue == null) {
             queue = createMailQueue(name);
             if (useJMX) {
@@ -135,4 +137,5 @@ public abstract class AbstractMailQueueFactory implements MailQueueFactory, LogE
     public void setLog(Logger log) {
         this.log = log;
     }
+    
 }

@@ -288,7 +288,7 @@ public class SMTPServerTest {
         chain.put("mailStore", store);
         fileSystem = new MockFileSystem();
 
-        chain.put("filesystem", fileSystem);
+        chain.put("fileSystem", fileSystem);
         chain.put("org.apache.james.smtpserver.protocol.DNSService", dnsService);
         chain.put("recipientrewritetable", new RecipientRewriteTable() {
 

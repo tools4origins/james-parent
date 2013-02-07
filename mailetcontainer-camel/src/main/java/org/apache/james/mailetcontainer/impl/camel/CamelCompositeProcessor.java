@@ -20,7 +20,8 @@
 package org.apache.james.mailetcontainer.impl.camel;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelContextAware;
@@ -46,17 +47,17 @@ public class CamelCompositeProcessor extends AbstractStateCompositeProcessor imp
     private MatcherLoader matcherLoader;
     private MailetLoader mailetLoader;
 
-    @Resource(name = "matcherloader")
-    public void setMatcherLoader(MatcherLoader matcherLoader) {
+    @Inject
+    public void setMatcherLoader(@Named("matcherloader") MatcherLoader matcherLoader) {
         this.matcherLoader = matcherLoader;
     }
 
-    @Resource(name = "mailetloader")
-    public void setMailetLoader(MailetLoader mailetLoader) {
+    @Inject
+    public void setMailetLoader(@Named("mailetloader") MailetLoader mailetLoader) {
         this.mailetLoader = mailetLoader;
     }
 
-    @Resource(name = "mailetcontext")
+    @Inject
     public void setMailetContext(MailetContext mailetContext) {
         this.mailetContext = mailetContext;
     }

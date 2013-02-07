@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -141,12 +141,12 @@ public class JDBCRecipientRewriteTable extends AbstractRecipientRewriteTable {
         }
     }
 
-    @Resource(name = "filesystem")
+    @Inject
     public void setFileSystem(FileSystem fileSystem) {
         this.fileSystem = fileSystem;
     }
 
-    @Resource(name = "datasource")
+    @Inject
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }

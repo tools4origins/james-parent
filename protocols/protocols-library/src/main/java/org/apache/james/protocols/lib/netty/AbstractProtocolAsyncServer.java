@@ -18,7 +18,8 @@
  ****************************************************************/
 package org.apache.james.protocols.lib.netty;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -30,8 +31,6 @@ import org.apache.james.protocols.lib.handler.ProtocolHandlerLoader;
 
 /**
  * Abstract base class which use a {@link ProtocolHandlerLoader} for loading the {@link ProtocolHandler}
- * 
- *
  */
 public abstract class AbstractProtocolAsyncServer extends AbstractConfigurableAsyncServer{
 
@@ -41,8 +40,8 @@ public abstract class AbstractProtocolAsyncServer extends AbstractConfigurableAs
 
     private HierarchicalConfiguration config;
 
-    @Resource(name = "protocolhandlerloader")
-    public void setProtocolHandlerLoader(ProtocolHandlerLoader loader) {
+    @Inject
+    public void setProtocolHandlerLoader(@Named("protocolhandlerloader") ProtocolHandlerLoader loader) {
         this.loader = loader;
     }
     
@@ -87,4 +86,5 @@ public abstract class AbstractProtocolAsyncServer extends AbstractConfigurableAs
      * @return jmx
      */
     protected abstract Class< ? extends HandlersPackage> getJMXHandlersPackage();
+
 }

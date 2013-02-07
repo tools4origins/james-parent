@@ -42,12 +42,12 @@ import org.apache.james.filesystem.api.FileSystem;
  */
 public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadStrategy, ActiveMQSupport {
 
-    private final FileSystem fs;
+    private final FileSystem fileSystem;
     private final BlobTransferPolicy policy;
     private int splitCount;
 
-    public FileSystemBlobStrategy(final BlobTransferPolicy policy, final FileSystem fs, int splitCount) {
-        this.fs = fs;
+    public FileSystemBlobStrategy(final BlobTransferPolicy policy, final FileSystem fileSystem, int splitCount) {
+        this.fileSystem = fileSystem;
         this.policy = policy;
         this.splitCount = splitCount;
     }
@@ -130,7 +130,7 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
      */
     protected File getFile(ActiveMQBlobMessage message) throws JMSException, IOException {
         if (message.getURL() != null) {
-            return fs.getFile(message.getURL().toString());
+            return fileSystem.getFile(message.getURL().toString());
         }
 
         // Make sure it works on windows in all cases and make sure
@@ -141,7 +141,7 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
 
         String queueUrl = policy.getUploadUrl() + "/" + i;
 
-        File queueF = fs.getFile(queueUrl);
+        File queueF = fileSystem.getFile(queueUrl);
 
         synchronized (queueF) {
             // check if we need to create the queue folder
@@ -150,7 +150,7 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
             }
         }
 
-        return fs.getFile(queueUrl + "/" + filename);
+        return fileSystem.getFile(queueUrl + "/" + filename);
 
     }
 }

@@ -88,6 +88,10 @@
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-annotation_1.1_spec</artifactId>
         </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.apache.james</groupId>

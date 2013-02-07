@@ -19,14 +19,6 @@
 
 package org.apache.james.repository.file;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.HierarchicalConfiguration;
-import org.apache.james.filesystem.api.FileSystem;
-import org.apache.james.lifecycle.api.Configurable;
-import org.apache.james.lifecycle.api.LogEnabled;
-import org.apache.james.repository.api.Repository;
-import org.slf4j.Logger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -40,7 +32,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.james.filesystem.api.FileSystem;
+import org.apache.james.lifecycle.api.Configurable;
+import org.apache.james.lifecycle.api.LogEnabled;
+import org.apache.james.repository.api.Repository;
+import org.slf4j.Logger;
 
 /**
  * This an abstract class implementing functionality for creating a file-store.
@@ -71,8 +72,8 @@ public abstract class AbstractFileRepository implements Repository, Configurable
         destination = configuration.getString("[@destinationURL]");
     }
 
-    @Resource(name = "filesystem")
-    public void setFileSystem(FileSystem fileSystem) {
+    @Inject
+    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
         this.fileSystem = fileSystem;
     }
 

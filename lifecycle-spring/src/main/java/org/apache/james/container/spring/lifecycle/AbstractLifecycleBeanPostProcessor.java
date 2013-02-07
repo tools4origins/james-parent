@@ -22,8 +22,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 
@@ -36,11 +36,11 @@ import org.springframework.core.PriorityOrdered;
 public abstract class AbstractLifecycleBeanPostProcessor<T> implements BeanPostProcessor, PriorityOrdered, BeanFactoryAware {
 
     private int order = Ordered.HIGHEST_PRECEDENCE;
-    private ListableBeanFactory factory;
+    private ConfigurableListableBeanFactory factory;
 
     @Override
     public void setBeanFactory(BeanFactory factory) throws BeansException {
-        this.factory = (ListableBeanFactory) factory;
+        this.factory = (ConfigurableListableBeanFactory) factory;
     }
 
     /**

@@ -25,7 +25,7 @@ import java.io.StringReader;
 import java.sql.Connection;
 import java.util.Enumeration;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -177,7 +177,7 @@ public class BayesianAnalysisFeeder extends GenericMailet {
         return this.maxSize;
     }
 
-    @Resource(name = "datasource")
+    @Inject
     public void setDataSource(DataSource datasource) {
         this.datasource = datasource;
     }
@@ -193,7 +193,7 @@ public class BayesianAnalysisFeeder extends GenericMailet {
         this.maxSize = maxSize;
     }
 
-    @Resource(name = "filesystem")
+    @Inject
     public void setFileSystem(FileSystem fs) {
         this.fs = fs;
     }

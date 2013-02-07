@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -58,7 +58,7 @@ public class JCRUsersRepository extends AbstractUsersRepository {
     private SimpleCredentials creds;
     private String workspace;
 
-    @Resource(name = "jcrRepository")
+    @Inject
     public void setRepository(Repository repository) {
         this.repository = repository;
     }

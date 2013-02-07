@@ -19,26 +19,6 @@
 
 package org.apache.james.transport.mailets;
 
-import org.apache.james.user.api.UsersRepository;
-import org.apache.james.user.api.model.JamesUser;
-import org.apache.james.util.sql.JDBCUtil;
-import org.apache.james.util.sql.SqlResources;
-import org.apache.mailet.base.GenericMailet;
-import org.apache.mailet.Mail;
-import org.apache.mailet.MailAddress;
-import org.apache.mailet.base.RFC2822Headers;
-import org.apache.mailet.base.RFC822DateFormat;
-
-import javax.annotation.Resource;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.sql.DataSource;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -56,6 +36,26 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
+import javax.inject.Inject;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.sql.DataSource;
+
+import org.apache.james.user.api.UsersRepository;
+import org.apache.james.user.api.model.JamesUser;
+import org.apache.james.util.sql.JDBCUtil;
+import org.apache.james.util.sql.SqlResources;
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
+import org.apache.mailet.base.GenericMailet;
+import org.apache.mailet.base.RFC2822Headers;
+import org.apache.mailet.base.RFC822DateFormat;
 
 /**
  * <p>
@@ -165,12 +165,12 @@ public class WhiteListManager extends GenericMailet {
     /** Holds value of property sqlParameters. */
     private Map<String, String> sqlParameters = new HashMap<String, String>();
 
-    @Resource(name = "datasource")
+    @Inject
     public void setDataSource(DataSource datasource) {
         this.datasource = datasource;
     }
 
-    @Resource(name = "usersrepository")
+    @Inject
     public void setUsersRepository(UsersRepository localusers) {
         this.localusers = localusers;
     }

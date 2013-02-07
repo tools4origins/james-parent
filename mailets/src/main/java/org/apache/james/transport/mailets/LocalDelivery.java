@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 
 import org.apache.commons.collections.iterators.IteratorChain;
@@ -45,16 +46,38 @@ import org.apache.mailet.base.GenericMailet;
  * James 2.3 behavior.
  */
 public class LocalDelivery extends GenericMailet {
-    @Resource(name = "recipientrewritetable")
+    
+    @Inject
     private org.apache.james.rrt.api.RecipientRewriteTable rrt;
-    @Resource(name = "usersrepository")
+    public void setRrt(@Named("recipientrewritetable") org.apache.james.rrt.api.RecipientRewriteTable rrt) {
+        this.rrt = rrt;
+    }
+
+    @Inject
+   
     private UsersRepository usersRepository;
-    @Resource(name = "mailboxmanager")
+    public void setUsersRepository(@Named("usersrepository") UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+    }
+    
+    @Inject
     private MailboxManager mailboxManager;
-    @Resource(name = "domainlist")
+    public void setMailboxManager(@Named("mailboxmanager") MailboxManager mailboxManager) {
+        this.mailboxManager = mailboxManager;
+    }
+    
+    @Inject
+    
     private DomainList domainList;
-    @Resource(name = "filesystem")
+    public void setDomainList(@Named("domainlist") DomainList domainList) {
+        this.domainList = domainList;
+    }
+    
+    @Inject
     private FileSystem fileSystem;
+    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
+        this.fileSystem = fileSystem;
+    }
 
     private SieveMailet sieveMailet;  // Mailet that actually stores the message
     private RecipientRewriteTable recipientRewriteTable;  // Mailet that applies RecipientRewriteTable

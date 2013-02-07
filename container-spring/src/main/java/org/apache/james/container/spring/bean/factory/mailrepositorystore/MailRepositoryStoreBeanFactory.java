@@ -200,7 +200,7 @@ public class MailRepositoryStoreBeanFactory extends AbstractBeanFactory implemen
             try {
                 // Use the classloader which is used for bean instance stuff
                 Class<MailRepository> clazz = (Class<MailRepository>) getBeanFactory().getBeanClassLoader().loadClass(repClass);
-                reply = (MailRepository) getBeanFactory().autowire(clazz, ConfigurableListableBeanFactory.AUTOWIRE_NO, false);
+                reply = (MailRepository) getBeanFactory().autowire(clazz, ConfigurableListableBeanFactory.AUTOWIRE_AUTODETECT, false);
 
                 if (reply instanceof LogEnabled) {
                     ((LogEnabled) reply).setLog(logger);

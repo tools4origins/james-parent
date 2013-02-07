@@ -22,34 +22,32 @@ package org.apache.james.transport.mailets;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.UnknownHostException;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.ArrayList;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.internet.ParseException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.ParseException;
 
-import org.apache.mailet.base.RFC2822Headers;
-import org.apache.mailet.base.RFC822DateFormat;
 import org.apache.james.core.MailImpl;
 import org.apache.james.core.MimeMessageUtil;
 import org.apache.james.dnsservice.api.DNSService;
-
-import org.apache.mailet.base.GenericMailet;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
+import org.apache.mailet.base.GenericMailet;
+import org.apache.mailet.base.RFC2822Headers;
+import org.apache.mailet.base.RFC822DateFormat;
 
 /**
  * <p>
@@ -250,7 +248,7 @@ public abstract class AbstractRedirect extends GenericMailet {
 
     protected DNSService dns;
 
-    @Resource(name = "dnsservice")
+    @Inject
     public void setDNSService(DNSService dns) {
         this.dns = dns;
     }

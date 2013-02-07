@@ -19,15 +19,6 @@
 
 package org.apache.james.transport.mailets;
 
-import org.apache.james.rrt.lib.RecipientRewriteTableUtil;
-import org.apache.james.util.sql.JDBCUtil;
-import org.apache.mailet.MailAddress;
-import org.apache.mailet.MailetException;
-
-import javax.annotation.Resource;
-import javax.mail.MessagingException;
-import javax.sql.DataSource;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -36,6 +27,15 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.inject.Inject;
+import javax.mail.MessagingException;
+import javax.sql.DataSource;
+
+import org.apache.james.rrt.lib.RecipientRewriteTableUtil;
+import org.apache.james.util.sql.JDBCUtil;
+import org.apache.mailet.MailAddress;
+import org.apache.mailet.MailetException;
 
 /**
  * <p>
@@ -126,7 +126,7 @@ public class JDBCRecipientRewriteTable extends AbstractRecipientRewriteTable {
         }
     };
 
-    @Resource(name = "datasource")
+    @Inject
     public void setDataSourceSelector(DataSource datasource) {
         this.datasource = datasource;
     }

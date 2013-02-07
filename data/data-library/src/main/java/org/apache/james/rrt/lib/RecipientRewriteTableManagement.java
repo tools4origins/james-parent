@@ -22,7 +22,7 @@ package org.apache.james.rrt.lib;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 
@@ -41,7 +41,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
 
     private RecipientRewriteTable vut;
 
-    @Resource(name = "recipientrewritetable")
+    @Inject
     public void setManageableRecipientRewriteTable(RecipientRewriteTable vut) {
         this.vut = vut;
     }

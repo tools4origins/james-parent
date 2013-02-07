@@ -19,6 +19,8 @@
 package org.apache.james.queue.activemq;
 
 import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.activemq.blob.BlobDownloadStrategy;
 import org.apache.activemq.blob.BlobTransferPolicy;
@@ -32,13 +34,14 @@ import org.apache.james.filesystem.api.FileSystem;
  */
 public class FileSystemBlobTransferPolicy extends BlobTransferPolicy {
 
-    private FileSystem fs;
+    private FileSystem fileSystem;
     private int splitCount = 10;
     private FileSystemBlobStrategy strategy;
 
+    @Inject
     @Resource(name = "filesystem")
-    public void setFileSystem(FileSystem fs) {
-        this.fs = fs;
+    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
+        this.fileSystem = fileSystem;
     }
 
     public void setSplitCount(int splitCount) {
@@ -48,7 +51,7 @@ public class FileSystemBlobTransferPolicy extends BlobTransferPolicy {
     @Override
     public BlobTransferPolicy copy() {
         FileSystemBlobTransferPolicy that = new FileSystemBlobTransferPolicy();
-        that.setFileSystem(fs);
+        that.setFileSystem(fileSystem);
         that.setDefaultUploadUrl(getDefaultUploadUrl());
         that.setBrokerUploadUrl(getBrokerUploadUrl());
         that.setUploadUrl(getUploadUrl());
@@ -68,7 +71,7 @@ public class FileSystemBlobTransferPolicy extends BlobTransferPolicy {
 
     private synchronized FileSystemBlobStrategy getStrategy() {
         if (strategy == null) {
-            strategy = new FileSystemBlobStrategy(this, fs, splitCount);
+            strategy = new FileSystemBlobStrategy(this, fileSystem, splitCount);
         }
         return strategy;
     }

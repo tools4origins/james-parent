@@ -86,15 +86,16 @@
               <!-- no alias needed -->
               <value></value>
             </entry>
+<!-- 
             <entry>
               <key>
                 <value>usersrepository23</value>
               </key>
-<!--               no alias needed -->
               <value></value>
             </entry>
+-->
           </map>
-        </property>
+         </property>
     </bean>
 
     <!-- 
@@ -169,7 +170,7 @@
         </amq:prefetchPolicy>
         <property name="blobTransferPolicy" ref="blobTransferPolicy"/>
     </amq:connectionFactory>
-    <bean id="blobTransferPolicy" class="org.apache.james.queue.activemq.FileSystemBlobTransferPolicy">
+    <bean id="blobTransferPolicy" class="org.apache.james.queue.activemq.FileSystemBlobTransferPolicy" autowire="byName">
         <property name="defaultUploadUrl" value="file://var/store/activemq/blob-transfer"/>
     </bean>
     <bean id="jmsConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
@@ -191,21 +192,21 @@
     <!-- 
       Mailet Container Beans.
      -->
-    <bean id="mailprocessor" name="processorRoute" class="org.apache.james.mailetcontainer.impl.camel.CamelCompositeProcessor"/>
+    <bean id="mailprocessor" name="processorRoute" class="org.apache.james.mailetcontainer.impl.camel.CamelCompositeProcessor" autowire="byType" />
 
     <!-- 
       !!! mailetcontext bean must be defined after mailProcessor 
           otherwise LogEnabled injection via LogEnabledBeanPostProcessor will not occur before 
           it is used - Seems like a Spring bug...
     -->
-    <bean id="mailetcontext" class="org.apache.james.mailetcontainer.impl.JamesMailetContext"/>
-    <bean id="mailspooler" class="org.apache.james.mailetcontainer.impl.JamesMailSpooler"/>
+    <bean id="mailetcontext" class="org.apache.james.mailetcontainer.impl.JamesMailetContext" autowire="byType" />
+    <bean id="mailspooler" class="org.apache.james.mailetcontainer.impl.JamesMailSpooler" autowire="byType" />
 
     <!-- 
       Mailet and Matcher "Bean-Factory".
      -->
-    <bean id="mailetloader" class="org.apache.james.container.spring.bean.factory.mailetcontainer.MailetLoaderBeanFactory" />
-    <bean id="matcherloader" class="org.apache.james.container.spring.bean.factory.mailetcontainer.MatcherLoaderBeanFactory" />
+    <bean id="mailetloader" class="org.apache.james.container.spring.bean.factory.mailetcontainer.MailetLoaderBeanFactory" autowire="byType" />
+    <bean id="matcherloader" class="org.apache.james.container.spring.bean.factory.mailetcontainer.MatcherLoaderBeanFactory" autowire="byType" />
 
     <!-- 
       Camel Context
@@ -223,7 +224,7 @@
     <bean class="org.apache.james.container.spring.bean.factorypostprocessor.FileSystemBeanFactoryPostProcessor">
         <property name="fileSystem" ref="filesystem" />
     </bean>
-    <bean id="filesystem" class="org.apache.james.container.spring.filesystem.FileSystemImpl" />
+    <bean id="filesystem" class="org.apache.james.container.spring.filesystem.FileSystemImpl" autowire="byName" />
 
     <!-- 
     ===========================================================================
@@ -231,7 +232,7 @@
     ===========================================================================
     -->
 
-    <bean id="dnsservice" class="org.apache.james.dnsservice.dnsjava.DNSJavaService" />
+    <bean id="dnsservice" class="org.apache.james.dnsservice.dnsjava.DNSJavaService" autowire="byName" />
 
     <!-- 
     ===========================================================================
@@ -239,7 +240,7 @@
     ===========================================================================
     -->
 
-    <bean id="fetchmail" class="org.apache.james.fetchmail.FetchScheduler" />
+    <bean id="fetchmail" class="org.apache.james.fetchmail.FetchScheduler" autowire="byName" />
 
 
     <!-- 
@@ -315,8 +316,9 @@
     <!-- 
       Mailbox Importer
      -->
+<!-- 
     <bean id="james23importer" class="org.apache.james.container.spring.tool.James23Importer"/>
-
+ -->
     <!-- 
     ===========================================================================
        Database DataSource
@@ -404,8 +406,10 @@
           <entry key="org.apache.james:type=component,name=mailboxmanagement" value-ref="mailboxmanagermanagement"/>
           <entry key="org.apache.james:type=component,component=mailetcontainer,name=mailspooler" value-ref="mailspooler"/>
           <entry key="org.apache.james:type=component,name=mailboxcopier" value-ref="mailboxcopiermanagement"/>
+<!-- 
           <entry key="org.apache.james:type=component,name=james23importer" value-ref="james23importermanagement"/>
-          <entry key="org.apache.james:type=container,name=logprovider" value-ref="logprovider"/>
+-->
+           <entry key="org.apache.james:type=container,name=logprovider" value-ref="logprovider"/>
         </map>
       </property>
       <property name="assembler">
@@ -419,7 +423,9 @@
     <bean id="domainlistmanagement" class="org.apache.james.domainlist.lib.DomainListManagement" />
     <bean id="mailboxmanagermanagement" class="org.apache.james.adapter.mailbox.MailboxManagerManagement" />
     <bean id="mailboxcopiermanagement" class="org.apache.james.container.spring.mailbox.MailboxCopierManagement" />
+<!-- 
     <bean id="james23importermanagement" class="org.apache.james.container.spring.tool.James23ImporterManagement" />
+-->
 
 <!-- uncomment the folowing line to enable JETM monitoring -->
 <!--

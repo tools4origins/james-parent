@@ -20,7 +20,6 @@
 package org.apache.james.fetchmail;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -28,7 +27,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Qualifier;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -75,22 +75,22 @@ public class FetchScheduler implements FetchSchedulerMBean, LogEnabled, Configur
 
     private DomainList domainList;
 
-    @Resource(name = "mailqueuefactory")
+    @Inject
     public void setMailQueueFactory(MailQueueFactory queueFactory) {
         this.queueFactory = queueFactory;
     }
 
-    @Resource(name = "dnsservice")
+    @Inject
     public void setDNSService(DNSService dns) {
         this.dns = dns;
     }
 
-    @Resource(name = "usersrepository")
+    @Inject
     public void setUsersRepository(UsersRepository urepos) {
         this.urepos = urepos;
     }
 
-    @Resource(name = "domainlist")
+    @Inject
     public void setDomainList(DomainList domainList) {
         this.domainList = domainList;
     }

@@ -20,7 +20,7 @@ package org.apache.james.transport.mailets;
 
 import java.util.Date;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -51,17 +51,17 @@ public class SieveMailet extends SieveMailboxMailet implements Poster {
     private FileSystem fileSystem;
     private String folder;
 
-    @Resource(name = "usersrepository")
+    @Inject
     public void setUsersRepository(UsersRepository usersRepos) {
         this.usersRepos = usersRepos;
     }
 
-    @Resource(name = "mailboxmanager")
+    @Inject
     public void setMailboxManager(MailboxManager mailboxManager) {
         this.mailboxManager = mailboxManager;
     }
 
-    @Resource(name = "filesystem")
+    @Inject
     public void setFileSystem(FileSystem fileSystem) {
         this.fileSystem = fileSystem;
     }

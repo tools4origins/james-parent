@@ -22,12 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.filesystem.api.FileSystem;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.encode.ImapEncoder;
+import org.apache.james.protocols.lib.handler.ProtocolHandlerLoader;
 import org.apache.james.protocols.lib.netty.AbstractConfigurableAsyncServer;
 import org.apache.james.protocols.lib.netty.AbstractServerFactory;
 import org.slf4j.Logger;
@@ -38,24 +41,24 @@ public class IMAPServerFactory extends AbstractServerFactory{
     private ImapDecoder decoder;
     private ImapEncoder encoder;
     private ImapProcessor processor;
-
     
+    @Inject
     @Resource(name = "filesystem")
-    public final void setFileSystem(FileSystem filesystem) {
+    public final void setFileSystem(@Named("filesystem") FileSystem filesystem) {
         this.fileSystem = filesystem;
     }
-    
-    @Resource(name = "imapDecoder")
+
+    @Inject
     public void setImapDecoder(ImapDecoder decoder) {
         this.decoder = decoder;
     }
 
-    @Resource(name = "imapEncoder")
+    @Inject
     public void setImapEncoder(ImapEncoder encoder) {
         this.encoder = encoder;
     }
 
-    @Resource(name = "imapProcessor")
+    @Inject
     public void setImapProcessor(ImapProcessor processor) {
         this.processor = processor;
     }

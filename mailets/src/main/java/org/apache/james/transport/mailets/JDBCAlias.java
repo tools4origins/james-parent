@@ -19,17 +19,6 @@
 
 package org.apache.james.transport.mailets;
 
-import org.apache.james.util.sql.JDBCUtil;
-import org.apache.mailet.base.GenericMailet;
-import org.apache.mailet.Mail;
-import org.apache.mailet.MailAddress;
-import org.apache.mailet.MailetException;
-
-import javax.annotation.Resource;
-import javax.mail.MessagingException;
-import javax.mail.internet.ParseException;
-import javax.sql.DataSource;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -38,6 +27,17 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
+
+import javax.inject.Inject;
+import javax.mail.MessagingException;
+import javax.mail.internet.ParseException;
+import javax.sql.DataSource;
+
+import org.apache.james.util.sql.JDBCUtil;
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
+import org.apache.mailet.MailetException;
+import org.apache.mailet.base.GenericMailet;
 
 /**
  * Rewrites recipient addresses based on a database table. The connection is
@@ -58,7 +58,7 @@ public class JDBCAlias extends GenericMailet {
     protected DataSource datasource;
     protected String query = null;
 
-    @Resource(name = "datasource")
+    @Inject
     public void setDataSource(DataSource datasource) {
         this.datasource = datasource;
     }

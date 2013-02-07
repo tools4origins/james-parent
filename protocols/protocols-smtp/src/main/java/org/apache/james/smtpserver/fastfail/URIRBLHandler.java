@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -72,7 +72,6 @@ public class URIRBLHandler implements JamesMessageHook, InitializingLifecycleAwa
 
     private boolean getDetail = false;
 
-
     /**
      * Gets the DNS service.
      * 
@@ -88,11 +87,10 @@ public class URIRBLHandler implements JamesMessageHook, InitializingLifecycleAwa
      * @param dnsService
      *            the dnsService to set
      */
-    @Resource(name = "dnsservice")
+    @Inject
     public final void setDNSService(DNSService dnsService) {
         this.dnsService = dnsService;
     }
-
 
     /**
      * Set the UriRBL Servers

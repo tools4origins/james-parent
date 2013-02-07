@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 
 import org.apache.james.dnsservice.api.DNSService;
@@ -56,7 +56,7 @@ public class NetworkIsInWhitelist extends AbstractSQLWhitelistMatcher {
      * 
      * @param dns
      */
-    @Resource(name = "dnsservice")
+    @Inject
     public void setDNSService(DNSService dns) {
         this.dns = dns;
     }

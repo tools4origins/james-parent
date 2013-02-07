@@ -55,7 +55,7 @@ public class ProtocolHandlerChainImpl implements ProtocolHandlerChain{
     public void init() throws Exception {
         List<org.apache.commons.configuration.HierarchicalConfiguration> children = handlerchainConfig.configurationsAt("handler");
 
-        // check if the coreHandlersPackage was specified inte hconfig if
+        // check if the coreHandlersPackage was specified in the config, if
         // not add the default
         if (handlerchainConfig.getString("[@coreHandlersPackage]") == null)
             handlerchainConfig.addProperty("[@coreHandlersPackage]", coreHandlersPackage);

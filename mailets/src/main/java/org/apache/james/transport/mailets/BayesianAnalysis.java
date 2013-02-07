@@ -27,7 +27,7 @@ import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.sql.DataSource;
@@ -204,12 +204,12 @@ public class BayesianAnalysis extends GenericMailet {
         return this.lastCorpusLoadTime;
     }
 
-    @Resource(name = "datasource")
+    @Inject
     public void setDataSource(DataSource datasource) {
         this.datasource = datasource;
     }
 
-    @Resource(name = "filesystem")
+    @Inject
     public void setFileSystem(FileSystem fs) {
         this.fs = fs;
     }

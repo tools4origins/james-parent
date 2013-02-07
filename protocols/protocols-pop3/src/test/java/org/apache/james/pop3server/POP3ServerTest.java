@@ -725,7 +725,7 @@ public class POP3ServerTest {
         protocolHandlerChain.put("mailboxmanager", mailboxManager);
     
         fileSystem = new MockFileSystem();
-        protocolHandlerChain.put("filesystem", fileSystem);
+        protocolHandlerChain.put("fileSystem", fileSystem);
     
     }
 
