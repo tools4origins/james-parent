@@ -143,7 +143,7 @@
         <commons-codec.version>1.7</commons-codec.version>
         <commons-cli.version>1.2</commons-cli.version>
         <commons-pool.version>1.6</commons-pool.version>
-        <commons-configuration-osgi.version>1.8_1</commons-configuration-osgi.version>
+        <commons-configuration.version>1.9</commons-configuration.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <commons-net.version>3.2</commons-net.version>
         <commons-beanutils-core.version>1.8.3</commons-beanutils-core.version>
@@ -768,9 +768,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.apache.servicemix.bundles</groupId>
-                <artifactId>org.apache.servicemix.bundles.commons-configuration</artifactId>
-                <version>${commons-configuration-osgi.version}</version>
+                <groupId>commons-configuration</groupId>
+                <artifactId>commons-configuration</artifactId>
+                <version>${commons-configuration.version}</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>commons-digester</artifactId>
