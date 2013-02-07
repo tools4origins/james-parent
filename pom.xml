@@ -54,6 +54,10 @@
 
     <modules>
         <module>app</module>
+
+        <module>karaf/features</module>
+        <module>karaf/integration</module>
+
         <module>util</module>
         <module>cli</module>
         <module>container-spring</module>
@@ -122,16 +126,17 @@
         <mailet.version>2.5.1-SNAPSHOT</mailet.version>
         <productName>Apache-James Mail Server</productName>
         <protocols.version>1.6.3-SNAPSHOT</protocols.version>
-        <spring.version>3.1.0.RELEASE</spring.version>
+        <spring.version>3.1.2.RELEASE</spring.version>
         <geronimo-jms-spec.version>1.1.1</geronimo-jms-spec.version>
         <h2.version>1.3.170</h2.version>
         <apache-jspf-resolver.version>1.0.0</apache-jspf-resolver.version>
-        <mail.version>1.4.4</mail.version>
+        <javamail.version>1.4.4</javamail.version>
         <javax-activation.version>1.1.1</javax-activation.version>
         <geronimo-activation-spec.version>1.1</geronimo-activation-spec.version>
         <geronimo-javamail.version>1.8.3</geronimo-javamail.version>
         <slf4j.version>1.7.2</slf4j.version>
         <servlet-api.version>2.4</servlet-api.version>
+        <!-- commons -->
         <commons-daemon.version>1.0.10</commons-daemon.version>
         <commons-collections.version>3.2.1</commons-collections.version>
         <commons-lang.version>2.6</commons-lang.version>
@@ -143,6 +148,8 @@
         <commons-net.version>3.2</commons-net.version>
         <commons-beanutils-core.version>1.8.3</commons-beanutils-core.version>
         <commons-io.version>2.4</commons-io.version>
+        <commons-logging.version>1.1.1</commons-logging.version>
+
         <dnsjava.version>2.1.1</dnsjava.version>
         <junit.version>4.11</junit.version>
         <jmock.version>2.6.0</jmock.version>
@@ -154,14 +161,28 @@
         <tika-parsers.version>1.2</tika-parsers.version>
         <xbean-spring.version>3.12</xbean-spring.version>
         <netty.version>3.3.1.Final</netty.version>
-        <geronimo-annotation_1.1_spec.version>1.0.1</geronimo-annotation_1.1_spec.version>
+        <geronimo-annotation-spec.version>1.0.1</geronimo-annotation-spec.version>
         <spring-osgi-extender.version>1.2.1</spring-osgi-extender.version>
         <org.osgi.core.version>5.0.0</org.osgi.core.version>
         <guava.version>13.0</guava.version>
+
+        <!-- karaf dependencies -->
+        <exam.version>2.6.0</exam.version>
+        <url.version>1.4.0</url.version>
+        <felix.version>4.0.3</felix.version>
+        <pax-swissbox-tinybundles.version>1.3.1</pax-swissbox-tinybundles.version>
+        <apache-karaf.version>2.3.0</apache-karaf.version>
+        <karaf.tooling.exam.container.version>2.3.0</karaf.tooling.exam.container.version>
+        <pax-logging-api.version>1.6.4</pax-logging-api.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-api</artifactId>
+                <version>${pax-logging-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.james</groupId>
                 <artifactId>james-server-cli</artifactId>
@@ -645,7 +666,7 @@
             <dependency>
                 <groupId>javax.mail</groupId>
                 <artifactId>mail</artifactId>
-                <version>${mail.version}</version>
+                <version>${javamail.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>javax.activation</groupId>
@@ -1033,7 +1054,7 @@
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-annotation_1.1_spec</artifactId>
-                <version>${geronimo-annotation_1.1_spec.version}</version>
+                <version>${geronimo-annotation-spec.version}</version>
             </dependency>
 
             <dependency>
@@ -1072,6 +1093,78 @@
                 <version>${org.osgi.core.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam</artifactId>
+                <version>${exam.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.karaf.tooling.exam</groupId>
+                <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
+                <version>${karaf.tooling.exam.container.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-junit4</artifactId>
+                <version>${exam.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-link-mvn</artifactId>
+                <version>${exam.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ops4j.pax.url</groupId>
+                <artifactId>pax-url-aether</artifactId>
+                <version>${url.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>${felix.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ops4j.pax.swissbox</groupId>
+                <artifactId>pax-swissbox-tinybundles</artifactId>
+                <version>${pax-swissbox-tinybundles.version}</version>
+            </dependency>
+
+            <!-- Apache Felix Karaf integration -->
+            <dependency>
+                <groupId>org.apache.karaf</groupId>
+                <artifactId>apache-karaf</artifactId>
+                <version>${apache-karaf.version}</version>
+                <scope>test</scope>
+                <type>tar.gz</type>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.karaf</groupId>
+                        <artifactId>org.apache.karaf.client</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.osgi</groupId>
+                        <artifactId>org.eclipse.osgi</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.james.karaf</groupId>
+                <artifactId>james-karaf-features</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+            </dependency>
+
             <!-- HBase/Hadoop dependencies -->
             <dependency>
                 <groupId>org.apache.hbase</groupId>
@@ -1096,6 +1189,7 @@
                 <scope>test</scope>
                 <version>${hadoop.version}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 
