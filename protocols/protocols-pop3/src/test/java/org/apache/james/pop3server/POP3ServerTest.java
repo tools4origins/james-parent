@@ -714,7 +714,6 @@ public class POP3ServerTest {
                 try {
                     return usersRepository.test(userid, passwd.toString());
                 } catch (UsersRepositoryException e) {
-    
                     e.printStackTrace();
                     return false;
                 }
