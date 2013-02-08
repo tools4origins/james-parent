@@ -1283,7 +1283,7 @@ All rights reserved.
                 <resource name='jackrabbit-spi-2.2.5.jar'/>
                 <resource name='jackrabbit-spi-commons-2.2.5.jar'/>
                 <resource name='james-server-cli-3.0-beta3.jar'/>
-                <resource name='james-server-container-spring-3.0-beta3.jar'/>
+                <resource name='james-server-spring-3.0-beta3.jar'/>
                 <resource name='james-server-core-3.0-beta3.jar'/>
                 <resource name='james-server-data-api-3.0-beta3.jar'/>
                 <resource name='james-server-data-library-3.0-beta3.jar'/>
@@ -1299,7 +1299,6 @@ All rights reserved.
                 <resource name='james-server-jpa-3.0-beta3.jar'/>
                 <resource name='james-server-ldap-3.0-beta3.jar'/>
                 <resource name='james-server-lifecycle-api-3.0-beta3.jar'/>
-                <resource name='james-server-lifecycle-spring-3.0-beta3.jar'/>
                 <resource name='james-server-lmtpserver-3.0-beta3.jar'/>
                 <resource name='james-server-mailbox-adapter-3.0-beta3.jar'/>
                 <resource name='james-server-mailetcontainer-api-3.0-beta3.jar'/>

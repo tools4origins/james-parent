@@ -29,16 +29,12 @@
     </parent>
 
     <groupId>org.apache.james</groupId>
-    <artifactId>james-server-container-spring</artifactId>
+    <artifactId>james-server-spring</artifactId>
     <packaging>bundle</packaging>
 
     <name>Apache James :: Server :: Container Spring</name>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.james</groupId>
-            <artifactId>james-server-lifecycle-spring</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.apache.james</groupId>
             <artifactId>james-server-lifecycle-api</artifactId>
