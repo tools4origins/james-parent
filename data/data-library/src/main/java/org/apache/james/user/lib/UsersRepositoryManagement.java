@@ -16,14 +16,15 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.user.lib;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 
@@ -38,11 +39,12 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     /**
      * The administered UsersRepository
      */
-    private UsersRepository localUsers;
+    private UsersRepository usersRepository;
 
     @Inject
-    public void setUsersRepository(UsersRepository localUsers) {
-        this.localUsers = localUsers;
+    @Resource(name = "usersrepository")
+    public void setUsersRepository(@Named("usersrepository") UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
     }
 
     public UsersRepositoryManagement() throws NotCompliantMBeanException {
@@ -50,7 +52,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     }
 
     private JamesUser getJamesUser(String userName) throws UsersRepositoryException {
-        User baseuser = localUsers.getUserByName(userName);
+        User baseuser = usersRepository.getUserByName(userName);
         if (baseuser == null)
             throw new IllegalArgumentException("user not found: " + userName);
         if (!(baseuser instanceof JamesUser))
@@ -65,7 +67,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
      */
     public void addUser(String userName, String password) throws Exception {
         try {
-            localUsers.addUser(userName, password);
+            usersRepository.addUser(userName, password);
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
         }
@@ -77,7 +79,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
      */
     public void deleteUser(String userName) throws Exception {
         try {
-            localUsers.removeUser(userName);
+            usersRepository.removeUser(userName);
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
         }
@@ -90,7 +92,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
      */
     public boolean verifyExists(String userName) throws Exception {
         try {
-            return localUsers.contains(userName);
+            return usersRepository.contains(userName);
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
         }
@@ -102,7 +104,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
      */
     public long countUsers() throws Exception {
         try {
-            return localUsers.countUsers();
+            return usersRepository.countUsers();
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
         }
@@ -115,7 +117,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     public String[] listAllUsers() throws Exception {
         List<String> userNames = new ArrayList<String>();
         try {
-            for (Iterator<String> it = localUsers.list(); it.hasNext();) {
+            for (Iterator<String> it = usersRepository.list(); it.hasNext();) {
                 userNames.add(it.next());
             }
         } catch (UsersRepositoryException e) {
@@ -132,13 +134,13 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
      */
     public void setPassword(String userName, String password) throws Exception {
         try {
-            User user = localUsers.getUserByName(userName);
+            User user = usersRepository.getUserByName(userName);
             if (user == null)
                 throw new UsersRepositoryException("user not found: " + userName);
             if (user.setPassword(password) == false) {
                 throw new UsersRepositoryException("Unable to update password for user " + user);
             }
-            localUsers.updateUser(user);
+            usersRepository.updateUser(user);
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
 
@@ -153,16 +155,14 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     public void unsetAlias(String userName) throws Exception {
         try {
             JamesUser user = getJamesUser(userName);
-            if (!user.getAliasing())
+            if (!user.getAliasing()) {
                 throw new UsersRepositoryException("User " + user + " is no alias");
-
+            }
             user.setAliasing(false);
-            localUsers.updateUser(user);
+            usersRepository.updateUser(user);
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
-
         }
-
     }
 
     /**
@@ -172,14 +172,14 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     public String getAlias(String userName) throws Exception {
         try {
             JamesUser user = getJamesUser(userName);
-            if (!user.getAliasing())
+            if (!user.getAliasing()) {
                 return null;
+            }
             return user.getAlias();
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
 
         }
-
     }
 
     /**
@@ -190,16 +190,14 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     public void unsetForwardAddress(String userName) throws Exception {
         try {
             JamesUser user = getJamesUser(userName);
-            if (!user.getForwarding())
+            if (!user.getForwarding()) {
                 throw new UsersRepositoryException("User " + user + " is no forward");
-
+            }
             user.setForwarding(false);
-            localUsers.updateUser(user);
+            usersRepository.updateUser(user);
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
-
         }
-
     }
 
     /**
@@ -210,14 +208,13 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     public String getForwardAddress(String userName) throws Exception {
         try {
             JamesUser user = getJamesUser(userName);
-            if (!user.getForwarding())
+            if (!user.getForwarding()) {
                 return null;
+            }
             return user.getForwardingDestination().toString();
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
-
         }
-
     }
 
     /**
@@ -225,10 +222,9 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
      */
     public boolean getVirtualHostingEnabled() throws Exception {
         try {
-            return localUsers.supportVirtualHosting();
+            return usersRepository.supportVirtualHosting();
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
-
         }
     }
 

@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.rrt.lib;
 
 import java.util.Collection;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 
@@ -35,15 +36,16 @@ import org.apache.james.rrt.api.RecipientRewriteTableManagementMBean;
  */
 public class RecipientRewriteTableManagement extends StandardMBean implements RecipientRewriteTableManagementMBean {
 
+    private RecipientRewriteTable rrt;
+
     protected RecipientRewriteTableManagement() throws NotCompliantMBeanException {
         super(RecipientRewriteTableManagementMBean.class);
     }
 
-    private RecipientRewriteTable vut;
-
     @Inject
-    public void setManageableRecipientRewriteTable(RecipientRewriteTable vut) {
-        this.vut = vut;
+    @Resource(name = "recipientrewritetable")
+    public void setManageableRecipientRewriteTable(@Named("recipientrewritetable") RecipientRewriteTable rrt) {
+        this.rrt = rrt;
     }
 
     /**
@@ -53,7 +55,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
      */
     public void addRegexMapping(String user, String domain, String regex) throws Exception {
         try {
-            vut.addRegexMapping(user, domain, regex);
+            rrt.addRegexMapping(user, domain, regex);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -66,8 +68,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
      */
     public void removeRegexMapping(String user, String domain, String regex) throws Exception {
         try {
-
-            vut.removeRegexMapping(user, domain, regex);
+            rrt.removeRegexMapping(user, domain, regex);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -80,8 +81,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
      */
     public void addAddressMapping(String user, String domain, String address) throws Exception {
         try {
-
-            vut.addAddressMapping(user, domain, address);
+            rrt.addAddressMapping(user, domain, address);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -94,8 +94,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
      */
     public void removeAddressMapping(String user, String domain, String address) throws Exception {
         try {
-
-            vut.removeAddressMapping(user, domain, address);
+            rrt.removeAddressMapping(user, domain, address);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -108,8 +107,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
      */
     public void addErrorMapping(String user, String domain, String error) throws Exception {
         try {
-
-            vut.addErrorMapping(user, domain, error);
+            rrt.addErrorMapping(user, domain, error);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -122,8 +120,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
      */
     public void removeErrorMapping(String user, String domain, String error) throws Exception {
         try {
-
-            vut.removeErrorMapping(user, domain, error);
+            rrt.removeErrorMapping(user, domain, error);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -131,7 +128,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
 
     public void addDomainMapping(String domain, String targetDomain) throws Exception {
         try {
-            vut.addAliasDomainMapping(domain, targetDomain);
+            rrt.addAliasDomainMapping(domain, targetDomain);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -139,7 +136,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
 
     public void removeDomainMapping(String domain, String targetDomain) throws Exception {
         try {
-            vut.removeAliasDomainMapping(domain, targetDomain);
+            rrt.removeAliasDomainMapping(domain, targetDomain);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -151,8 +148,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
      */
     public Collection<String> getUserDomainMappings(String user, String domain) throws Exception {
         try {
-
-            return vut.getUserDomainMappings(user, domain);
+            return rrt.getUserDomainMappings(user, domain);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -165,8 +161,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
      */
     public void addMapping(String user, String domain, String mapping) throws Exception {
         try {
-
-            vut.addMapping(user, domain, mapping);
+            rrt.addMapping(user, domain, mapping);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -179,8 +174,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
      */
     public void removeMapping(String user, String domain, String mapping) throws Exception {
         try {
-
-            vut.removeMapping(user, domain, mapping);
+            rrt.removeMapping(user, domain, mapping);
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }
@@ -192,8 +186,7 @@ public class RecipientRewriteTableManagement extends StandardMBean implements Re
      */
     public Map<String, Collection<String>> getAllMappings() throws Exception {
         try {
-
-            return vut.getAllMappings();
+            return rrt.getAllMappings();
         } catch (RecipientRewriteTableException e) {
             throw new Exception(e.getMessage());
         }

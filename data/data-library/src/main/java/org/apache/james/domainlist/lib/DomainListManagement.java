@@ -18,7 +18,9 @@
  ****************************************************************/
 package org.apache.james.domainlist.lib;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 
@@ -35,7 +37,8 @@ public class DomainListManagement extends StandardMBean implements DomainListMan
     }
 
     @Inject
-    public void setDomainList(DomainList domainList) {
+    @Resource(name = "domainlist")
+    public void setDomainList(@Named("domainlist") DomainList domainList) {
         this.domainList = domainList;
     }
 
@@ -49,7 +52,6 @@ public class DomainListManagement extends StandardMBean implements DomainListMan
 
     public boolean containsDomain(String domain) throws Exception {
         try {
-
             return domainList.containsDomain(domain);
         } catch (DomainListException e) {
             throw new Exception(e.getMessage());
@@ -58,7 +60,6 @@ public class DomainListManagement extends StandardMBean implements DomainListMan
 
     public String[] getDomains() throws Exception {
         try {
-
             return domainList.getDomains();
         } catch (DomainListException e) {
             throw new Exception(e.getMessage());
@@ -67,7 +68,6 @@ public class DomainListManagement extends StandardMBean implements DomainListMan
 
     public void removeDomain(String domain) throws Exception {
         try {
-
             domainList.removeDomain(domain);
         } catch (DomainListException e) {
             throw new Exception(e.getMessage());
@@ -76,11 +76,11 @@ public class DomainListManagement extends StandardMBean implements DomainListMan
 
     public String getDefaultDomain() throws Exception {
         try {
-
             return domainList.getDefaultDomain();
         } catch (DomainListException e) {
             throw new Exception(e.getMessage());
         }
+
     }
 
 }
