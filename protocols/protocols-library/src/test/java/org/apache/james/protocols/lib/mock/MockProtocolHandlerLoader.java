@@ -1,5 +1,6 @@
 package org.apache.james.protocols.lib.mock;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -9,7 +10,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.james.protocols.api.handler.ProtocolHandler;
@@ -92,15 +94,22 @@ public class MockProtocolHandlerLoader implements ProtocolHandlerLoader{
     private void injectResources(Object resource) {
         final Method[] methods = resource.getClass().getMethods();
         for (Method method : methods) {
-            final Resource resourceAnnotation = method.getAnnotation(Resource.class);
-            if (resourceAnnotation != null) {
-                final String name = resourceAnnotation.name();
+            final Inject injectAnnotation = method.getAnnotation(Inject.class);
+            if (injectAnnotation != null) {
+                String name = null;
+                Annotation[][] paramAnnotations = method.getParameterAnnotations();
+                if (paramAnnotations.length == 1) {
+                    if (paramAnnotations[0].length ==1) {
+                        if (paramAnnotations[0][0].annotationType().equals(Named.class)) {
+                            name = ((Named) paramAnnotations[0][0]).value();
+                        }
+                    }
+                }
                 if (name == null) {
-                    throw new UnsupportedOperationException("Resource annotation without name specified is not supported by this implementation");
+                    throw new UnsupportedOperationException("@Inject annotation without @Named specified is not supported by this implementation");
                 } else {
                     // Name indicates a service
                     final Object service = getObjectForName(name);
-
                     if (service == null) {
                         throw new RuntimeException("Injection failed for object " + resource + " on method " + method + " with resource name " + name + ", because no mapping was found");
                     } else {
