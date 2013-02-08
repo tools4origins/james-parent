@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>org.apache.james.karaf</groupId>
-    <artifactId>distribution</artifactId>
+    <artifactId>james-karaf-distribution</artifactId>
     <packaging>pom</packaging>
 
     <name>Apache James :: Karaf :: James Server</name>

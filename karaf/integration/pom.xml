@@ -13,7 +13,7 @@
 
     <groupId>org.apache.james.karaf</groupId>
     <artifactId>james-karaf-integration</artifactId>
-    <name>Apache James :: Karaf :: Intetgration tests</name>
+    <name>Apache James :: Karaf :: Integration tests</name>
 
     <dependencies>
         <dependency>
