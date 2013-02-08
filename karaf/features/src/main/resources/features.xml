@@ -26,16 +26,6 @@
         <bundle>mvn:org.apache.geronimo.javamail/geronimo-javamail_1.4_mail/${geronimo-javamail.version}</bundle>
     </feature>
 
-    <feature name="james-server-lifecycle-spring" version="${project.version}">
-        <feature version="${project.version}">james-server-lifecycle-api</feature>
-        <feature version="${project.version}">james-server-filesystem-api</feature>
-        <feature version="${project.version}">james-server-data-api</feature>
-        <feature version="${spring.version}">spring31</feature>
-        <bundle>mvn:org.apache.geronimo.specs/geronimo-annotation_1.1_spec/${geronimo-annotation-spec.version}
-        </bundle>
-        <bundle>mvn:org.apache.geronimo.specs/geronimo-jpa_2.0_spec/${geronimo-jpa-spec.version}</bundle>
-    </feature>
-
     <feature name="james-server-mailetcontainer-api" version="${project.version}">
         <bundle>mvn:org.apache.james/james-server-mailetcontainer-api/${project.version}</bundle>
         <bundle>mvn:org.apache.james/apache-mailet-api/${mailet.version}</bundle>
@@ -68,9 +58,8 @@
         <bundle>mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/${geronimo-activation-spec.version}</bundle>
     </feature>
 
-    <feature name="james-server-container-spring" version="${project.version}">
-        <bundle>mvn:org.apache.james/james-server-container-spring/${project.version}</bundle>
-        <feature version="${project.version}">james-server-lifecycle-spring</feature>
+    <feature name="james-server-spring" version="${project.version}">
+        <bundle>mvn:org.apache.james/james-server-spring/${project.version}</bundle>
         <feature version="${project.version}">james-server-lifecycle-api</feature>
         <feature version="${project.version}">james-server-filesystem-api</feature>
         <feature version="${project.version}">james-server-mailetcontainer-api</feature>
