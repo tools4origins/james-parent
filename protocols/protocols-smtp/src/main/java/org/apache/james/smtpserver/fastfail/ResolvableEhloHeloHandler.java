@@ -30,7 +30,8 @@ public class ResolvableEhloHeloHandler extends org.apache.james.protocols.smtp.c
     private DNSService dns;
 
     @Inject
-    public void setDNSService(@Named("dnsservice") DNSService dns) {
+    @Named("dnsservice")
+    public void setDNSService(DNSService dns) {
         this.dns = dns;
     }
 

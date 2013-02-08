@@ -42,22 +42,26 @@ public class IMAPServerFactory extends AbstractServerFactory {
     private ImapProcessor processor;
     
     @Inject
-    public final void setFileSystem(@Named("filesystem") FileSystem filesystem) {
+    @Named("filesystem")
+    public final void setFileSystem(FileSystem filesystem) {
         this.fileSystem = filesystem;
     }
 
     @Inject
-    public void setImapProcessor(@Named("imapProcessor") ImapProcessor processor) {
+    @Named("imapProcessor")
+    public void setImapProcessor(ImapProcessor processor) {
         this.processor = processor;
     }
     
     @Inject
-    public void setImapDecoder(@Named("imapDecoder") ImapDecoder decoder) {
+    @Named("imapDecoder")
+    public void setImapDecoder(ImapDecoder decoder) {
         this.decoder = decoder;
     }
 
     @Inject
-    public void setImapEncoder(@Named("imapEncoder") ImapEncoder encoder) {
+    @Named("imapEncoder")
+    public void setImapEncoder(ImapEncoder encoder) {
         this.encoder = encoder;
     }
 

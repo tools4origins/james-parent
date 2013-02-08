@@ -37,7 +37,8 @@ public class DNSRBLHandler extends org.apache.james.protocols.smtp.core.fastfail
     private DNSService dns;
 
     @Inject
-    public void setDNSService(@Named("dnsservice") DNSService dns) {
+    @Named("dnsservice")
+    public void setDNSService(DNSService dns) {
         this.dns = dns;
     }
 

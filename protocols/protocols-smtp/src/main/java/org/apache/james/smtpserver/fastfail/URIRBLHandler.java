@@ -88,7 +88,8 @@ public class URIRBLHandler implements JamesMessageHook, InitializingLifecycleAwa
      *            the dnsService to set
      */
     @Inject
-    public final void setDNSService(@Named("dnsservice") DNSService dnsService) {
+    @Named("dnsservice")
+    public final void setDNSService(DNSService dnsService) {
         this.dnsService = dnsService;
     }
 

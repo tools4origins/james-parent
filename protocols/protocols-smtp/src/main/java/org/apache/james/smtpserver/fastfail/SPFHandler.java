@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.smtpserver.fastfail;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.configuration.Configuration;
@@ -96,7 +97,9 @@ public class SPFHandler implements JamesMessageHook, MailHook, RcptHook, Initial
      * @param dnsService
      *            The DNSService
      */
-    public void setDNSService(@Named("dnsservice") DNSService dnsService) {
+    @Inject
+    @Named("dnsservice")
+    public void setDNSService(DNSService dnsService) {
         spf = new SPF(dnsService, new SPFLogger());
     }
 

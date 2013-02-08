@@ -56,7 +56,8 @@ public class ToRepository extends GenericMailet {
     private MailRepositoryStore mailStore;
 
     @Inject
-    public void setStore(@Named("mailrepositorystore") MailRepositoryStore mailStore) {
+    @Named("mailrepositorystore")
+    public void setStore(MailRepositoryStore mailStore) {
         this.mailStore = mailStore;
     }
 

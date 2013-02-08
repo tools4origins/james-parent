@@ -235,11 +235,7 @@ public class RemoteDelivery extends GenericMailet implements Runnable {
     /** The retry count dnsProblemErrors */
     private int dnsProblemRetry = 0;
 
-    @Inject
     private MailQueueFactory queueFactory;
-    public void setMailQueueFactory(@Named("mailqueuefactory") MailQueueFactory queueFactory) {
-        this.queueFactory = queueFactory;
-    }
 
     private MailQueue queue;
 
@@ -256,8 +252,15 @@ public class RemoteDelivery extends GenericMailet implements Runnable {
     private boolean isSSLEnable = false;
 
     @Inject
-    public void setDomainList(@Named("domainlist") DomainList domainList) {
+    @Named("domainlist")
+    public void setDomainList(DomainList domainList) {
         this.domainList = domainList;
+    }
+
+    @Inject
+    @Named("mailqueuefactory")
+    public void setMailQueueFactory( MailQueueFactory queueFactory) {
+        this.queueFactory = queueFactory;
     }
 
     /**

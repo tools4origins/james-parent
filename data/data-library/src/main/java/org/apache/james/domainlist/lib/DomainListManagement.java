@@ -37,8 +37,9 @@ public class DomainListManagement extends StandardMBean implements DomainListMan
     }
 
     @Inject
+    @Named("domainlist")
     @Resource(name = "domainlist")
-    public void setDomainList(@Named("domainlist") DomainList domainList) {
+    public void setDomainList(DomainList domainList) {
         this.domainList = domainList;
     }
 

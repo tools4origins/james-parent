@@ -39,8 +39,9 @@ public class UserRepositoryAuthenticator implements Authenticator, LogEnabled {
     private Logger log;
 
     @Inject
+    @Named("usersrepository") 
     @Resource(name = "usersrepository")
-    public void setUsersRepository(@Named("usersrepository") UsersRepository repos) {
+    public void setUsersRepository(UsersRepository repos) {
         this.repos = repos;
     }
 

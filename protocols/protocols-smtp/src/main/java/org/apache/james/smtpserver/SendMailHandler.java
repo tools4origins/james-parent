@@ -44,7 +44,8 @@ public class SendMailHandler implements JamesMessageHook {
     private MailQueueFactory queueFactory;
 
     @Inject
-    public void setMailQueueFactory(@Named("mailqueuefactory") MailQueueFactory queueFactory) {
+    @Named("mailqueuefactory")
+    public void setMailQueueFactory(MailQueueFactory queueFactory) {
         this.queueFactory = queueFactory;
     }
 
@@ -59,6 +60,7 @@ public class SendMailHandler implements JamesMessageHook {
      * @see org.apache.james.smtpserver#onMessage(SMTPSession)
      */
     public HookResult onMessage(SMTPSession session, Mail mail) {
+       
         session.getLogger().debug("sending mail");
 
         try {
@@ -76,7 +78,9 @@ public class SendMailHandler implements JamesMessageHook {
             session.getLogger().error("Unknown error occurred while processing DATA.", me);
             return new HookResult(HookReturnCode.DENYSOFT, DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.UNDEFINED_STATUS) + " Error processing message.");
         }
+        
         return new HookResult(HookReturnCode.OK, DSNStatus.getStatus(DSNStatus.SUCCESS, DSNStatus.CONTENT_OTHER) + " Message received");
+    
     }
 
 }

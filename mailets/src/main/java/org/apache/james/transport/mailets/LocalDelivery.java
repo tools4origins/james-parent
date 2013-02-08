@@ -47,35 +47,39 @@ import org.apache.mailet.base.GenericMailet;
  */
 public class LocalDelivery extends GenericMailet {
     
-    @Inject
     private org.apache.james.rrt.api.RecipientRewriteTable rrt;
-    public void setRrt(@Named("recipientrewritetable") org.apache.james.rrt.api.RecipientRewriteTable rrt) {
+    private UsersRepository usersRepository;
+    private MailboxManager mailboxManager;
+    private DomainList domainList;
+    private FileSystem fileSystem;
+
+    @Inject
+    @Named("recipientrewritetable") 
+    public void setRrt(org.apache.james.rrt.api.RecipientRewriteTable rrt) {
         this.rrt = rrt;
     }
 
     @Inject
-   
-    private UsersRepository usersRepository;
-    public void setUsersRepository(@Named("usersrepository") UsersRepository usersRepository) {
+    @Named("usersrepository") 
+    public void setUsersRepository(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
     
     @Inject
-    private MailboxManager mailboxManager;
-    public void setMailboxManager(@Named("mailboxmanager") MailboxManager mailboxManager) {
+    @Named("mailboxmanager")
+    public void setMailboxManager(MailboxManager mailboxManager) {
         this.mailboxManager = mailboxManager;
     }
     
     @Inject
-    
-    private DomainList domainList;
-    public void setDomainList(@Named("domainlist") DomainList domainList) {
+    @Named("domainlist") 
+    public void setDomainList(DomainList domainList) {
         this.domainList = domainList;
     }
     
     @Inject
-    private FileSystem fileSystem;
-    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
+    @Named("filesystem")
+    public void setFileSystem(FileSystem fileSystem) {
         this.fileSystem = fileSystem;
     }
 

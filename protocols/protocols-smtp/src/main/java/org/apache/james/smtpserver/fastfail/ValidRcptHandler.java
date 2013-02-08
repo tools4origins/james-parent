@@ -66,7 +66,8 @@ public class ValidRcptHandler extends AbstractValidRcptHandler implements Initia
      *            the users to set
      */
     @Inject
-    public final void setUsersRepository(@Named("usersrepository") UsersRepository users) {
+    @Named("usersrepository")
+    public final void setUsersRepository(UsersRepository users) {
         this.users = users;
     }
 
@@ -82,7 +83,8 @@ public class ValidRcptHandler extends AbstractValidRcptHandler implements Initia
     }
 
     @Inject
-    public void setDomainList(@Named("domainlist") DomainList domains) {
+    @Named("domainlist")
+    public void setDomainList(DomainList domains) {
         this.domains = domains;
     }
     

@@ -73,7 +73,8 @@ public abstract class AbstractFileRepository implements Repository, Configurable
     }
 
     @Inject
-    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
+    @Named("filesystem") 
+    public void setFileSystem(FileSystem fileSystem) {
         this.fileSystem = fileSystem;
     }
 
