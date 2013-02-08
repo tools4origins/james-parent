@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.smtpserver.fastfail;
+
+import javax.inject.Named;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -95,7 +96,7 @@ public class SPFHandler implements JamesMessageHook, MailHook, RcptHook, Initial
      * @param dnsService
      *            The DNSService
      */
-    public void setDNSService(DNSService dnsService) {
+    public void setDNSService(@Named("dnsservice") DNSService dnsService) {
         spf = new SPF(dnsService, new SPFLogger());
     }
 

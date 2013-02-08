@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.smtpserver.fastfail;
 
 import java.io.IOException;
@@ -27,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -88,7 +88,7 @@ public class URIRBLHandler implements JamesMessageHook, InitializingLifecycleAwa
      *            the dnsService to set
      */
     @Inject
-    public final void setDNSService(DNSService dnsService) {
+    public final void setDNSService(@Named("dnsservice") DNSService dnsService) {
         this.dnsService = dnsService;
     }
 

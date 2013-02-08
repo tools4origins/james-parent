@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.smtpserver.fastfail;
 
 import java.util.Collection;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.james.dnsservice.api.DNSService;
 import org.apache.james.protocols.smtp.SMTPSession;
@@ -31,7 +31,7 @@ public class ValidSenderDomainHandler extends org.apache.james.protocols.smtp.co
     private DNSService dnsService;
 
     @Inject
-    public void setDNSService(DNSService dnsService) {
+    public void setDNSService(@Named("dnsservice") DNSService dnsService) {
         this.dnsService = dnsService;
     }
 

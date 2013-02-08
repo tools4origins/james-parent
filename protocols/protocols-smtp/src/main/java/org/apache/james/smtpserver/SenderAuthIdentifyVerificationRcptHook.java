@@ -19,6 +19,7 @@
 package org.apache.james.smtpserver;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.james.domainlist.api.DomainList;
 import org.apache.james.domainlist.api.DomainListException;
@@ -39,12 +40,12 @@ public class SenderAuthIdentifyVerificationRcptHook extends AbstractSenderAuthId
     private UsersRepository users;
 
     @Inject
-    public final void setUsersRepository(UsersRepository users) {
+    public final void setUsersRepository(@Named("usersrepository") UsersRepository users) {
         this.users = users;
     }
 
     @Inject
-    public void setDomainList(DomainList domains) {
+    public void setDomainList(@Named("domainlist") DomainList domains) {
         this.domains = domains;
     }
 

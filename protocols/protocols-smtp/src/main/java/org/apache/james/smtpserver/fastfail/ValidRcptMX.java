@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.smtpserver.fastfail;
 
 import java.net.UnknownHostException;
@@ -25,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -90,7 +90,7 @@ public class ValidRcptMX implements InitializingLifecycleAwareProtocolHandler, R
      * @param dnsService the dnsService to set
      */
     @Inject
-    public final void setDNSService(DNSService dnsService) {
+    public final void setDNSService(@Named("dnsservice") DNSService dnsService) {
         this.dnsService = dnsService;
     }
 

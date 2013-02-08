@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.smtpserver.fastfail;
 
 import java.net.UnknownHostException;
@@ -25,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -37,7 +37,7 @@ public class DNSRBLHandler extends org.apache.james.protocols.smtp.core.fastfail
     private DNSService dns;
 
     @Inject
-    public void setDNSService(DNSService dns) {
+    public void setDNSService(@Named("dnsservice") DNSService dns) {
         this.dns = dns;
     }
 

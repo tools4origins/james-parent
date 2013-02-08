@@ -51,10 +51,12 @@ public class ValidRcptHandlerTest {
 
     @Before
     public void setUp() throws Exception {
+
         users = new MockUsersRepository();
         users.addUser(VALID_USER, "xxx");
+        
         handler = new ValidRcptHandler();
-        handler.setUsers(users);
+        handler.setUsersRepository(users);
         handler.setRecipientRewriteTable(setUpRecipientRewriteTable());
 
         handler.setDomainList(new SimpleDomainList() {
@@ -298,4 +300,5 @@ public class ValidRcptHandlerTest {
         assertNull("Valid Error mapping", session.getAttachment("VALID_USER", State.Transaction));
         assertEquals("Error mapping", rCode, HookReturnCode.DENY);
     }
+    
 }

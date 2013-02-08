@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations      *
  * under the License.                                           *
  ****************************************************************/
-
 package org.apache.james.smtpserver.fastfail;
 
 import java.io.File;
@@ -34,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.sql.DataSource;
 
 import org.apache.commons.configuration.Configuration;
@@ -170,7 +170,7 @@ public class JDBCGreylistHandler extends AbstractGreylistHandler implements Init
     }
 
     @Inject
-    public final void setDNSService(DNSService dnsService) {
+    public final void setDNSService(@Named("dnsservice") DNSService dnsService) {
         this.dnsService = dnsService;
     }
 

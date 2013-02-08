@@ -18,13 +18,31 @@
  ****************************************************************/
 package org.apache.james.smtpserver;
 
-import java.io.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
 import org.apache.commons.net.smtp.SMTPClient;
 import org.apache.commons.net.smtp.SMTPReply;
 import org.apache.james.dnsservice.api.DNSService;
@@ -44,7 +62,6 @@ import org.apache.mailet.HostAddress;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -136,11 +153,12 @@ public class SMTPServerTest {
             return InetAddress.getLocalHost();
         }
     }
-    protected final int m_smtpListenerPort;
-    // private SMTPServer m_smtpServer;
-    protected SMTPTestConfiguration m_testConfiguration;
-    protected MockUsersRepository m_usersRepository = new MockUsersRepository();
-    protected AlterableDNSServer m_dnsServer;
+
+    protected final int smtpListenerPort;
+    
+    protected SMTPTestConfiguration smtpConfiguration;
+    protected MockUsersRepository usersRepository = new MockUsersRepository();
+    protected AlterableDNSServer dnsServer;
     protected MockMailRepositoryStore store;
     protected MockFileSystem fileSystem;
     protected DNSService dnsService;
@@ -148,8 +166,10 @@ public class SMTPServerTest {
     protected MockMailQueueFactory queueFactory;
     protected MockMailQueue queue;
 
+    private SMTPServer smtpServer;
+
     public SMTPServerTest() {
-        m_smtpListenerPort = PortUtil.getNonPrivilegedPort();
+        smtpListenerPort = PortUtil.getNonPrivilegedPort();
     }
 
     @Before
@@ -157,16 +177,8 @@ public class SMTPServerTest {
         setUpFakeLoader();
         // slf4j can't set programmatically any log level. It's just a facade
         // log.setLevel(SimpleLog.LOG_LEVEL_ALL);
-        m_testConfiguration = new SMTPTestConfiguration(m_smtpListenerPort);
-
+        smtpConfiguration = new SMTPTestConfiguration(smtpListenerPort);
         setUpSMTPServer();
-    }
-    private SMTPServer m_smtpServer;
-
-    protected void initSMTPServer(SMTPTestConfiguration testConfiguration) throws Exception {
-        m_smtpServer.configure(testConfiguration);
-        m_smtpServer.init();
-
     }
 
     protected SMTPServer createSMTPServer() {
@@ -174,24 +186,141 @@ public class SMTPServerTest {
     }
 
     protected void setUpSMTPServer() throws Exception {
+        
         Logger log = LoggerFactory.getLogger("SMTP");
         // slf4j can't set programmatically any log level. It's just a facade
         // log.setLevel(SimpleLog.LOG_LEVEL_ALL);
-        m_smtpServer = createSMTPServer();
-        m_smtpServer.setDnsService(m_dnsServer);
-        m_smtpServer.setFileSystem(fileSystem);
+        smtpServer = createSMTPServer();
+        smtpServer.setDnsService(dnsServer);
+        smtpServer.setFileSystem(fileSystem);
+        smtpServer.setProtocolHandlerLoader(chain);
+        smtpServer.setLog(log);
 
-        m_smtpServer.setProtocolHandlerLoader(chain);
+    }
 
-        m_smtpServer.setLog(log);
+    protected void init(SMTPTestConfiguration testConfiguration) throws Exception {
+        testConfiguration.init();
+        initSMTPServer(testConfiguration);
+        // m_mailServer.setMaxMessageSizeBytes(m_testConfiguration.getMaxMessageSize() * 1024);
+    }
+
+    protected void initSMTPServer(SMTPTestConfiguration testConfiguration) throws Exception {
+        smtpServer.configure(testConfiguration);
+        smtpServer.init();
+    }
+
+    protected void setUpFakeLoader() throws Exception {
+
+        chain = new MockProtocolHandlerLoader();
+    
+        chain.put("usersrepository", usersRepository);
+    
+        dnsServer = new AlterableDNSServer();
+        chain.put("dnsservice", dnsServer);
+    
+        store = new MockMailRepositoryStore();
+        chain.put("mailStore", store);
+        fileSystem = new MockFileSystem();
+    
+        chain.put("fileSystem", fileSystem);
+        chain.put("org.apache.james.smtpserver.protocol.DNSService", dnsService);
+    
+        chain.put("recipientrewritetable", new RecipientRewriteTable() {
+    
+            @Override
+            public void addRegexMapping(String user, String domain, String regex) throws RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public void removeRegexMapping(String user, String domain, String regex) throws
+                    RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public void addAddressMapping(String user, String domain, String address) throws
+                    RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public void removeAddressMapping(String user, String domain, String address) throws
+                    RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public void addErrorMapping(String user, String domain, String error) throws RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public void removeErrorMapping(String user, String domain, String error) throws
+                    RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public Collection<String> getUserDomainMappings(String user, String domain) throws
+                    RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public void addMapping(String user, String domain, String mapping) throws RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public void removeMapping(String user, String domain, String mapping) throws RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public Map<String, Collection<String>> getAllMappings() throws RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public void addAliasDomainMapping(String aliasDomain, String realDomain) throws
+                    RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public void removeAliasDomainMapping(String aliasDomain, String realDomain) throws
+                    RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+    
+            @Override
+            public Collection<String> getMappings(String user, String domain) throws ErrorMappingException,
+                    RecipientRewriteTableException {
+                throw new UnsupportedOperationException("Not implemented");
+            }
+        });
+    
+        chain.put("org.apache.james.smtpserver.protocol.DNSService", dnsService);
+        queueFactory = new MockMailQueueFactory();
+        queue = (MockMailQueue) queueFactory.getQueue(MockMailQueueFactory.SPOOL);
+        chain.put("mailqueuefactory", queueFactory);
+        chain.put("domainlist", new SimpleDomainList() {
+    
+            @Override
+            public boolean containsDomain(String serverName) {
+                return "localhost".equals(serverName);
+            }
+        });
+        
     }
 
     @Test
     public void testMaxLineLength() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < AbstractChannelPipelineFactory.MAX_LINE_LENGTH; i++) {
@@ -210,18 +339,18 @@ public class SMTPServerTest {
 
     @Test
     public void testConnectionLimit() throws Exception {
-        m_testConfiguration.setConnectionLimit(2);
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setConnectionLimit(2);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
         SMTPClient smtpProtocol2 = new SMTPClient();
-        smtpProtocol2.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol2.connect("127.0.0.1", smtpListenerPort);
 
         SMTPClient smtpProtocol3 = new SMTPClient();
 
         try {
-            smtpProtocol3.connect("127.0.0.1", m_smtpListenerPort);
+            smtpProtocol3.connect("127.0.0.1", smtpListenerPort);
             Thread.sleep(3000);
             fail("Shold disconnect connection 3");
         } catch (Exception e) {
@@ -232,24 +361,15 @@ public class SMTPServerTest {
         smtpProtocol2.quit();
         smtpProtocol2.disconnect();
 
-        smtpProtocol3.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol3.connect("127.0.0.1", smtpListenerPort);
         Thread.sleep(3000);
 
-    }
-
-    protected void finishSetUp(SMTPTestConfiguration testConfiguration) throws Exception {
-        testConfiguration.init();
-
-        initSMTPServer(testConfiguration);
-
-        // m_mailServer.setMaxMessageSizeBytes(m_testConfiguration.getMaxMessageSize()
-        // * 1024);
     }
 
     @After
     public void tearDown() throws Exception {
         queue.clear();
-        m_smtpServer.destroy();
+        smtpServer.destroy();
     }
 
     public void verifyLastMail(String sender, String recipient, MimeMessage msg) throws IOException, MessagingException {
@@ -276,124 +396,12 @@ public class SMTPServerTest {
         }
     }
 
-    protected void setUpFakeLoader() throws Exception {
-        chain = new MockProtocolHandlerLoader();
-
-        chain.put("usersrepository", m_usersRepository);
-
-        m_dnsServer = new AlterableDNSServer();
-        chain.put("dnsservice", m_dnsServer);
-
-        store = new MockMailRepositoryStore();
-        chain.put("mailStore", store);
-        fileSystem = new MockFileSystem();
-
-        chain.put("fileSystem", fileSystem);
-        chain.put("org.apache.james.smtpserver.protocol.DNSService", dnsService);
-        chain.put("recipientrewritetable", new RecipientRewriteTable() {
-
-            @Override
-            public void addRegexMapping(String user, String domain, String regex) throws RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-            }
-
-            @Override
-            public void removeRegexMapping(String user, String domain, String regex) throws
-                    RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-
-            }
-
-            @Override
-            public void addAddressMapping(String user, String domain, String address) throws
-                    RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-
-            }
-
-            @Override
-            public void removeAddressMapping(String user, String domain, String address) throws
-                    RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-
-            }
-
-            @Override
-            public void addErrorMapping(String user, String domain, String error) throws RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-
-            }
-
-            @Override
-            public void removeErrorMapping(String user, String domain, String error) throws
-                    RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-
-            }
-
-            @Override
-            public Collection<String> getUserDomainMappings(String user, String domain) throws
-                    RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-            }
-
-            @Override
-            public void addMapping(String user, String domain, String mapping) throws RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-
-            }
-
-            @Override
-            public void removeMapping(String user, String domain, String mapping) throws RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-
-            }
-
-            @Override
-            public Map<String, Collection<String>> getAllMappings() throws RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-            }
-
-            @Override
-            public void addAliasDomainMapping(String aliasDomain, String realDomain) throws
-                    RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-
-            }
-
-            @Override
-            public void removeAliasDomainMapping(String aliasDomain, String realDomain) throws
-                    RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-
-            }
-
-            @Override
-            public Collection<String> getMappings(String user, String domain) throws ErrorMappingException,
-                    RecipientRewriteTableException {
-                throw new UnsupportedOperationException("Not implemented");
-            }
-        });
-
-        chain.put("org.apache.james.smtpserver.protocol.DNSService", dnsService);
-        queueFactory = new MockMailQueueFactory();
-        queue = (MockMailQueue) queueFactory.getQueue(MockMailQueueFactory.SPOOL);
-        chain.put("mailqueuefactory", queueFactory);
-        chain.put("domainlist", new SimpleDomainList() {
-
-            @Override
-            public boolean containsDomain(String serverName) {
-                return "localhost".equals(serverName);
-            }
-        });
-    }
-
     @Test
     public void testSimpleMailSendWithEHLO() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         // no message there, yet
         assertNull("no mail received by mail server", queue.getLastMail());
@@ -424,11 +432,11 @@ public class SMTPServerTest {
 
     @Test
     public void testStartTLSInEHLO() throws Exception {
-        m_testConfiguration.setStartTLS();
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setStartTLS();
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         // no message there, yet
         assertNull("no mail received by mail server", queue.getLastMail());
@@ -490,10 +498,10 @@ public class SMTPServerTest {
      */
     @Test
     public void testSimpleMailSendWithHELO() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         // no message there, yet
         assertNull("no mail received by mail server", queue.getLastMail());
@@ -515,12 +523,12 @@ public class SMTPServerTest {
 
     @Test
     public void testTwoSimultaneousMails() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
         SMTPClient smtpProtocol2 = new SMTPClient();
-        smtpProtocol2.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol2.connect("127.0.0.1", smtpListenerPort);
 
         assertTrue("first connection taken", smtpProtocol1.isConnected());
         assertTrue("second connection taken", smtpProtocol2.isConnected());
@@ -556,10 +564,10 @@ public class SMTPServerTest {
 
     @Test
     public void testTwoMailsInSequence() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         assertTrue("first connection taken", smtpProtocol1.isConnected());
 
@@ -590,16 +598,16 @@ public class SMTPServerTest {
 
     @Test
     public void testHeloResolv() throws Exception {
-        m_testConfiguration.setHeloResolv();
-        m_testConfiguration.setAuthorizedAddresses("192.168.0.1");
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setHeloResolv();
+        smtpConfiguration.setAuthorizedAddresses("192.168.0.1");
+        init(smtpConfiguration);
 
         doTestHeloEhloResolv("helo");
     }
 
     private void doTestHeloEhloResolv(String heloCommand) throws IOException {
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         assertTrue("first connection taken", smtpProtocol.isConnected());
 
@@ -633,10 +641,10 @@ public class SMTPServerTest {
 
     @Test
     public void testHeloResolvDefault() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol1.helo("abgsfe3rsf.de");
         // helo should not be checked. so this should give a 250 code
@@ -647,19 +655,19 @@ public class SMTPServerTest {
 
     @Test
     public void testReverseEqualsHelo() throws Exception {
-        m_testConfiguration.setReverseEqualsHelo();
-        m_testConfiguration.setAuthorizedAddresses("192.168.0.1");
+        smtpConfiguration.setReverseEqualsHelo();
+        smtpConfiguration.setAuthorizedAddresses("192.168.0.1");
         // temporary alter the loopback resolution
         try {
-            m_dnsServer.setLocalhostByName(InetAddress.getByName("james.apache.org"));
+            dnsServer.setLocalhostByName(InetAddress.getByName("james.apache.org"));
         } catch (UnknownHostException e) {
             fail("james.apache.org currently cannot be resolved (check your DNS/internet connection/proxy settings to make test pass)");
         }
         try {
-            finishSetUp(m_testConfiguration);
+            init(smtpConfiguration);
 
             SMTPClient smtpProtocol1 = new SMTPClient();
-            smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+            smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
             assertTrue("first connection taken", smtpProtocol1.isConnected());
 
@@ -688,18 +696,18 @@ public class SMTPServerTest {
 
             smtpProtocol1.quit();
         } finally {
-            m_dnsServer.setLocalhostByName(null);
+            dnsServer.setLocalhostByName(null);
         }
     }
 
     @Test
     public void testSenderDomainResolv() throws Exception {
-        m_testConfiguration.setSenderDomainResolv();
-        m_testConfiguration.setAuthorizedAddresses("192.168.0.1/32");
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setSenderDomainResolv();
+        smtpConfiguration.setAuthorizedAddresses("192.168.0.1/32");
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         assertTrue("first connection taken", smtpProtocol1.isConnected());
 
@@ -721,10 +729,10 @@ public class SMTPServerTest {
 
     @Test
     public void testSenderDomainResolvDefault() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol1.helo(InetAddress.getLocalHost().toString());
 
@@ -737,11 +745,11 @@ public class SMTPServerTest {
 
     @Test
     public void testSenderDomainResolvRelayClientDefault() throws Exception {
-        m_testConfiguration.setSenderDomainResolv();
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setSenderDomainResolv();
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         assertTrue("first connection taken", smtpProtocol1.isConnected());
 
@@ -761,12 +769,12 @@ public class SMTPServerTest {
 
     @Test
     public void testSenderDomainResolvRelayClient() throws Exception {
-        m_testConfiguration.setSenderDomainResolv();
-        m_testConfiguration.setCheckAuthNetworks(true);
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setSenderDomainResolv();
+        smtpConfiguration.setCheckAuthNetworks(true);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         assertTrue("first connection taken", smtpProtocol1.isConnected());
 
@@ -789,11 +797,11 @@ public class SMTPServerTest {
 
     @Test
     public void testMaxRcpt() throws Exception {
-        m_testConfiguration.setMaxRcpt(1);
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setMaxRcpt(1);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         assertTrue("first connection taken", smtpProtocol1.isConnected());
 
@@ -829,10 +837,10 @@ public class SMTPServerTest {
 
     @Test
     public void testMaxRcptDefault() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol1.helo(InetAddress.getLocalHost().toString());
 
@@ -850,19 +858,19 @@ public class SMTPServerTest {
 
     @Test
     public void testEhloResolv() throws Exception {
-        m_testConfiguration.setEhloResolv();
-        m_testConfiguration.setAuthorizedAddresses("192.168.0.1");
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setEhloResolv();
+        smtpConfiguration.setAuthorizedAddresses("192.168.0.1");
+        init(smtpConfiguration);
 
         doTestHeloEhloResolv("ehlo");
     }
 
     @Test
     public void testEhloResolvDefault() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol1.sendCommand("ehlo", "abgsfe3rsf.de");
         // ehlo should not be checked. so this should give a 250 code
@@ -873,30 +881,30 @@ public class SMTPServerTest {
 
     @Test
     public void testEhloResolvIgnoreClientDisabled() throws Exception {
-        m_testConfiguration.setEhloResolv();
-        m_testConfiguration.setCheckAuthNetworks(true);
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setEhloResolv();
+        smtpConfiguration.setCheckAuthNetworks(true);
+        init(smtpConfiguration);
 
         doTestHeloEhloResolv("ehlo");
     }
 
     @Test
     public void testReverseEqualsEhlo() throws Exception {
-        m_testConfiguration.setReverseEqualsEhlo();
-        m_testConfiguration.setAuthorizedAddresses("192.168.0.1");
+        smtpConfiguration.setReverseEqualsEhlo();
+        smtpConfiguration.setAuthorizedAddresses("192.168.0.1");
         // temporary alter the loopback resolution
         InetAddress jamesDomain = null;
         try {
-            jamesDomain = m_dnsServer.getByName("james.apache.org");
+            jamesDomain = dnsServer.getByName("james.apache.org");
         } catch (UnknownHostException e) {
             fail("james.apache.org currently cannot be resolved (check your DNS/internet connection/proxy settings to make test pass)");
         }
-        m_dnsServer.setLocalhostByName(jamesDomain);
+        dnsServer.setLocalhostByName(jamesDomain);
         try {
-            finishSetUp(m_testConfiguration);
+            init(smtpConfiguration);
 
             SMTPClient smtpProtocol1 = new SMTPClient();
-            smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+            smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
             assertTrue("first connection taken", smtpProtocol1.isConnected());
 
@@ -925,16 +933,16 @@ public class SMTPServerTest {
 
             smtpProtocol1.quit();
         } finally {
-            m_dnsServer.setLocalhostByName(null);
+            dnsServer.setLocalhostByName(null);
         }
     }
 
     @Test
     public void testHeloEnforcement() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         assertTrue("first connection taken", smtpProtocol1.isConnected());
 
@@ -954,11 +962,11 @@ public class SMTPServerTest {
 
     @Test
     public void testHeloEnforcementDisabled() throws Exception {
-        m_testConfiguration.setHeloEhloEnforcement(false);
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setHeloEhloEnforcement(false);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol1 = new SMTPClient();
-        smtpProtocol1.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol1.connect("127.0.0.1", smtpListenerPort);
 
         assertTrue("first connection taken", smtpProtocol1.isConnected());
 
@@ -974,12 +982,12 @@ public class SMTPServerTest {
 
     @Test
     public void testAuthCancel() throws Exception {
-        m_testConfiguration.setAuthorizedAddresses("127.0.0.1/8");
-        m_testConfiguration.setAuthorizingAnnounce();
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setAuthorizedAddresses("127.0.0.1/8");
+        smtpConfiguration.setAuthorizingAnnounce();
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo", InetAddress.getLocalHost().toString());
 
@@ -998,12 +1006,12 @@ public class SMTPServerTest {
     // Test for JAMES-939
     @Test
     public void testAuth() throws Exception {
-        m_testConfiguration.setAuthorizedAddresses("128.0.0.1/8");
-        m_testConfiguration.setAuthorizingAnnounce();
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setAuthorizedAddresses("128.0.0.1/8");
+        smtpConfiguration.setAuthorizingAnnounce();
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo", InetAddress.getLocalHost().toString());
         String[] capabilityRes = smtpProtocol.getReplyStrings();
@@ -1029,14 +1037,14 @@ public class SMTPServerTest {
         smtpProtocol.addRecipient("mail@sample.com");
         assertEquals("expected 530 error", 530, smtpProtocol.getReplyCode());
 
-        assertFalse("user not existing", m_usersRepository.contains(noexistUserName));
+        assertFalse("user not existing", usersRepository.contains(noexistUserName));
 
         smtpProtocol.sendCommand("AUTH PLAIN");
         smtpProtocol.sendCommand(Base64.encodeAsString("\0" + noexistUserName + "\0pwd\0"));
         // smtpProtocol.sendCommand(noexistUserName+"pwd".toCharArray());
         assertEquals("expected error", 535, smtpProtocol.getReplyCode());
 
-        m_usersRepository.addUser(userName, "pwd");
+        usersRepository.addUser(userName, "pwd");
 
         smtpProtocol.sendCommand("AUTH PLAIN");
         smtpProtocol.sendCommand(Base64.encodeAsString("\0" + userName + "\0wrongpwd\0"));
@@ -1060,17 +1068,17 @@ public class SMTPServerTest {
 
     @Test
     public void testAuthWithEmptySender() throws Exception {
-        m_testConfiguration.setAuthorizedAddresses("128.0.0.1/8");
-        m_testConfiguration.setAuthorizingAnnounce();
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setAuthorizedAddresses("128.0.0.1/8");
+        smtpConfiguration.setAuthorizingAnnounce();
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo " + InetAddress.getLocalHost());
 
         String userName = "test_user_smtp";
-        m_usersRepository.addUser(userName, "pwd");
+        usersRepository.addUser(userName, "pwd");
 
         smtpProtocol.setSender("");
 
@@ -1086,10 +1094,10 @@ public class SMTPServerTest {
 
     @Test
     public void testNoRecepientSpecified() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo " + InetAddress.getLocalHost());
 
@@ -1108,10 +1116,10 @@ public class SMTPServerTest {
 
     @Test
     public void testMultipleMailsAndRset() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo " + InetAddress.getLocalHost());
 
@@ -1129,11 +1137,11 @@ public class SMTPServerTest {
 
     @Test
     public void testRelayingDenied() throws Exception {
-        m_testConfiguration.setAuthorizedAddresses("128.0.0.1/8");
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setAuthorizedAddresses("128.0.0.1/8");
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo " + InetAddress.getLocalHost());
 
@@ -1145,11 +1153,11 @@ public class SMTPServerTest {
 
     @Test
     public void testHandleAnnouncedMessageSizeLimitExceeded() throws Exception {
-        m_testConfiguration.setMaxMessageSize(1); // set message limit to 1kb
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setMaxMessageSize(1); // set message limit to 1kb
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo " + InetAddress.getLocalHost());
 
@@ -1161,11 +1169,11 @@ public class SMTPServerTest {
     }
 
     public void testHandleMessageSizeLimitExceeded() throws Exception {
-        m_testConfiguration.setMaxMessageSize(1); // set message limit to 1kb
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setMaxMessageSize(1); // set message limit to 1kb
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo " + InetAddress.getLocalHost());
 
@@ -1197,11 +1205,11 @@ public class SMTPServerTest {
 
     @Test
     public void testHandleMessageSizeLimitRespected() throws Exception {
-        m_testConfiguration.setMaxMessageSize(1); // set message limit to 1kb
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setMaxMessageSize(1); // set message limit to 1kb
+        init(smtpConfiguration);
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo " + InetAddress.getLocalHost());
 
@@ -1232,15 +1240,15 @@ public class SMTPServerTest {
 
     @Test
     public void testDNSRBLNotRejectAuthUser() throws Exception {
-        m_testConfiguration.setAuthorizedAddresses("192.168.0.1/32");
-        m_testConfiguration.setAuthorizingAnnounce();
-        m_testConfiguration.useRBL(true);
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setAuthorizedAddresses("192.168.0.1/32");
+        smtpConfiguration.setAuthorizingAnnounce();
+        smtpConfiguration.useRBL(true);
+        init(smtpConfiguration);
 
-        m_dnsServer.setLocalhostByName(InetAddress.getByName("127.0.0.1"));
+        dnsServer.setLocalhostByName(InetAddress.getByName("127.0.0.1"));
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo", InetAddress.getLocalHost().toString());
         String[] capabilityRes = smtpProtocol.getReplyStrings();
@@ -1259,7 +1267,7 @@ public class SMTPServerTest {
 
         smtpProtocol.setSender(sender);
 
-        m_usersRepository.addUser(userName, "pwd");
+        usersRepository.addUser(userName, "pwd");
 
         smtpProtocol.sendCommand("AUTH PLAIN");
         smtpProtocol.sendCommand(Base64.encodeAsString("\0" + userName + "\0pwd\0"));
@@ -1278,14 +1286,14 @@ public class SMTPServerTest {
 
     @Test
     public void testDNSRBLRejectWorks() throws Exception {
-        m_testConfiguration.setAuthorizedAddresses("192.168.0.1/32");
-        m_testConfiguration.useRBL(true);
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setAuthorizedAddresses("192.168.0.1/32");
+        smtpConfiguration.useRBL(true);
+        init(smtpConfiguration);
 
-        m_dnsServer.setLocalhostByName(InetAddress.getByName("127.0.0.1"));
+        dnsServer.setLocalhostByName(InetAddress.getByName("127.0.0.1"));
 
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo", InetAddress.getLocalHost().toString());
 
@@ -1306,10 +1314,10 @@ public class SMTPServerTest {
 
     @Test
     public void testAddressBracketsEnforcementDisabled() throws Exception {
-        m_testConfiguration.setAddressBracketsEnforcement(false);
-        finishSetUp(m_testConfiguration);
+        smtpConfiguration.setAddressBracketsEnforcement(false);
+        init(smtpConfiguration);
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo", InetAddress.getLocalHost().toString());
 
@@ -1321,7 +1329,7 @@ public class SMTPServerTest {
 
         smtpProtocol.quit();
 
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo", InetAddress.getLocalHost().toString());
 
@@ -1336,9 +1344,9 @@ public class SMTPServerTest {
 
     @Test
     public void testAddressBracketsEnforcementEnabled() throws Exception {
-        finishSetUp(m_testConfiguration);
+        init(smtpConfiguration);
         SMTPClient smtpProtocol = new SMTPClient();
-        smtpProtocol.connect("127.0.0.1", m_smtpListenerPort);
+        smtpProtocol.connect("127.0.0.1", smtpListenerPort);
 
         smtpProtocol.sendCommand("ehlo", InetAddress.getLocalHost().toString());
 
@@ -1359,8 +1367,8 @@ public class SMTPServerTest {
     @Test
     public void testPipelining() throws Exception {
         StringBuilder buf = new StringBuilder();
-        finishSetUp(m_testConfiguration);
-        Socket client = new Socket("127.0.0.1", m_smtpListenerPort);
+        init(smtpConfiguration);
+        Socket client = new Socket("127.0.0.1", smtpListenerPort);
 
         buf.append("HELO TEST");
         buf.append("\r\n");
@@ -1403,9 +1411,9 @@ public class SMTPServerTest {
     @Test
     public void testRejectAllRCPTPipelining() throws Exception {
         StringBuilder buf = new StringBuilder();
-        m_testConfiguration.setAuthorizedAddresses("");
-        finishSetUp(m_testConfiguration);
-        Socket client = new Socket("127.0.0.1", m_smtpListenerPort);
+        smtpConfiguration.setAuthorizedAddresses("");
+        init(smtpConfiguration);
+        Socket client = new Socket("127.0.0.1", smtpListenerPort);
 
         buf.append("HELO TEST");
         buf.append("\r\n");
@@ -1449,9 +1457,9 @@ public class SMTPServerTest {
     @Test
     public void testRejectOneRCPTPipelining() throws Exception {
         StringBuilder buf = new StringBuilder();
-        m_testConfiguration.setAuthorizedAddresses("");
-        finishSetUp(m_testConfiguration);
-        Socket client = new Socket("127.0.0.1", m_smtpListenerPort);
+        smtpConfiguration.setAuthorizedAddresses("");
+        init(smtpConfiguration);
+        Socket client = new Socket("127.0.0.1", smtpListenerPort);
 
         buf.append("HELO TEST");
         buf.append("\r\n");

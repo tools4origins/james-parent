@@ -21,6 +21,7 @@ package org.apache.james.smtpserver.fastfail;
 import java.net.UnknownHostException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.james.dnsservice.api.DNSService;
 
@@ -29,7 +30,7 @@ public class ReverseEqualsEhloHeloHandler extends org.apache.james.protocols.smt
     private DNSService dns;
 
     @Inject
-    public void setDNSService(DNSService dns) {
+    public void setDNSService(@Named("dnsservice") DNSService dns) {
         this.dns = dns;
     }
 
