@@ -91,7 +91,6 @@ public class ImapChannelUpstreamHandler extends SimpleChannelUpstreamHandler imp
 
     @Override
     public void channelBound(final ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-
         ImapSession imapsession = new NettyImapSession(ctx.getChannel(), logger, context, enabledCipherSuites, compress, plainAuthDisallowed);
         attributes.set(ctx.getChannel(), imapsession);
         super.channelBound(ctx, e);
@@ -99,6 +98,7 @@ public class ImapChannelUpstreamHandler extends SimpleChannelUpstreamHandler imp
 
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        
         InetSocketAddress address = (InetSocketAddress) ctx.getChannel().getRemoteAddress();
         getLogger(ctx.getChannel()).info("Connection closed for " + address.getAddress().getHostAddress());
 
@@ -113,6 +113,7 @@ public class ImapChannelUpstreamHandler extends SimpleChannelUpstreamHandler imp
 
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        
         InetSocketAddress address = (InetSocketAddress) ctx.getChannel().getRemoteAddress();
         getLogger(ctx.getChannel()).info("Connection established from " + address.getAddress().getHostAddress());
 
@@ -127,6 +128,8 @@ public class ImapChannelUpstreamHandler extends SimpleChannelUpstreamHandler imp
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+        
+        getLogger(ctx.getChannel()).warn("Error while processing imap request: " + e.getCause().getClass().getName() + " - " + e.getCause().getMessage());
         getLogger(ctx.getChannel()).debug("Error while processing imap request", e.getCause());
 
         if (e.getCause() instanceof TooLongFrameException) {
@@ -147,7 +150,9 @@ public class ImapChannelUpstreamHandler extends SimpleChannelUpstreamHandler imp
             // See also JAMES-1190
             ImapResponseComposer composer = (ImapResponseComposer) ctx.getAttachment();
             composer.untaggedResponse(ImapConstants.BAD + " failed. Maximum command line length exceeded");
+            
         } else {
+
             // logout on error not sure if that is the best way to handle it
             final ImapSession imapSession = (ImapSession) attributes.get(ctx.getChannel());
             if (imapSession != null)
@@ -165,6 +170,7 @@ public class ImapChannelUpstreamHandler extends SimpleChannelUpstreamHandler imp
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        
         ImapSession session = (ImapSession) attributes.get(ctx.getChannel());
         ImapResponseComposer response = (ImapResponseComposer) ctx.getAttachment();
         ImapMessage message = (ImapMessage) e.getMessage();
@@ -202,6 +208,7 @@ public class ImapChannelUpstreamHandler extends SimpleChannelUpstreamHandler imp
         }
 
         super.messageReceived(ctx, e);
+
     }
 
 }

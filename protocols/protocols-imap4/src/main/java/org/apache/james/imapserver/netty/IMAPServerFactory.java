@@ -30,12 +30,11 @@ import org.apache.james.filesystem.api.FileSystem;
 import org.apache.james.imap.api.process.ImapProcessor;
 import org.apache.james.imap.decode.ImapDecoder;
 import org.apache.james.imap.encode.ImapEncoder;
-import org.apache.james.protocols.lib.handler.ProtocolHandlerLoader;
 import org.apache.james.protocols.lib.netty.AbstractConfigurableAsyncServer;
 import org.apache.james.protocols.lib.netty.AbstractServerFactory;
 import org.slf4j.Logger;
 
-public class IMAPServerFactory extends AbstractServerFactory{
+public class IMAPServerFactory extends AbstractServerFactory {
 
     private FileSystem fileSystem;
     private ImapDecoder decoder;
@@ -43,33 +42,33 @@ public class IMAPServerFactory extends AbstractServerFactory{
     private ImapProcessor processor;
     
     @Inject
-    @Resource(name = "filesystem")
     public final void setFileSystem(@Named("filesystem") FileSystem filesystem) {
         this.fileSystem = filesystem;
     }
 
     @Inject
-    public void setImapDecoder(ImapDecoder decoder) {
+    public void setImapProcessor(@Named("imapProcessor") ImapProcessor processor) {
+        this.processor = processor;
+    }
+    
+    @Inject
+    public void setImapDecoder(@Named("imapDecoder") ImapDecoder decoder) {
         this.decoder = decoder;
     }
 
     @Inject
-    public void setImapEncoder(ImapEncoder encoder) {
+    public void setImapEncoder(@Named("imapEncoder") ImapEncoder encoder) {
         this.encoder = encoder;
     }
 
-    @Inject
-    public void setImapProcessor(ImapProcessor processor) {
-        this.processor = processor;
-    }
-    
     protected IMAPServer createServer() {
        return new IMAPServer();
     }
     
     @SuppressWarnings("unchecked")
     @Override
-    protected List<AbstractConfigurableAsyncServer> createServers(Logger log, HierarchicalConfiguration config) throws Exception{
+    protected List<AbstractConfigurableAsyncServer> createServers(Logger log, HierarchicalConfiguration config) throws Exception {
+        
         List<AbstractConfigurableAsyncServer> servers = new ArrayList<AbstractConfigurableAsyncServer>();
         List<HierarchicalConfiguration> configs = config.configurationsAt("imapserver");
         
@@ -85,7 +84,7 @@ public class IMAPServerFactory extends AbstractServerFactory{
         }
 
         return servers;
+        
     }
-
 
 }

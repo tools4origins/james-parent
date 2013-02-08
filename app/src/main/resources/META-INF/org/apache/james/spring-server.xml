@@ -253,25 +253,39 @@
     <!-- 
       SMTP Server
      -->
-    <bean id="smtpserver" class="org.apache.james.smtpserver.netty.SMTPServerFactory"/>
+    <bean id="smtpserver" class="org.apache.james.smtpserver.netty.SMTPServerFactory">
+        <property name="protocolHandlerLoader" ref="protocolhandlerloader"/>
+        <property name="fileSystem" ref="filesystem"/>
+        <property name="dnsService" ref="dnsservice"/>
+    </bean>
 
     <!-- 
       LMTP Server
      -->
-    <bean id="lmtpserver" class="org.apache.james.lmtpserver.netty.LMTPServerFactory"/>
+    <bean id="lmtpserver" class="org.apache.james.lmtpserver.netty.LMTPServerFactory">
+        <property name="protocolHandlerLoader" ref="protocolhandlerloader"/>
+        <property name="fileSystem" ref="filesystem"/>
+    </bean>
 
     <!-- 
       POP3 Server
      -->
-    <bean id="pop3server"  class="org.apache.james.pop3server.netty.POP3ServerFactory"/>
+    <bean id="pop3server"  class="org.apache.james.pop3server.netty.POP3ServerFactory">
+        <property name="protocolHandlerLoader" ref="protocolhandlerloader"/>
+        <property name="fileSystem" ref="filesystem"/>
+    </bean>
 
     <!-- 
-      IMAP Server
+      IMAP4 Server
      -->
+
     <bean id="imapserver" class="org.apache.james.imapserver.netty.IMAPServerFactory">
-        <property name="imapDecoder" ref="imapDecoder"/>
+        <property name="imapProcessor" ref="imapProcessor"/>
         <property name="imapEncoder" ref="imapEncoder"/>
+        <property name="imapDecoder" ref="imapDecoder"/>
+        <property name="fileSystem" ref="filesystem"/>
     </bean>
+
     <!-- The imapProcessor configuration will be reviewed when IMAP will be integrated into Protocols project -->
     <!-- Temporary configuration - see IMAP-357 -->
     <bean id="imapProcessor" class="org.apache.james.imap.processor.main.DefaultImapProcessorFactory" factory-method="createXListSupportingProcessor">
@@ -289,10 +303,12 @@
           </set>
        </constructor-arg>
     </bean>
-    <bean id="imapDecoder" factory-bean="imapDecoderFactory" factory-method="buildImapDecoder"/>
+    
     <bean id="imapDecoderFactory" class="org.apache.james.imap.main.DefaultImapDecoderFactory"/>
-    <bean id="imapEncoder" factory-bean="imapEncoderFactory"  factory-method="buildImapEncoder"/>
+    <bean id="imapDecoder" factory-bean="imapDecoderFactory" factory-method="buildImapDecoder"/>
+
     <bean id="imapEncoderFactory" class="org.apache.james.imap.encode.main.DefaultImapEncoderFactory"/>
+    <bean id="imapEncoder" factory-bean="imapEncoderFactory"  factory-method="buildImapEncoder"/>
 
     <!-- 
     ===========================================================================

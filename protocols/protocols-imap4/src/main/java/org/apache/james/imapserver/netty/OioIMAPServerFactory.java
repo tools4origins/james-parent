@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.james.imapserver.netty;
 
-public class OioIMAPServerFactory extends IMAPServerFactory{
+public class OioIMAPServerFactory extends IMAPServerFactory {
 
     @Override
     protected IMAPServer createServer() {

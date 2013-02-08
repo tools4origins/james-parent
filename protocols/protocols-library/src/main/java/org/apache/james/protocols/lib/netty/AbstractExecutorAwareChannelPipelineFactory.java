@@ -31,13 +31,14 @@ import org.jboss.netty.handler.execution.ExecutionHandler;
  */
 public abstract class AbstractExecutorAwareChannelPipelineFactory extends AbstractSSLAwareChannelPipelineFactory{
 
-
     public AbstractExecutorAwareChannelPipelineFactory(int timeout, int maxConnections, int maxConnectsPerIp, ChannelGroup group, ExecutionHandler eHandler) {
         super(timeout, maxConnections, maxConnectsPerIp, group, eHandler);
     }
+
     public AbstractExecutorAwareChannelPipelineFactory(int timeout, int maxConnections, int maxConnectsPerIp, ChannelGroup group, String[] enabledCipherSuites, ExecutionHandler eHandler) {
         super(timeout, maxConnections, maxConnectsPerIp, group, enabledCipherSuites, eHandler);
     }
+    
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeLine = super.getPipeline();
@@ -45,12 +46,12 @@ public abstract class AbstractExecutorAwareChannelPipelineFactory extends Abstra
         
         return pipeLine;
     }
-
     
     /**
-     * REturn the {@link ConnectionCountHandler} to use
+     * Return the {@link ConnectionCountHandler} to use
      * 
      * @return cHandler
      */
     protected abstract ConnectionCountHandler getConnectionCountHandler();
+
 }

@@ -32,8 +32,6 @@ import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 
 /**
  * {@link OrderedMemoryAwareThreadPoolExecutor} subclass which expose statistics via JMX
- * 
- *
  */
 public class JMXEnabledOrderedMemoryAwareThreadPoolExecutor extends OrderedMemoryAwareThreadPoolExecutor implements JMXEnabledOrderedMemoryAwareThreadPoolExecutorMBean{
 
@@ -50,10 +48,6 @@ public class JMXEnabledOrderedMemoryAwareThreadPoolExecutor extends OrderedMemor
         this.jmxPath = jmxPath;
         registerMBean();
     }
-    
-
-
-
 
     @Override
     protected void beforeExecute(Thread t, Runnable r) {

@@ -44,8 +44,6 @@ public class MockProtocolHandlerLoader implements ProtocolHandlerLoader{
 
     private List<Object> loaderRegistry = new ArrayList<Object>();
 
-
-
     protected ProtocolHandler create(String className) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         return (ProtocolHandler) Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
     }
@@ -125,4 +123,5 @@ public class MockProtocolHandlerLoader implements ProtocolHandlerLoader{
     public Object getObjectForName(String name) {
         return get(name);
     }
+
 }

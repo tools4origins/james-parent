@@ -3,9 +3,7 @@ package org.apache.james.pop3server.netty;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.filesystem.api.FileSystem;
@@ -20,14 +18,12 @@ public class POP3ServerFactory extends AbstractServerFactory{
     private FileSystem fileSystem;
     
     @Inject
-    @Resource(name = "protocolhandlerloader")
-    public void setProtocolHandlerLoader(@Named("protocolhandlerloader") ProtocolHandlerLoader loader) {
+    public void setProtocolHandlerLoader(ProtocolHandlerLoader loader) {
         this.loader = loader;
     }
 
     @Inject
-    @Resource(name = "filesystem")
-    public final void setFileSystem(@Named("filesystem") FileSystem filesystem) {
+    public final void setFileSystem(FileSystem filesystem) {
         this.fileSystem = filesystem;
     }
 
@@ -38,6 +34,7 @@ public class POP3ServerFactory extends AbstractServerFactory{
     @SuppressWarnings("unchecked")
     @Override
     protected List<AbstractConfigurableAsyncServer> createServers(Logger log, HierarchicalConfiguration config) throws Exception{
+
         List<AbstractConfigurableAsyncServer> servers = new ArrayList<AbstractConfigurableAsyncServer>();
         List<HierarchicalConfiguration> configs = config.configurationsAt("pop3server");
         
@@ -51,7 +48,7 @@ public class POP3ServerFactory extends AbstractServerFactory{
         }
 
         return servers;
+        
     }
     
-
 }

@@ -28,7 +28,7 @@ import org.jboss.netty.handler.timeout.IdleStateEvent;
 
 /**
  * {@link IdleStateAwareChannelHandler} which will call {@link ImapSession#logout()} if the
- * connected client did not receive or send any traffic in a given timeframe
+ * connected client did not receive or send any traffic in a given timeframe.
  */
 public class ImapIdleStateHandler extends IdleStateAwareChannelHandler implements NettyConstants {
 
@@ -49,8 +49,9 @@ public class ImapIdleStateHandler extends IdleStateAwareChannelHandler implement
             ctx.getChannel().close();
 
         }
+        
         super.channelIdle(ctx, e);
+    
     }
-
 
 }

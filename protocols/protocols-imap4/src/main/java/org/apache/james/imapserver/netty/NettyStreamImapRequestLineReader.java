@@ -48,9 +48,9 @@ public class NettyStreamImapRequestLineReader extends AbstractNettyImapRequestLi
      *             If the end-of-stream is reached.
      */
     public char nextChar() throws DecodingException {
+        
         if (!nextSeen) {
             int next = -1;
-
             try {
                 next = in.read();
             } catch (IOException e) {
@@ -59,11 +59,12 @@ public class NettyStreamImapRequestLineReader extends AbstractNettyImapRequestLi
             if (next == -1) {
                 throw new DecodingException(HumanReadableText.ILLEGAL_ARGUMENTS, "Unexpected end of stream.");
             }
-
             nextSeen = true;
             nextChar = (char) next;
         }
+        
         return nextChar;
+    
     }
 
     /**
@@ -89,6 +90,7 @@ public class NettyStreamImapRequestLineReader extends AbstractNettyImapRequestLi
         } else {
             return fin;
         }
+        
     }
 
     public void dispose() throws IOException {

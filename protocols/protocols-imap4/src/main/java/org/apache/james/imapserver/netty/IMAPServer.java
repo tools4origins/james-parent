@@ -22,7 +22,9 @@ import static org.jboss.netty.channel.Channels.pipeline;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.net.ssl.SSLEngine;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -49,59 +51,49 @@ import org.jboss.netty.handler.timeout.IdleStateHandler;
 import org.jboss.netty.util.HashedWheelTimer;
 
 /**
- * NIO IMAP Server which use Netty
+ * NIO IMAP Server which use Netty.
  */
 public class IMAPServer extends AbstractConfigurableAsyncServer implements ImapConstants, IMAPServerMBean, NettyConstants {
 
     private static final String softwaretype = "JAMES " + VERSION + " Server ";
 
-    private String hello;
     private ImapProcessor processor;
     private ImapEncoder encoder;
-
     private ImapDecoder decoder;
 
+    private String hello;
     private boolean compress;
-
     private int maxLineLength;
-
     private int inMemorySizeLimit;
-
     private boolean plainAuthDisallowed;
-    
     private int timeout;
-    
     private int literalSizeLimit;
 
-    // Use a big default
-    public final static int DEFAULT_MAX_LINE_LENGTH = 65536;
-
-    // Use 10MB as default
-    public final static int DEFAULT_IN_MEMORY_SIZE_LIMIT = 10485760;
-
-    // default timeout is 30 seconds
-    public final static int DEFAULT_TIMEOUT = 30 * 60;
-
+    public final static int DEFAULT_MAX_LINE_LENGTH = 65536; // Use a big default
+    public final static int DEFAULT_IN_MEMORY_SIZE_LIMIT = 10485760; // Use 10MB as default
+    public final static int DEFAULT_TIMEOUT = 30 * 60; // default timeout is 30 seconds
     public final static int DEFAULT_LITERAL_SIZE_LIMIT = 0;
 
     @Inject
-    public void setImapDecoder(ImapDecoder decoder) {
+    public void setImapProcessor(@Named("imapProcessor") ImapProcessor processor) {
+        this.processor = processor;
+    }
+
+    @Inject
+    public void setImapDecoder(@Named("imapDecoder") ImapDecoder decoder) {
         this.decoder = decoder;
     }
 
     @Inject
-    public void setImapEncoder(ImapEncoder encoder) {
+    public void setImapEncoder(@Named("imapEncoder") ImapEncoder encoder) {
         this.encoder = encoder;
-    }
-
-    @Inject
-    public void setImapProcessor(ImapProcessor processor) {
-        this.processor = processor;
     }
 
     @Override
     public void doConfigure(final HierarchicalConfiguration configuration) throws ConfigurationException {
+        
         super.doConfigure(configuration);
+        
         hello = softwaretype + " Server " + getHelloName() + " is ready.";
         compress = configuration.getBoolean("compress", false);
         maxLineLength = configuration.getInt("maxLineLength", DEFAULT_MAX_LINE_LENGTH);
@@ -113,9 +105,11 @@ public class IMAPServer extends AbstractConfigurableAsyncServer implements ImapC
         if (timeout < DEFAULT_TIMEOUT) {
             throw new ConfigurationException("Minimum timeout of 30 minutes required. See rfc2060 5.4 for details");
         }
+        
         if (timeout < 0) {
             timeout = 0;
         }
+        
     }
 
     /**
@@ -135,7 +129,9 @@ public class IMAPServer extends AbstractConfigurableAsyncServer implements ImapC
 
     @Override
     protected ChannelPipelineFactory createPipelineFactory(final ChannelGroup group) {
+        
         return new ChannelPipelineFactory() {
+            
             private final ChannelGroupHandler groupHandler = new ChannelGroupHandler(group);
             private final HashedWheelTimer timer = new HashedWheelTimer();
             

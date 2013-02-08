@@ -43,12 +43,10 @@ public class OioIMAPServer extends IMAPServer {
 
     /**
      * As OIO use one thread per connection we disable the use of the {@link ExecutionHandler}
-     * 
      */
     @Override
     protected ExecutionHandler createExecutionHander() {
         return null;
     }
-
 
 }

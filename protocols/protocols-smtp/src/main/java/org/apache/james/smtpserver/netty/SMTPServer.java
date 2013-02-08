@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.james.smtpserver.netty;
 
-
-
 import javax.inject.Inject;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -51,7 +49,6 @@ public class SMTPServer extends AbstractProtocolAsyncServer implements SMTPServe
     private final static int AUTH_ANNOUNCE = 2;
     private int authRequired = AUTH_DISABLED;
     
-
     /**
      * Whether the server needs helo to be send first
      */
@@ -89,7 +86,7 @@ public class SMTPServer extends AbstractProtocolAsyncServer implements SMTPServe
     private SMTPChannelUpstreamHandler coreHandler;
 
     @Inject
-    public void setDNSService(DNSService dns) {
+    public void setDnsService(DNSService dns) {
         this.dns = dns;
     }
     
@@ -113,8 +110,7 @@ public class SMTPServer extends AbstractProtocolAsyncServer implements SMTPServe
             }
             
         };
-        coreHandler = new SMTPChannelUpstreamHandler(transport, getLogger(), getEncryption());
-        
+        coreHandler = new SMTPChannelUpstreamHandler(transport, getLogger(), getEncryption());        
     }
 
     @Override

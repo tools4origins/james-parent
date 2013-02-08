@@ -22,9 +22,7 @@ package org.apache.james.smtpserver.netty;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.dnsservice.api.DNSService;
@@ -41,20 +39,17 @@ public class SMTPServerFactory extends AbstractServerFactory {
     private FileSystem fileSystem;
 
     @Inject
-    @Resource(name = "dnsservice")
-    public void setDNSService(@Named("dnsservice") DNSService dns) {
+    public void setDnsService(DNSService dns) {
         this.dns = dns;
     }
     
     @Inject
-    @Resource(name = "protocolhandlerloader")
-    public void setProtocolHandlerLoader(@Named("protocolhandlerloader") ProtocolHandlerLoader loader) {
+    public void setProtocolHandlerLoader(ProtocolHandlerLoader loader) {
         this.loader = loader;
     }
 
     @Inject
-    @Resource(name = "filesystem")
-    public final void setFileSystem(@Named("filesystem") FileSystem filesystem) {
+    public final void setFileSystem(FileSystem filesystem) {
         this.fileSystem = filesystem;
     }
 
@@ -71,7 +66,7 @@ public class SMTPServerFactory extends AbstractServerFactory {
         
         for (HierarchicalConfiguration serverConfig: configs) {
             SMTPServer server = createServer();
-            server.setDNSService(dns);
+            server.setDnsService(dns);
             server.setProtocolHandlerLoader(loader);
             server.setLog(log);
             server.setFileSystem(fileSystem);

@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.james.pop3server.netty;
 
-
 import org.apache.james.pop3server.core.CoreCmdHandlerLoader;
 import org.apache.james.pop3server.jmx.JMXHandlersLoader;
 import org.apache.james.protocols.api.ProtocolConfiguration;
@@ -33,6 +32,7 @@ import org.jboss.netty.channel.ChannelUpstreamHandler;
  * NIO POP3 Server which use Netty
  */
 public class POP3Server extends AbstractProtocolAsyncServer implements POP3ServerMBean {
+
     /**
      * The configuration data to be passed to the handler
      */
@@ -91,15 +91,14 @@ public class POP3Server extends AbstractProtocolAsyncServer implements POP3Serve
         return coreHandler; 
     }
 
-
     @Override
     protected Class<? extends HandlersPackage> getCoreHandlersPackage() {
         return CoreCmdHandlerLoader.class;
     }
 
-
     @Override
     protected Class<? extends HandlersPackage> getJMXHandlersPackage() {
         return JMXHandlersLoader.class;
     }
+
 }

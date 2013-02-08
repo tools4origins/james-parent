@@ -32,7 +32,7 @@ import org.apache.james.protocols.lib.handler.ProtocolHandlerLoader;
 /**
  * Abstract base class which use a {@link ProtocolHandlerLoader} for loading the {@link ProtocolHandler}
  */
-public abstract class AbstractProtocolAsyncServer extends AbstractConfigurableAsyncServer{
+public abstract class AbstractProtocolAsyncServer extends AbstractConfigurableAsyncServer {
 
     private ProtocolHandlerChainImpl handlerChain;
 

@@ -132,7 +132,6 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
 
         try {
             mbeanServer.registerMBean(this, new ObjectName(getMBeanName()));
-
         } catch (Exception e) {
             throw new RuntimeException("Unable to register mbean", e);
         }
@@ -264,6 +263,7 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
 
     @PostConstruct
     public final void init() throws Exception {
+
         if (isEnabled()) {
 
             buildSSLContext();
@@ -277,11 +277,14 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
             getLogger().info("Init " + getServiceType() + " done");
 
         }
+    
     }
 
     @PreDestroy
     public final void destroy() {
+        
         getLogger().info("Dispose " + getServiceType());
+        
         if (isEnabled()) {
             unbind();
             postDestroy();
@@ -571,7 +574,6 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
         return executionHandler;
     }
     
-
     protected abstract ChannelUpstreamHandler createCoreHandler();
     
     @Override
@@ -605,6 +607,5 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
 
         };
     }
-    
     
 }

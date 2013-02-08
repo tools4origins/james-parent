@@ -34,7 +34,7 @@ import org.apache.james.protocols.lib.handler.HandlersPackage;
 import org.apache.james.protocols.lib.handler.ProtocolHandlerLoader;
 import org.apache.james.protocols.lib.lifecycle.InitializingLifecycleAwareProtocolHandler;
 
-public class ProtocolHandlerChainImpl implements ProtocolHandlerChain{
+public class ProtocolHandlerChainImpl implements ProtocolHandlerChain {
 
     private ProtocolHandlerLoader loader;
     private HierarchicalConfiguration handlerchainConfig;

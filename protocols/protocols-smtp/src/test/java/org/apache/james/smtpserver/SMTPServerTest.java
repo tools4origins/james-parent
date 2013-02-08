@@ -178,7 +178,7 @@ public class SMTPServerTest {
         // slf4j can't set programmatically any log level. It's just a facade
         // log.setLevel(SimpleLog.LOG_LEVEL_ALL);
         m_smtpServer = createSMTPServer();
-        m_smtpServer.setDNSService(m_dnsServer);
+        m_smtpServer.setDnsService(m_dnsServer);
         m_smtpServer.setFileSystem(fileSystem);
 
         m_smtpServer.setProtocolHandlerLoader(chain);
