@@ -17,9 +17,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <!-- 
-      LMTP Server
-     -->
-    <bean id="lmtpserver" class="org.apache.james.lmtpserver.netty.LMTPServer"/>
+    <bean id="lmtpserver" class="org.apache.james.lmtpserver.netty.LMTPServerFactory">
+        <property name="protocolHandlerLoader" ref="protocolhandlerloader"/>
+        <property name="fileSystem" ref="filesystem"/>
+    </bean>
     
 </beans>

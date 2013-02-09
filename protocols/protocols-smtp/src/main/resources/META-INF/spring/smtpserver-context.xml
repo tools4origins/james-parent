@@ -18,9 +18,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <!-- 
-      SMTP Server
-     -->
-    <bean id="smtpserver" class="org.apache.james.smtpserver.netty.SMTPServer"/>
+    <bean id="smtpserver" class="org.apache.james.smtpserver.netty.SMTPServerFactory">
+        <property name="protocolHandlerLoader" ref="protocolhandlerloader"/>
+        <property name="fileSystem" ref="filesystem"/>
+        <property name="dnsService" ref="dnsservice"/>
+    </bean>
     
 </beans>

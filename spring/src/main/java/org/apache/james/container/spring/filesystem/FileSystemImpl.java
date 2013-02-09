@@ -37,23 +37,17 @@ public class FileSystemImpl implements FileSystem, ApplicationContextAware {
 
     private JamesResourceLoader resourceLoader = null;
 
-    /**
-     * @see org.apache.james.filesystem.api.FileSystem#getBasedir()
-     */
+    @Override
     public File getBasedir() throws FileNotFoundException {
         return new File(resourceLoader.getRootDirectory());
     }
 
-    /**
-     * @see org.apache.james.filesystem.api.FileSystem#getResource(String)
-     */
+    @Override
     public InputStream getResource(String url) throws IOException {
         return resourceLoader.getResource(url).getInputStream();
     }
 
-    /**
-     * @see org.apache.james.filesystem.api.FileSystem#getFile(String)
-     */
+    @Override
     public File getFile(String fileURL) throws FileNotFoundException {
         try {
             return resourceLoader.getResource(fileURL).getFile();
@@ -62,11 +56,7 @@ public class FileSystemImpl implements FileSystem, ApplicationContextAware {
         }
     }
 
-    /**
-     * @see
-     * org.springframework.context.ApplicationContextAware#setApplicationContext
-     * (org.springframework.context.ApplicationContext)
-     */
+    @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.resourceLoader = (JamesResourceLoader) context;
     }

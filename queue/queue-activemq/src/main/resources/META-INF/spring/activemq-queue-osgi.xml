@@ -17,20 +17,32 @@
   specific language governing permissions and limitations
   under the License.
 -->
-<beans:beans                                                                            
-   xmlns="http://www.springframework.org/schema/osgi"                                   
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xmlns:beans="http://www.springframework.org/schema/beans"             
-   xmlns:osgi="http://www.springframework.org/schema/osgi"                              
-   xsi:schemaLocation="http://www.springframework.org/schema/osgi  
+<beans:beans
+        xmlns="http://www.springframework.org/schema/osgi"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:beans="http://www.springframework.org/schema/beans"
+        xmlns:osgi="http://www.springframework.org/schema/osgi"
+        xsi:schemaLocation="http://www.springframework.org/schema/osgi
        http://www.springframework.org/schema/osgi/spring-osgi-1.2.xsd
        http://www.springframework.org/schema/beans   
-       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">                   
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!-- Configuration Admin entries so the user can overwrite them if needed -->
+    <!--<osgix:cm-properties id="cmProps" persistent-id="org.apache.james.activemq">-->
+    <!--<prop key="brokerURL">vm://james?create=false</prop>-->
+    <!--<prop key="sessionCacheSize">10</prop>-->
+    <!--<prop key="baseDir">/var/store/activemq/</prop>-->
+    <!--<prop key="useBlobMessages">true</prop>-->
+    <!--</osgix:cm-properties>-->
+
+    <!-- placeholder configurer -->
+    <!--<ctx:property-placeholder properties-ref="cmProps"/>-->
+
 
     <osgi:service ref="mailqueuefactory">
-      <osgi:interfaces>
-       <beans:value> org.apache.james.queue.api.MailQueueFactory</beans:value>
-      </osgi:interfaces>
-    </osgi:service>         
-   
+        <osgi:interfaces>
+            <beans:value>org.apache.james.queue.api.MailQueueFactory</beans:value>
+        </osgi:interfaces>
+    </osgi:service>
+
 </beans:beans>
