@@ -29,6 +29,7 @@
 
     <osgi:service ref="fetchmail">
         <osgi:interfaces>
+            <beans:value>org.apache.james.fetchmail.FetchScheduler</beans:value>
             <beans:value>org.apache.james.fetchmail.FetchSchedulerMBean</beans:value>
         </osgi:interfaces>
     </osgi:service>

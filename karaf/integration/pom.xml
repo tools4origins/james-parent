@@ -21,6 +21,11 @@
             <artifactId>james-server-dnsservice-dnsjava</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.james</groupId>
+            <artifactId>james-server-fetchmail</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>

@@ -162,7 +162,7 @@ public class FetchScheduler implements FetchSchedulerMBean, LogEnabled, Configur
 
     /**
      * Describes whether this service is enabled by configuration.
-     * 
+     *
      * @return is the service enabled.
      */
     public final boolean isEnabled() {

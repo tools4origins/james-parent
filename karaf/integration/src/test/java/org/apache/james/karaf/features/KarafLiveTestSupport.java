@@ -1,7 +1,6 @@
-package org.apache.james.karaf.karaf;
+package org.apache.james.karaf.features;
 
 import com.google.common.base.Stopwatch;
-import org.apache.james.dnsservice.api.DNSService;
 import org.apache.karaf.features.Feature;
 import org.apache.karaf.features.FeaturesService;
 import org.apache.karaf.tooling.exam.options.KarafDistributionConfigurationFilePutOption;
@@ -13,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
@@ -37,20 +35,22 @@ import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Apache James Karaf deployment test.
+ * Base class for integration testing with Karaf.
  */
 @RunWith(JUnit4TestRunner.class)
 @ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
-public class KarafFeatureInstallTest {
+public class KarafLiveTestSupport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(KarafFeatureInstallTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KarafLiveTestSupport.class);
+    public static final int WAIT_30_SECONDS = 30000;
+
     @Inject
-    private FeaturesService features;
+    FeaturesService features;
 
     @Inject
     BundleContext bundleContext;
 
-    private String featuresVersion;
+    String featuresVersion;
 
     @Configuration
     public static Option[] configuration() throws Exception {
@@ -80,37 +80,12 @@ public class KarafFeatureInstallTest {
         featuresVersion = System.getProperty("james-karaf-features");
     }
 
-    @Test
-    public void testInstallCommonsConfigurationFeature() throws Exception {
-        addJamesFeaturesRepository();
-        features.installFeature("commons-configuration");
-        assertInstalled("commons-configuration");
-        assertBundlesAreActive();
-    }
-
-    @Test
-    public void testInstallApacheMime4jFeature() throws Exception {
-        addJamesFeaturesRepository();
-        features.installFeature("apache-james-mime4j");
-        assertInstalled("apache-james-mime4j");
-        assertBundlesAreActive();
-    }
-
-    @Test
-    public void testInstallJamesDnsServiceDnsJava() throws Exception {
-        addJamesFeaturesRepository();
-        features.installFeature("james-server-dnsservice-dnsjava");
-        assertInstalled("james-server-dnsservice-dnsjava");
-        assertBundlesAreActive();
-        assertOSGiServiceStartsIn(DNSService.class, 30000);
-    }
-
-    private void assertInstalled(String featureName) throws Exception {
+    void assertInstalled(String featureName) throws Exception {
         Feature feature = features.getFeature(featureName);
         assertTrue("Feature " + featureName + " should be installed", features.isInstalled(feature));
     }
 
-    private void assertBundlesAreActive() {
+    void assertBundlesAreActive() {
         for (Bundle bundle : bundleContext.getBundles()) {
             LOG.info("***** bundle {} is {}", bundle.getSymbolicName(), bundle.getState());
             assertEquals("Bundle " + bundle.getSymbolicName() + " is not active",
@@ -118,7 +93,7 @@ public class KarafFeatureInstallTest {
         }
     }
 
-    private void addJamesFeaturesRepository() throws Exception {
+    void addJamesFeaturesRepository() throws Exception {
         String url = maven("org.apache.james.karaf", "james-karaf-features")
                 .version(featuresVersion)
                 .classifier("features")
@@ -130,7 +105,7 @@ public class KarafFeatureInstallTest {
         features.installFeature("war");
     }
 
-    private void assertOSGiServiceStartsIn(Class clazz, int timeoutInMilliseconds) throws InterruptedException {
+    void assertOSGiServiceStartsIn(Class clazz, int timeoutInMilliseconds) throws InterruptedException {
         final ServiceTracker tracker = new ServiceTracker(bundleContext, clazz, null);
         tracker.open(true);
         try {
