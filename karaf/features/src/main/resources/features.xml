@@ -213,7 +213,7 @@
     </feature>
 
     <feature name="james-server-mailet-container-camel" version="${project.version}">
-        <bundle>mvn:org.apache.james/james-server-mailetcontainer-camel/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.james/james-server-mailetcontainer-camel/${project.version}</bundle>
         <feature version="${project.version}">james-server-mailetcontainer-api</feature>
         <feature version="${project.version}">james-server-queue-api</feature>
         <feature version="${project.version}">james-server-util</feature>
@@ -221,13 +221,20 @@
         <feature version="${project.version}">james-server-lifecycle-api</feature>
         <feature version="${project.version}">james-server-data-api</feature>
         <feature version="${project.version}">james-server-core</feature>
-        <bundle>mvn:org.apache.james/apache-mailet-api/${mailet.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.james/apache-mailet-api/${mailet.version}</bundle>
         <feature version="${project.version}">james-server-filesystem-api</feature>
         <feature version="${project.version}">james-server-data-library</feature>
         <feature version="${commons-configuration-osgi.version}">commons-configuration</feature>
-        <bundle>mvn:org.apache.camel/camel-core/${camel.version}</bundle>
-        <bundle>mvn:org.apache.geronimo.javamail/geronimo-javamail_1.4_mail/${geronimo-javamail.version}</bundle>
-        <bundle>mvn:org.apache.geronimo.specs/geronimo-annotation_1.1_spec/${geronimo-annotation-spec.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.camel/camel-core/${camel.version}</bundle>
+        <bundle dependency="true">
+            mvn:org.apache.geronimo.javamail/geronimo-javamail_1.4_mail/${geronimo-javamail.version}
+        </bundle>
+        <bundle dependency="true">
+            mvn:org.apache.geronimo.specs/geronimo-annotation_1.1_spec/${geronimo-annotation-spec.version}
+        </bundle>
+        <bundle dependency="true">
+            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/${javax-inject-osgi.version}
+        </bundle>
     </feature>
 
     <feature name="james-server-mailets" version="${project.version}">

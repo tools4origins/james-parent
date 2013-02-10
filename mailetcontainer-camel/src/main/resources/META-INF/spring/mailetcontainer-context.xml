@@ -19,9 +19,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <!-- 
-     Mailet Container Beans.
-    -->
+    <!-- Mailet Container Beans. -->
     <bean id="mailprocessor" name="processorRoute"
           class="org.apache.james.mailetcontainer.impl.camel.CamelCompositeProcessor" autowire="byType"/>
 

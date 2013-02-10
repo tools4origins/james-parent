@@ -25,17 +25,20 @@
        
     <osgi:service ref="domainlistmanagement">
       <osgi:interfaces>
+          <beans:value>org.apache.james.domainlist.lib.DomainListManagement</beans:value>
        <beans:value>org.apache.james.domainlist.api.DomainListManagementMBean</beans:value>
       </osgi:interfaces>
     </osgi:service>
 
     <osgi:service ref="recipientrewritetablemanagement">
       <osgi:interfaces>
+          <beans:value>org.apache.james.rrt.lib.RecipientRewriteTableManagement</beans:value>
        <beans:value>org.apache.james.rrt.api.RecipientRewriteTableManagementMBean</beans:value>
       </osgi:interfaces>
     </osgi:service>  
     <osgi:service ref="usersrepositorymanagement">
       <osgi:interfaces>
+          <beans:value>org.apache.james.user.lib.UsersRepositoryManagement</beans:value>
        <beans:value>org.apache.james.user.api.UsersRepositoryManagementMBean</beans:value>
       </osgi:interfaces>
     </osgi:service>  

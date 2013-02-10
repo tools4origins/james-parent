@@ -19,17 +19,10 @@
 
 package org.apache.james.mailetcontainer.impl;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.lifecycle.api.Configurable;
+import org.apache.james.lifecycle.api.Disposable;
 import org.apache.james.lifecycle.api.LifecycleUtil;
 import org.apache.james.lifecycle.api.LogEnabled;
 import org.apache.james.mailetcontainer.api.MailProcessor;
@@ -42,33 +35,49 @@ import org.apache.james.util.concurrent.JMXEnabledThreadPoolExecutor;
 import org.apache.mailet.Mail;
 import org.slf4j.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Manages the mail spool. This class is responsible for retrieving messages
  * from the spool, directing messages to the appropriate processor, and removing
  * them from the spool when processing is complete.
- * 
  */
-public class JamesMailSpooler implements Runnable, Configurable, LogEnabled, MailSpoolerMBean {
+public class JamesMailSpooler implements Runnable, Disposable, Configurable, LogEnabled, MailSpoolerMBean {
 
     private MailQueue queue;
 
-    /** The number of threads used to move mail through the spool. */
+    /**
+     * The number of threads used to move mail through the spool.
+     */
     private int numThreads;
 
-    /** Number of active threads */
-    private AtomicInteger numActive = new AtomicInteger(0);;
+    /**
+     * Number of active threads
+     */
+    private AtomicInteger numActive = new AtomicInteger(0);
 
-    private AtomicInteger processingActive = new AtomicInteger(0);;
+    private AtomicInteger processingActive = new AtomicInteger(0);
 
-    /** Spool threads are active */
+    /**
+     * Spool threads are active
+     */
     private AtomicBoolean active = new AtomicBoolean(false);
 
-    /** Spool threads */
+    /**
+     * Spool threads
+     */
     private ExecutorService dequeueService;
-    
+
     private ExecutorService workerService;
-    
-    /** The mail processor */
+
+    /**
+     * The mail processor
+     */
     private MailProcessor mailProcessor;
 
     private Logger logger;
@@ -88,8 +97,7 @@ public class JamesMailSpooler implements Runnable, Configurable, LogEnabled, Mai
     }
 
     /**
-     * @see
-     * org.apache.james.lifecycle.api.Configurable#configure(org.apache.commons.configuration.HierarchicalConfiguration)
+     * @see org.apache.james.lifecycle.api.Configurable#configure(org.apache.commons.configuration.HierarchicalConfiguration)
      */
     public void configure(HierarchicalConfiguration config) throws ConfigurationException {
         numDequeueThreads = config.getInt("dequeueThreads", 2);
@@ -114,7 +122,7 @@ public class JamesMailSpooler implements Runnable, Configurable, LogEnabled, Mai
         active.set(true);
         workerService = JMXEnabledThreadPoolExecutor.newFixedThreadPool("org.apache.james:type=component,component=mailetcontainer,name=mailspooler,sub-type=threadpool", "spooler", numThreads);
         dequeueService = JMXEnabledThreadPoolExecutor.newFixedThreadPool("org.apache.james:type=component,component=mailetcontainer,name=mailspooler,sub-type=threadpool", "dequeuer", numDequeueThreads);
-        
+
         for (int i = 0; i < numDequeueThreads; i++) {
             Thread reader = new Thread(this, "Dequeue Thread #" + i);
             dequeueService.execute(reader);
@@ -125,6 +133,7 @@ public class JamesMailSpooler implements Runnable, Configurable, LogEnabled, Mai
      * This routinely checks the message spool for messages, and processes them
      * as necessary
      */
+    @Override
     public void run() {
 
         if (logger.isInfoEnabled()) {
@@ -178,16 +187,12 @@ public class JamesMailSpooler implements Runnable, Configurable, LogEnabled, Mai
 
                     }
                 });
-                  
-               
             } catch (MailQueueException e1) {
                 if (active.get() && logger.isErrorEnabled()) {
                     logger.error("Exception dequeue mail", e1);
 
                 }
             }
-          
-
         }
         if (logger.isInfoEnabled()) {
             logger.info("Stop " + getClass().getName() + ": " + Thread.currentThread().getName());
@@ -198,19 +203,20 @@ public class JamesMailSpooler implements Runnable, Configurable, LogEnabled, Mai
      * The dispose operation is called at the end of a components lifecycle.
      * Instances of this class use this method to release and destroy any
      * resources that they own.
-     * 
+     * <p/>
      * This implementation shuts down the LinearProcessors managed by this
      * JamesSpoolManager
-     * 
+     *
      * @see org.apache.james.lifecycle.api.Disposable#dispose()
      */
     @PreDestroy
+    @Override
     public void dispose() {
         logger.info(getClass().getName() + " dispose...");
         active.set(false); // shutdown the threads
         dequeueService.shutdownNow();
         workerService.shutdown();
-        
+
         long stop = System.currentTimeMillis() + 60000;
         // give the spooler threads one minute to terminate gracefully
         while (numActive.get() != 0 && stop > System.currentTimeMillis()) {
@@ -223,25 +229,16 @@ public class JamesMailSpooler implements Runnable, Configurable, LogEnabled, Mai
         logger.info(getClass().getName() + " thread shutdown completed.");
     }
 
-    /**
-     * @see org.apache.james.lifecycle.api.LogEnabled#setLog(org.slf4j.Logger)
-     */
     public void setLog(Logger log) {
         this.logger = log;
     }
 
-    /**
-     * @see
-     * org.apache.james.mailetcontainer.api.jmx.MailSpoolerMBean#getThreadCount()
-     */
+    @Override
     public int getThreadCount() {
         return numThreads;
     }
 
-    /**
-     * @see
-     * org.apache.james.mailetcontainer.api.jmx.MailSpoolerMBean#getCurrentSpoolCount()
-     */
+    @Override
     public int getCurrentSpoolCount() {
         return processingActive.get();
     }
