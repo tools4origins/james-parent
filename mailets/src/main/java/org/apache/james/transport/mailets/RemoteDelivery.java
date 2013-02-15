@@ -252,14 +252,12 @@ public class RemoteDelivery extends GenericMailet implements Runnable {
     private boolean isSSLEnable = false;
 
     @Inject
-    @Named("domainlist")
-    public void setDomainList(DomainList domainList) {
+    public void setDomainList(@Named("domainlist") DomainList domainList) {
         this.domainList = domainList;
     }
 
     @Inject
-    @Named("mailqueuefactory")
-    public void setMailQueueFactory( MailQueueFactory queueFactory) {
+    public void setMailQueueFactory(@Named("mailqueuefactory") MailQueueFactory queueFactory) {
         this.queueFactory = queueFactory;
     }
 

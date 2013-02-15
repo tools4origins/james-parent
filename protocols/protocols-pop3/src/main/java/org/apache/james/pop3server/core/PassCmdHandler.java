@@ -48,8 +48,7 @@ public class PassCmdHandler extends AbstractPassCmdHandler  {
     private MailboxManager manager;
 
     @Inject
-    @Named("mailboxmanager")
-    public void setMailboxManager(MailboxManager manager) {
+    public void setMailboxManager(@Named("mailboxmanager") MailboxManager manager) {
         this.manager = manager;
     }
 

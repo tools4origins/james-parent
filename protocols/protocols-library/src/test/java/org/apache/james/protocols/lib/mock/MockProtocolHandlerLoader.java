@@ -94,9 +94,17 @@ public class MockProtocolHandlerLoader implements ProtocolHandlerLoader{
     private void injectResources(Object resource) {
         final Method[] methods = resource.getClass().getMethods();
         for (Method method : methods) {
-            final Named namedAnnotation = method.getAnnotation(Named.class);
-            if (namedAnnotation != null) {
-                String name = namedAnnotation.value();
+            final Inject injectAnnotation = method.getAnnotation(Inject.class);
+            if (injectAnnotation != null) {
+                String name = null;
+                Annotation[][] paramAnnotations = method.getParameterAnnotations();
+                if (paramAnnotations.length == 1) {
+                    if (paramAnnotations[0].length ==1) {
+                        if (paramAnnotations[0][0].annotationType().equals(Named.class)) {
+                            name = ((Named) paramAnnotations[0][0]).value();
+                        }
+                    }
+                }
                 if (name == null) {
                     throw new UnsupportedOperationException("@Inject annotation without @Named specified is not supported by this implementation");
                 } else {

@@ -42,9 +42,8 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
     private UsersRepository usersRepository;
 
     @Inject
-    @Named("usersrepository") 
     @Resource(name = "usersrepository")
-    public void setUsersRepository(UsersRepository usersRepository) {
+    public void setUsersRepository(@Named("usersrepository") UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 

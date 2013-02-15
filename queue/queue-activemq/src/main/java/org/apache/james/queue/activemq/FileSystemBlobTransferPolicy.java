@@ -39,9 +39,8 @@ public class FileSystemBlobTransferPolicy extends BlobTransferPolicy {
     private FileSystemBlobStrategy strategy;
 
     @Inject
-    @Named("filesystem")
     @Resource(name = "filesystem")
-    public void setFileSystem(FileSystem fileSystem) {
+    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
         this.fileSystem = fileSystem;
     }
 

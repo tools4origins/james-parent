@@ -48,14 +48,12 @@ public class CamelCompositeProcessor extends AbstractStateCompositeProcessor imp
     private MailetLoader mailetLoader;
 
     @Inject
-    @Named("matcherloader")
-    public void setMatcherLoader(MatcherLoader matcherLoader) {
+    public void setMatcherLoader(@Named("matcherloader") MatcherLoader matcherLoader) {
         this.matcherLoader = matcherLoader;
     }
 
     @Inject
-    @Named("mailetloader")
-    public void setMailetLoader(MailetLoader mailetLoader) {
+    public void setMailetLoader(@Named("mailetloader") MailetLoader mailetLoader) {
         this.mailetLoader = mailetLoader;
     }
 

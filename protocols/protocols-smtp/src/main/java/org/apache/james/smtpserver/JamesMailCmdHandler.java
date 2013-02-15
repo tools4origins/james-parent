@@ -30,8 +30,7 @@ public class JamesMailCmdHandler extends MailCmdHandler {
     private DomainList domainList;
 
     @Inject
-    @Named("domainlist")
-    public final void setDomainList(DomainList domainList) {
+    public final void setDomainList(@Named("domainlist") DomainList domainList) {
         this.domainList = domainList;
     }
 

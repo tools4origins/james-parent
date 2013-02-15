@@ -41,8 +41,7 @@ public abstract class AbstractProtocolAsyncServer extends AbstractConfigurableAs
     private HierarchicalConfiguration config;
 
     @Inject
-    @Named("protocolhandlerloader")
-    public void setProtocolHandlerLoader(ProtocolHandlerLoader loader) {
+    public void setProtocolHandlerLoader(@Named("protocolhandlerloader") ProtocolHandlerLoader loader) {
         this.loader = loader;
     }
     

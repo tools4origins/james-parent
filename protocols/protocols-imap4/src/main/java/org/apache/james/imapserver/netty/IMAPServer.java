@@ -75,20 +75,17 @@ public class IMAPServer extends AbstractConfigurableAsyncServer implements ImapC
     public final static int DEFAULT_LITERAL_SIZE_LIMIT = 0;
 
     @Inject
-    @Named("imapProcessor")
-    public void setImapProcessor(ImapProcessor processor) {
+    public void setImapProcessor(@Named("imapProcessor") ImapProcessor processor) {
         this.processor = processor;
     }
 
     @Inject
-    @Named("imapDecoder")
-    public void setImapDecoder(ImapDecoder decoder) {
+    public void setImapDecoder(@Named("imapDecoder") ImapDecoder decoder) {
         this.decoder = decoder;
     }
 
     @Inject
-    @Named("imapEncoder")
-    public void setImapEncoder(ImapEncoder encoder) {
+    public void setImapEncoder(@Named("imapEncoder") ImapEncoder encoder) {
         this.encoder = encoder;
     }
 

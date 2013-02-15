@@ -35,9 +35,8 @@ public class JMSMailQueueFactory extends AbstractMailQueueFactory {
     protected ConnectionFactory connectionFactory;
 
     @Inject
-    @Named("jmsConnectionFactory")
     @Resource(name = "jmsConnectionFactory")
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+    public void setConnectionFactory(@Named("jmsConnectionFactory") ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 

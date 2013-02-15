@@ -70,8 +70,7 @@ public class UsersFileRepository extends AbstractJamesUsersRepository {
     private FileSystem fileSystem;
 
     @Inject
-    @Named("filesystem") 
-    public void setFileSystem(FileSystem fileSystem) {
+    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
         this.fileSystem = fileSystem;
     }
 

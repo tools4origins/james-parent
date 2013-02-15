@@ -154,8 +154,7 @@ public class JDBCMailRepository extends AbstractMailRepository {
     }
 
     @Inject
-    @Named("filesystem") 
-    public void setFileSystem(FileSystem fileSystem) {
+    public void setFileSystem(@Named("filesystem") FileSystem fileSystem) {
         this.fileSystem = fileSystem;
     }
 

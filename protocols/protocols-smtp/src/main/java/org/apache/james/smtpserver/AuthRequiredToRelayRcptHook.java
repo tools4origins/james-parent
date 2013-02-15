@@ -30,8 +30,7 @@ public class AuthRequiredToRelayRcptHook extends AbstractAuthRequiredToRelayRcpt
     private DomainList domains;
 
     @Inject
-    @Named("domainlist")
-    public void setDomainList(DomainList domains) {
+    public void setDomainList(@Named("domainlist") DomainList domains) {
         this.domains = domains;
     }
 
