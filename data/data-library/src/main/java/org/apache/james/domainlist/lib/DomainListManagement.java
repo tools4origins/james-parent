@@ -37,47 +37,58 @@ public class DomainListManagement extends StandardMBean implements DomainListMan
     }
 
     @Inject
-    @Resource(@Named("domainlist") name = "domainlist")
-    public void setDomainList(DomainList domainList) {
+    @Resource(
+        name = "domainlist")
+    public void setDomainList(@Named("domainlist") DomainList domainList) {
         this.domainList = domainList;
     }
 
+    @Override
     public void addDomain(String domain) throws Exception {
         try {
             domainList.addDomain(domain);
-        } catch (DomainListException e) {
+        }
+        catch (DomainListException e) {
             throw new Exception(e.getMessage());
         }
     }
 
+    @Override
     public boolean containsDomain(String domain) throws Exception {
         try {
             return domainList.containsDomain(domain);
-        } catch (DomainListException e) {
+        }
+        catch (DomainListException e) {
             throw new Exception(e.getMessage());
         }
     }
 
+    @Override
     public String[] getDomains() throws Exception {
         try {
             return domainList.getDomains();
-        } catch (DomainListException e) {
+        }
+        catch (DomainListException e) {
             throw new Exception(e.getMessage());
         }
     }
 
+    @Override
     public void removeDomain(String domain) throws Exception {
         try {
             domainList.removeDomain(domain);
-        } catch (DomainListException e) {
+        }
+        catch (DomainListException e) {
             throw new Exception(e.getMessage());
         }
     }
 
+    @Override
     public String getDefaultDomain() throws Exception {
         try {
             return domainList.getDefaultDomain();
-        } catch (DomainListException e) {
+        }
+        catch (DomainListException e) {
             throw new Exception(e.getMessage());
         }
 
