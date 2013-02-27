@@ -22,7 +22,7 @@ import org.ops4j.pax.exam.junit.ExamReactorStrategy;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.ops4j.pax.exam.options.MavenArtifactUrlReference;
-import org.ops4j.pax.exam.spi.reactors.AllConfinedStagedReactorFactory;
+import org.ops4j.pax.exam.spi.reactors.EagerSingleStagedReactorFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -38,11 +38,14 @@ import java.util.concurrent.TimeUnit;
  * Base class for integration testing with Karaf.
  */
 @RunWith(JUnit4TestRunner.class)
-@ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
+@ExamReactorStrategy(EagerSingleStagedReactorFactory.class)
 public class KarafLiveTestSupport {
 
     private static final Logger LOG = LoggerFactory.getLogger(KarafLiveTestSupport.class);
     public static final int WAIT_30_SECONDS = 30000;
+
+    private static final String DISTRIBUTION_GROUP_ID = "org.apache.james.karaf";
+    private static final String DISTRIBUTION_ARTIFACT_ID = "james-karaf-distribution";
 
     @Inject
     FeaturesService features;
@@ -54,15 +57,19 @@ public class KarafLiveTestSupport {
 
     @Configuration
     public static Option[] configuration() throws Exception {
-        MavenArtifactUrlReference karafUrl = maven().groupId("org.apache.karaf")
-                .artifactId("apache-karaf")
-                .version("2.3.0")
+
+        MavenArtifactUrlReference karafUrl = maven().groupId(DISTRIBUTION_GROUP_ID)
+                .artifactId(DISTRIBUTION_ARTIFACT_ID)
+                .versionAsInProject()
                 .type("tar.gz");
 
         String jamesFeaturesVersion = MavenUtils.getArtifactVersion("org.apache.james.karaf", "james-karaf-features");
 
         return new Option[]{
-                karafDistributionConfiguration().frameworkUrl(karafUrl).karafVersion("2.3.0").name("Apache Karaf")
+                karafDistributionConfiguration()
+                        .frameworkUrl(karafUrl)
+                        .karafVersion(getDistributionVersionAsInProject())
+                        .name("Apache Karaf")
                         .unpackDirectory(new File("target/exam")),
                 logLevel(LogLevelOption.LogLevel.INFO),
                 new KarafDistributionConfigurationFilePutOption("etc/custom.properties",
@@ -73,6 +80,10 @@ public class KarafLiveTestSupport {
                 // use system property to provide project version for tests
                 systemProperty("james-karaf-features").value(jamesFeaturesVersion)
         };
+    }
+
+    public static String getDistributionVersionAsInProject() {
+        return MavenUtils.asInProject().getVersion(DISTRIBUTION_GROUP_ID, DISTRIBUTION_ARTIFACT_ID);
     }
 
     @Before

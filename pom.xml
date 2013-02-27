@@ -32,7 +32,7 @@
     </parent>
 
     <artifactId>james-server</artifactId>
-    <version>3.0-beta5-SNAPSHOT</version>
+    <version>3.0.0-beta5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Apache James :: Server</name>
@@ -55,6 +55,7 @@
     <modules>
         <module>app</module>
 
+        <module>karaf/distribution</module>
         <module>karaf/features</module>
         <module>karaf/integration</module>
 
@@ -81,7 +82,7 @@
         <module>data/data-jdbc</module>
         <module>data/data-file</module>
         <module>data/data-ldap</module>
-        <!--<module>data/data-hbase</module>-->
+        <module>data/data-hbase</module>
 
         <module>protocols/protocols-imap4</module>
         <module>protocols/protocols-library</module>
@@ -1141,9 +1142,9 @@
 
             <!-- Apache Felix Karaf integration -->
             <dependency>
-                <groupId>org.apache.karaf</groupId>
-                <artifactId>apache-karaf</artifactId>
-                <version>${karaf.version}</version>
+                <groupId>org.apache.james.karaf</groupId>
+                <artifactId>james-karaf-distribution</artifactId>
+                <version>${project.version}</version>
                 <scope>test</scope>
                 <type>tar.gz</type>
                 <exclusions>

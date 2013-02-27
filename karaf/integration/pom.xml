@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.apache.james</groupId>
         <artifactId>james-server</artifactId>
-        <version>3.0-beta5-SNAPSHOT</version>
+        <version>3.0.0-beta5-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -83,9 +83,9 @@
 
         <!-- Apache Felix Karaf integration -->
         <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>apache-karaf</artifactId>
-            <version>${karaf.version}</version>
+            <groupId>org.apache.james.karaf</groupId>
+            <artifactId>james-karaf-distribution</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
             <type>tar.gz</type>
             <exclusions>
