@@ -41,7 +41,7 @@ public class HBaseRecipientRewriteTableTest extends AbstractRecipientRewriteTabl
      * The Logger.
      */
     private static Logger logger = Logger.getLogger(HBaseRecipientRewriteTableTest.class);
-    private static HBaseClusterSingleton cluster = HBaseClusterSingleton.build();
+    private static final HBaseClusterSingleton cluster = HBaseClusterSingleton.build();
 
     @Before
     public void setMeUp() throws IOException {
@@ -60,7 +60,6 @@ public class HBaseRecipientRewriteTableTest extends AbstractRecipientRewriteTabl
     }
 
     /**
-     * @see org.apache.jŒames.rrt.lib.AbstractRecipientRewriteTableTest#addMapping(String, String, String, int)
      */
     @Override
     protected boolean addMapping(String user, String domain, String mapping, int type) throws

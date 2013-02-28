@@ -35,7 +35,6 @@ public class JamesServerWebApplicationContext extends XmlWebApplicationContext i
     private final JamesResourceLoader resourceLoader = new AbstractJamesResourceLoader() {
 
         /**
-         * @see org.apache.james.container.spring.JamesResourceLoader#getAbsoluteDirectory()
          */
         public String getAbsoluteDirectory() {
             if (absoluteDirectory == null) {
@@ -46,7 +45,6 @@ public class JamesServerWebApplicationContext extends XmlWebApplicationContext i
         }
 
         /**
-         * @see org.apache.james.container.spring.JamesResourceLoader#getConfDirectory()
          */
         public String getConfDirectory() {
             if (confDirectory == null) {
@@ -57,7 +55,6 @@ public class JamesServerWebApplicationContext extends XmlWebApplicationContext i
         }
 
         /**
-         * @see org.apache.james.container.spring.JamesResourceLoader#getRootDirectory()
          */
         public String getRootDirectory() {
             if (rootDirectory == null) {
@@ -69,7 +66,6 @@ public class JamesServerWebApplicationContext extends XmlWebApplicationContext i
         }
 
         /**
-         * @see org.apache.james.container.spring.JamesResourceLoader#getVarDirectory()
          */
         public String getVarDirectory() {
             if (varDirectory == null) {

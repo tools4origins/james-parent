@@ -19,21 +19,6 @@
 
 package org.apache.james.mailrepository.file;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.core.MimeMessageCopyOnWriteProxy;
@@ -44,19 +29,33 @@ import org.apache.james.repository.file.FilePersistentObjectRepository;
 import org.apache.james.repository.file.FilePersistentStreamRepository;
 import org.apache.mailet.Mail;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 /**
  * <p>
  * Implementation of a MailRepository on a FileSystem.
  * </p>
  * <p>
  * Requires a configuration element in the .conf.xml file of the form:
- * 
+ * <p/>
  * <pre>
  *  &lt;repository destinationURL="file://path-to-root-dir-for-repository"
  *              type="MAIL"
  *              model="SYNCHRONOUS"/&gt;
  * </pre>
- * 
+ * <p/>
  * Requires a logger called MailRepository.
  * </p>
  */
@@ -66,9 +65,10 @@ public class FileMailRepository extends AbstractMailRepository {
     private FilePersistentObjectRepository objectRepository;
     private String destination;
     private Set keys;
+    private final Object lock = new Object();
     private boolean fifo;
     private boolean cacheKeys; // experimental: for use with write mostly
-                               // repositories such as spam and error
+    // repositories such as spam and error
     private FileSystem fileSystem;
 
     @Inject
@@ -111,25 +111,25 @@ public class FileMailRepository extends AbstractMailRepository {
 
             // Finds non-matching pairs and deletes the extra files
             HashSet streamKeys = new HashSet();
-            for (Iterator i = streamRepository.list(); i.hasNext();) {
+            for (Iterator i = streamRepository.list(); i.hasNext(); ) {
                 streamKeys.add(i.next());
             }
             HashSet objectKeys = new HashSet();
-            for (Iterator i = objectRepository.list(); i.hasNext();) {
+            for (Iterator i = objectRepository.list(); i.hasNext(); ) {
                 objectKeys.add(i.next());
             }
 
             Collection strandedStreams = (Collection) streamKeys.clone();
             strandedStreams.removeAll(objectKeys);
-            for (Iterator i = strandedStreams.iterator(); i.hasNext();) {
-                String key = (String) i.next();
+            for (Object strandedStream : strandedStreams) {
+                String key = (String) strandedStream;
                 remove(key);
             }
 
             Collection strandedObjects = (Collection) objectKeys.clone();
             strandedObjects.removeAll(streamKeys);
-            for (Iterator i = strandedObjects.iterator(); i.hasNext();) {
-                String key = (String) i.next();
+            for (Object strandedObject : strandedObjects) {
+                String key = (String) strandedObject;
                 remove(key);
             }
 
@@ -137,13 +137,13 @@ public class FileMailRepository extends AbstractMailRepository {
                 // Next get a list from the object repository
                 // and use that for the list of keys
                 keys.clear();
-                for (Iterator i = objectRepository.list(); i.hasNext();) {
+                for (Iterator i = objectRepository.list(); i.hasNext(); ) {
                     keys.add(i.next());
                 }
             }
             if (getLogger().isDebugEnabled()) {
-                StringBuffer logBuffer = new StringBuffer(128).append(getClass().getName()).append(" created in ").append(destination);
-                getLogger().debug(logBuffer.toString());
+                String logBuffer = getClass().getName() + " created in " + destination;
+                getLogger().debug(logBuffer);
             }
         } catch (Exception e) {
             final String message = "Failed to retrieve Store component:" + e.getMessage();
@@ -152,9 +152,7 @@ public class FileMailRepository extends AbstractMailRepository {
         }
     }
 
-    /**
-     * @see org.apache.james.mailrepository.lib.AbstractMailRepository#internalStore(Mail)
-     */
+    @Override
     protected void internalStore(Mail mc) throws MessagingException, IOException {
         String key = mc.getName();
         if (keys != null && !keys.contains(key)) {
@@ -174,12 +172,12 @@ public class FileMailRepository extends AbstractMailRepository {
             MimeMessageWrapper wrapper = (MimeMessageWrapper) message;
             if (DEEP_DEBUG) {
                 System.out.println("Retrieving from: " + wrapper.getSourceId());
-                StringBuffer debugBuffer = new StringBuffer(64).append("Saving to:       ").append(destination).append("/").append(mc.getName());
-                System.out.println(debugBuffer.toString());
+                String debugBuffer = "Saving to:       " + destination + "/" + mc.getName();
+                System.out.println(debugBuffer);
                 System.out.println("Modified: " + wrapper.isModified());
             }
-            StringBuffer destinationBuffer = new StringBuffer(128).append(destination).append("/").append(mc.getName());
-            if (destinationBuffer.toString().equals(wrapper.getSourceId())) {
+            String destinationBuffer = destination + "/" + mc.getName();
+            if (destinationBuffer.equals(wrapper.getSourceId())) {
                 if (!wrapper.isModified()) {
                     // We're trying to save to the same place, and it's not
                     // modified... we shouldn't save.
@@ -219,19 +217,14 @@ public class FileMailRepository extends AbstractMailRepository {
         objectRepository.put(key, mc);
     }
 
-    /**
-     * @see org.apache.james.mailrepository.api.MailRepository#retrieve(String)
-     */
+    @Override
     public Mail retrieve(String key) throws MessagingException {
-        if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-            getLogger().debug("Retrieving mail: " + key);
-        }
         try {
-            Mail mc = null;
+            Mail mc;
             try {
                 mc = (Mail) objectRepository.get(key);
             } catch (RuntimeException re) {
-                StringBuffer exceptionBuffer = new StringBuffer(128);
+                StringBuilder exceptionBuffer = new StringBuilder(128);
                 if (re.getCause() instanceof Error) {
                     exceptionBuffer.append("Error when retrieving mail, not deleting: ").append(re.toString());
                 } else {
@@ -253,9 +246,7 @@ public class FileMailRepository extends AbstractMailRepository {
         }
     }
 
-    /**
-     * @see org.apache.james.mailrepository.lib.AbstractMailRepository#internalRemove(String)
-     */
+    @Override
     protected void internalRemove(String key) throws MessagingException {
         if (keys != null)
             keys.remove(key);
@@ -263,26 +254,24 @@ public class FileMailRepository extends AbstractMailRepository {
         objectRepository.remove(key);
     }
 
-    /**
-     * @see org.apache.james.mailrepository.api.MailRepository#list()
-     */
+    @Override
     public Iterator list() {
         // Fix ConcurrentModificationException by cloning
         // the keyset before getting an iterator
         final ArrayList clone;
         if (keys != null)
-            synchronized (keys) {
+            synchronized (lock) {
                 clone = new ArrayList(keys);
             }
         else {
             clone = new ArrayList();
-            for (Iterator i = objectRepository.list(); i.hasNext();) {
+            for (Iterator i = objectRepository.list(); i.hasNext(); ) {
                 clone.add(i.next());
             }
         }
         if (fifo)
             Collections.sort(clone); // Keys is a HashSet; impose FIFO for apps
-                                     // that need it
+        // that need it
         return clone.iterator();
     }
 }

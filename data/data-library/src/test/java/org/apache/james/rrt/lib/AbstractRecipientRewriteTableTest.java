@@ -55,19 +55,14 @@ public abstract class AbstractRecipientRewriteTableTest {
 
         if (mappings != null) {
 
-            Iterator<String> mappingsIt = virtualUserTable.getAllMappings().keySet().iterator();
-
-            while (mappingsIt.hasNext()) {
-                String key = mappingsIt.next().toString();
+            for (String key : virtualUserTable.getAllMappings().keySet()) {
                 String args[] = key.split("@");
 
                 Collection<String> map = mappings.get(key);
 
-                Iterator<String> mapIt = map.iterator();
-
-                while (mapIt.hasNext()) {
+                for (String aMap : map) {
                     try {
-                        removeMapping(args[0], args[1], mapIt.next().toString());
+                        removeMapping(args[0], args[1], aMap);
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     }

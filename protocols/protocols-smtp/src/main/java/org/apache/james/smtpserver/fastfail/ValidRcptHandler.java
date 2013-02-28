@@ -98,21 +98,21 @@ public class ValidRcptHandler extends AbstractValidRcptHandler implements Initia
         // check if the server use virtualhosting, if not use only the localpart
         // as username
         try {
-            if (users.supportVirtualHosting() == false) {
+            if (!users.supportVirtualHosting()) {
                 username = recipient.getLocalPart();
             }
 
-            if (users.contains(username) == true) {
+            if (users.contains(username)) {
                 return true;
             } else {
 
-                if (useVut == true) {
+                if (useVut) {
                     session.getLogger().debug("Unknown user " + username + " check if its an alias");
 
                     try {
                         Collection<String> targetString = vut.getMappings(recipient.getLocalPart(), recipient.getDomain());
 
-                        if (targetString != null && targetString.isEmpty() == false) {
+                        if (targetString != null && !targetString.isEmpty()) {
                             return true;
                         }
                     } catch (ErrorMappingException e) {

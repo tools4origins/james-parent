@@ -41,7 +41,7 @@ public class RecipientRewriteTableUtil {
 
     // @deprecated QUERY is deprecated - SQL queries are now located in
     // sqlResources.xml
-    public static String QUERY = "select RecipientRewriteTable.target_address from RecipientRewriteTable, RecipientRewriteTable as VUTDomains where (RecipientRewriteTable.user like ? or RecipientRewriteTable.user like '\\%') and (RecipientRewriteTable.domain like ? or (RecipientRewriteTable.domain like '%*%' and VUTDomains.domain like ?)) order by concat(RecipientRewriteTable.user,'@',RecipientRewriteTable.domain) desc limit 1";
+    public static final String QUERY = "select RecipientRewriteTable.target_address from RecipientRewriteTable, RecipientRewriteTable as VUTDomains where (RecipientRewriteTable.user like ? or RecipientRewriteTable.user like '\\%') and (RecipientRewriteTable.domain like ? or (RecipientRewriteTable.domain like '%*%' and VUTDomains.domain like ?)) order by concat(RecipientRewriteTable.user,'@',RecipientRewriteTable.domain) desc limit 1";
 
     /**
      * Processes regex virtual user mapping
@@ -99,7 +99,7 @@ public class RecipientRewriteTableUtil {
     static public String replaceParameters(String str, Map<String, String> parameters) {
         if (str != null && parameters != null) {
             // Do parameter replacements for this string resource.
-            StringBuffer replaceBuffer = new StringBuffer(64);
+            StringBuilder replaceBuffer = new StringBuilder(64);
             for (Map.Entry<String, String> entry : parameters.entrySet()) {
                 replaceBuffer.setLength(0);
                 replaceBuffer.append("${").append(entry.getKey()).append("}");
@@ -126,7 +126,7 @@ public class RecipientRewriteTableUtil {
         int find_length = find.length();
         int replace_length = replace.length();
 
-        StringBuffer output = new StringBuffer(input);
+        StringBuilder output = new StringBuilder(input);
         int index = input.indexOf(find);
         int outputOffset = 0;
 
@@ -157,21 +157,21 @@ public class RecipientRewriteTableUtil {
 
         // Look for exact (user@domain) match
         buf = new StringBuffer().append(user).append("@").append(domain);
-        target = (String) mappings.get(buf.toString());
+        target = mappings.get(buf.toString());
         if (target != null) {
             return target;
         }
 
         // Look for user@* match
         buf = new StringBuffer().append(user).append("@*");
-        target = (String) mappings.get(buf.toString());
+        target = mappings.get(buf.toString());
         if (target != null) {
             return target;
         }
 
         // Look for *@domain match
         buf = new StringBuffer().append("*@").append(domain);
-        target = (String) mappings.get(buf.toString());
+        target = mappings.get(buf.toString());
         if (target != null) {
             return target;
         }
@@ -187,7 +187,7 @@ public class RecipientRewriteTableUtil {
      * @return the character to tokenize on
      */
     public static String getSeparator(String targetString) {
-        return (targetString.indexOf(',') > -1 ? "," : (targetString.indexOf(';') > -1 ? ";" : ((targetString.indexOf(RecipientRewriteTable.ERROR_PREFIX) > -1 || targetString.indexOf(RecipientRewriteTable.REGEX_PREFIX) > -1 || targetString.indexOf(RecipientRewriteTable.ALIASDOMAIN_PREFIX) > -1) ? "" : ":")));
+        return (targetString.indexOf(',') > -1 ? "," : (targetString.indexOf(';') > -1 ? ";" : ((targetString.contains(RecipientRewriteTable.ERROR_PREFIX) || targetString.contains(RecipientRewriteTable.REGEX_PREFIX) || targetString.contains(RecipientRewriteTable.ALIASDOMAIN_PREFIX)) ? "" : ":")));
     }
 
     /**
@@ -246,7 +246,7 @@ public class RecipientRewriteTableUtil {
      * @return mapping the mapping String
      */
     public static String CollectionToMapping(Collection<String> map) {
-        StringBuffer mapping = new StringBuffer();
+        StringBuilder mapping = new StringBuilder();
         Iterator<String> mappings = map.iterator();
         while (mappings.hasNext()) {
             mapping.append(mappings.next());

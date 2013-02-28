@@ -134,6 +134,6 @@ public class JamesServerApplicationContext extends ClassPathXmlApplicationContex
             return "../";
         }
 
-    };
+    }
 
 }

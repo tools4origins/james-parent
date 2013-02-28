@@ -36,7 +36,7 @@ import org.apache.jsieve.mailet.ResourceLocator;
  */
 public class ResourceLocatorImpl implements ResourceLocator {
 
-    private boolean virtualHosting;
+    private final boolean virtualHosting;
     
     private FileSystem fileSystem = null;
 
@@ -58,7 +58,7 @@ public class ResourceLocatorImpl implements ResourceLocator {
 
         // RFC 5228 permits extensions: .siv .sieve
         String sieveFilePrefix = FileSystem.FILE_PROTOCOL + "sieve/" + username + ".";
-        File sieveFile = null;
+        File sieveFile;
         try {
             sieveFile = fileSystem.getFile(sieveFilePrefix + "sieve");
         } catch (FileNotFoundException ex) {

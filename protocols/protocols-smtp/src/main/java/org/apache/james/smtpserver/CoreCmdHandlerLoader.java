@@ -45,74 +45,68 @@ import org.apache.james.protocols.smtp.core.log.HookResultLogger;
  */
 public class CoreCmdHandlerLoader implements HandlersPackage {
 
-    private final String COMMANDDISPATCHER = CommandDispatcher.class.getName();
-    private final String AUTHCMDHANDLER = AuthCmdHandler.class.getName();
-    private final String DATACMDHANDLER = JamesDataCmdHandler.class.getName();
-    private final String EHLOCMDHANDLER = EhloCmdHandler.class.getName();
-    private final String EXPNCMDHANDLER = ExpnCmdHandler.class.getName();
-    private final String HELOCMDHANDLER = HeloCmdHandler.class.getName();
-    private final String HELPCMDHANDLER = HelpCmdHandler.class.getName();
-    private final String MAILCMDHANDLER = JamesMailCmdHandler.class.getName();
-    private final String NOOPCMDHANDLER = NoopCmdHandler.class.getName();
-    private final String QUITCMDHANDLER = QuitCmdHandler.class.getName();
-    private final String RCPTCMDHANDLER = JamesRcptCmdHandler.class.getName();
-    private final String RSETCMDHANDLER = RsetCmdHandler.class.getName();
-    private final String VRFYCMDHANDLER = VrfyCmdHandler.class.getName();
-    private final String MAILSIZEHOOK = MailSizeEsmtpExtension.class.getName();
-    private final String WELCOMEMESSAGEHANDLER = JamesWelcomeMessageHandler.class.getName();
-    private final String USERSREPOSITORYAUTHHANDLER = UsersRepositoryAuthHook.class.getName();
-    private final String POSTMASTERABUSEHOOK = PostmasterAbuseRcptHook.class.getName();
-    private final String AUTHREQUIREDTORELAY = AuthRequiredToRelayRcptHook.class.getName();
-    private final String SENDERAUTHIDENTITYVERIFICATION = SenderAuthIdentifyVerificationRcptHook.class.getName();
-    private final String RECEIVEDDATALINEFILTER = ReceivedDataLineFilter.class.getName();
-    private final String DATALINEMESSAGEHOOKHANDLER = DataLineJamesMessageHookHandler.class.getName();
-    private final String STARTTLSHANDLER = StartTlsCmdHandler.class.getName();
-
-    // MessageHooks
-    private final String ADDDEFAULTATTRIBUTESHANDLER = AddDefaultAttributesMessageHook.class.getName();
-    private final String SENDMAILHANDLER = SendMailHandler.class.getName();
-
-    // logging stuff
-    private final String COMMANDHANDLERRESULTLOGGER = CommandHandlerResultLogger.class.getName();
-    private final String HOOKRESULTLOGGER = HookResultLogger.class.getName();
-
     private final List<String> commands = new LinkedList<String>();
 
     public CoreCmdHandlerLoader() {
         // Insert the base commands in the Map
+        String WELCOMEMESSAGEHANDLER = JamesWelcomeMessageHandler.class.getName();
         commands.add(WELCOMEMESSAGEHANDLER);
+        String COMMANDDISPATCHER = CommandDispatcher.class.getName();
         commands.add(COMMANDDISPATCHER);
+        String AUTHCMDHANDLER = AuthCmdHandler.class.getName();
         commands.add(AUTHCMDHANDLER);
+        String DATACMDHANDLER = JamesDataCmdHandler.class.getName();
         commands.add(DATACMDHANDLER);
+        String EHLOCMDHANDLER = EhloCmdHandler.class.getName();
         commands.add(EHLOCMDHANDLER);
+        String EXPNCMDHANDLER = ExpnCmdHandler.class.getName();
         commands.add(EXPNCMDHANDLER);
+        String HELOCMDHANDLER = HeloCmdHandler.class.getName();
         commands.add(HELOCMDHANDLER);
+        String HELPCMDHANDLER = HelpCmdHandler.class.getName();
         commands.add(HELPCMDHANDLER);
+        String MAILCMDHANDLER = JamesMailCmdHandler.class.getName();
         commands.add(MAILCMDHANDLER);
+        String NOOPCMDHANDLER = NoopCmdHandler.class.getName();
         commands.add(NOOPCMDHANDLER);
+        String QUITCMDHANDLER = QuitCmdHandler.class.getName();
         commands.add(QUITCMDHANDLER);
+        String RCPTCMDHANDLER = JamesRcptCmdHandler.class.getName();
         commands.add(RCPTCMDHANDLER);
+        String RSETCMDHANDLER = RsetCmdHandler.class.getName();
         commands.add(RSETCMDHANDLER);
+        String VRFYCMDHANDLER = VrfyCmdHandler.class.getName();
         commands.add(VRFYCMDHANDLER);
+        String MAILSIZEHOOK = MailSizeEsmtpExtension.class.getName();
         commands.add(MAILSIZEHOOK);
+        String USERSREPOSITORYAUTHHANDLER = UsersRepositoryAuthHook.class.getName();
         commands.add(USERSREPOSITORYAUTHHANDLER);
+        String AUTHREQUIREDTORELAY = AuthRequiredToRelayRcptHook.class.getName();
         commands.add(AUTHREQUIREDTORELAY);
+        String SENDERAUTHIDENTITYVERIFICATION = SenderAuthIdentifyVerificationRcptHook.class.getName();
         commands.add(SENDERAUTHIDENTITYVERIFICATION);
+        String POSTMASTERABUSEHOOK = PostmasterAbuseRcptHook.class.getName();
         commands.add(POSTMASTERABUSEHOOK);
+        String RECEIVEDDATALINEFILTER = ReceivedDataLineFilter.class.getName();
         commands.add(RECEIVEDDATALINEFILTER);
+        String DATALINEMESSAGEHOOKHANDLER = DataLineJamesMessageHookHandler.class.getName();
         commands.add(DATALINEMESSAGEHOOKHANDLER);
+        String STARTTLSHANDLER = StartTlsCmdHandler.class.getName();
         commands.add(STARTTLSHANDLER);
         // Add the default messageHooks
+        String ADDDEFAULTATTRIBUTESHANDLER = AddDefaultAttributesMessageHook.class.getName();
         commands.add(ADDDEFAULTATTRIBUTESHANDLER);
+        String SENDMAILHANDLER = SendMailHandler.class.getName();
         commands.add(SENDMAILHANDLER);
 
         // Add logging stuff
+        String COMMANDHANDLERRESULTLOGGER = CommandHandlerResultLogger.class.getName();
         commands.add(COMMANDHANDLERRESULTLOGGER);
+        String HOOKRESULTLOGGER = HookResultLogger.class.getName();
         commands.add(HOOKRESULTLOGGER);
     }
 
     /**
-     * @see org.apache.james.protocols.api.handler.HandlersPackage#getHandlers()
      */
     public List<String> getHandlers() {
         return commands;

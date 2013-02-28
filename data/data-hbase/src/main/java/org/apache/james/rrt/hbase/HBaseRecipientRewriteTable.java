@@ -50,7 +50,7 @@ public class HBaseRecipientRewriteTable extends AbstractRecipientRewriteTable {
     /**
      * The Logger.
      */
-    private static Logger log = LoggerFactory.getLogger(HBaseRecipientRewriteTable.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(HBaseRecipientRewriteTable.class.getName());
     private static final String ROW_SEPARATOR = "@";
 
     /**
@@ -121,7 +121,7 @@ public class HBaseRecipientRewriteTable extends AbstractRecipientRewriteTable {
             scan.addFamily(HRecipientRewriteTable.COLUMN_FAMILY_NAME);
             scan.setCaching(table.getScannerCaching() * 2);
             resultScanner = table.getScanner(scan);
-            Result result = null;
+            Result result;
             while ((result = resultScanner.next()) != null) {
                 List<KeyValue> keyValues = result.list();
                 if (keyValues != null) {

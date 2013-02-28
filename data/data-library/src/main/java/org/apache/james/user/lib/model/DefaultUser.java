@@ -33,9 +33,9 @@ public class DefaultUser implements User, Serializable {
 
     private static final long serialVersionUID = 5178048915868531270L;
 
-    private String userName;
+    private final String userName;
     private String hashedPassword;
-    private String algorithm;
+    private final String algorithm;
 
     /**
      * Standard constructor.

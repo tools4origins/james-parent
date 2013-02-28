@@ -30,7 +30,7 @@ import org.slf4j.Logger;
  */
 public class ExtendedSMTPSession extends org.apache.james.protocols.smtp.SMTPSessionImpl {
    
-    private SMTPConfiguration smtpConfiguration;
+    private final SMTPConfiguration smtpConfiguration;
 
     public ExtendedSMTPSession(SMTPConfiguration smtpConfiguration, Logger logger, ProtocolTransport transport) {
         super(new ProtocolLoggerAdapter(logger), transport, smtpConfiguration);
@@ -38,10 +38,6 @@ public class ExtendedSMTPSession extends org.apache.james.protocols.smtp.SMTPSes
     }
 
 	public boolean verifyIdentity() {
-        if (smtpConfiguration instanceof SMTPHandlerConfigurationDataImpl) {
-            return ((SMTPHandlerConfigurationDataImpl) smtpConfiguration).verifyIdentity();
-        } else {
-            return true;
-        }
+        return !(smtpConfiguration instanceof SMTPHandlerConfigurationDataImpl) || ((SMTPHandlerConfigurationDataImpl) smtpConfiguration).verifyIdentity();
     }
 }

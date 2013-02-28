@@ -40,7 +40,7 @@ public class ConfigurationProviderImpl implements ConfigurationProvider, Resourc
     /**
      * A map of loaded configuration per bean.
      */
-    private Map<String, HierarchicalConfiguration> configurations = new HashMap<String, HierarchicalConfiguration>();
+    private final Map<String, HierarchicalConfiguration> configurations = new HashMap<String, HierarchicalConfiguration>();
 
     /**
      * Mappings for bean names associated with their related
@@ -80,9 +80,7 @@ public class ConfigurationProviderImpl implements ConfigurationProvider, Resourc
      */
     public void afterPropertiesSet() throws Exception {
         if (configurationMappings != null) {
-            Iterator<String> it = configurationMappings.keySet().iterator();
-            while (it.hasNext()) {
-                String key = it.next();
+            for (String key : configurationMappings.keySet()) {
                 String value = configurationMappings.get(key);
                 registerConfiguration(key, getConfiguration(value));
             }

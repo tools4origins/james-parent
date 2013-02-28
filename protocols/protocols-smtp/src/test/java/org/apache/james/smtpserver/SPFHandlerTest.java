@@ -37,7 +37,6 @@ public class SPFHandlerTest {
 
     private DNSService mockedDnsService;
     private SMTPSession mockedSMTPSession;
-    ;
 
     private boolean relaying = false;
 
@@ -125,8 +124,8 @@ public class SPFHandlerTest {
     private void setupMockedSMTPSession(final String ip, final String helo) {
         mockedSMTPSession = new BaseFakeSMTPSession() {
 
-            private HashMap<String, Object> sstate = new HashMap<String, Object>();
-            private HashMap<String, Object> connectionState = new HashMap<String, Object>();
+            private final HashMap<String, Object> sstate = new HashMap<String, Object>();
+            private final HashMap<String, Object> connectionState = new HashMap<String, Object>();
 
             @Override
             public Object setAttachment(String key, Object value, State state) {

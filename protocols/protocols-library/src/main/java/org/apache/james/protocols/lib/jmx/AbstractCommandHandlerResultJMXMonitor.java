@@ -40,7 +40,7 @@ import org.apache.james.protocols.lib.lifecycle.InitializingLifecycleAwareProtoc
  */
 public abstract class AbstractCommandHandlerResultJMXMonitor<S extends ProtocolSession> implements ProtocolHandlerResultHandler<Response, S>, ExtensibleHandler, InitializingLifecycleAwareProtocolHandler {
 
-    private Map<String, AbstractCommandHandlerStats> cStats = new HashMap<String, AbstractCommandHandlerStats>();
+    private final Map<String, AbstractCommandHandlerStats> cStats = new HashMap<String, AbstractCommandHandlerStats>();
     private String jmxName;
 
     /**
@@ -79,9 +79,9 @@ public abstract class AbstractCommandHandlerResultJMXMonitor<S extends ProtocolS
     public void wireExtensions(Class<?> interfaceName, List<?> extension) throws WiringException {
         if (interfaceName.equals(CommandHandler.class)) {
             // add stats for all hooks
-            for (int i = 0; i < extension.size(); i++) {
-                CommandHandler c = (CommandHandler) extension.get(i);
-                if (equals(c) == false) {
+            for (Object anExtension : extension) {
+                CommandHandler c = (CommandHandler) anExtension;
+                if (!equals(c)) {
                     String cName = c.getClass().getName();
                     try {
                         cStats.put(cName, createCommandHandlerStats(c));
@@ -117,9 +117,8 @@ public abstract class AbstractCommandHandlerResultJMXMonitor<S extends ProtocolS
     
     @Override
     public void destroy() {
-        Iterator<AbstractCommandHandlerStats> it = cStats.values().iterator();
-        while(it.hasNext()) {
-            it.next().dispose();
+        for (AbstractCommandHandlerStats abstractCommandHandlerStats : cStats.values()) {
+            abstractCommandHandlerStats.dispose();
         }
     }
 

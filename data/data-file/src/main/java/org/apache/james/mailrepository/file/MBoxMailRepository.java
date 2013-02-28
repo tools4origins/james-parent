@@ -160,11 +160,6 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
         MimeMessage messageAction(String messageSeparator, String bodyText, long messageStart);
     }
 
-    /**
-     * The repository configuration
-     */
-    private HierarchicalConfiguration configuration;
-
     private Logger logger;
 
     public void setLog(Logger logger) {
@@ -172,7 +167,10 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
     }
 
     public void configure(HierarchicalConfiguration configuration) throws ConfigurationException {
-        this.configuration = configuration;
+        /*
+      The repository configuration
+     */
+        HierarchicalConfiguration configuration1 = configuration;
         String destination;
         this.mList = null;
         BUFFERING = configuration.getBoolean("[@BUFFERING]", true);
@@ -242,8 +240,8 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
         }
 
         if (mimeMessage == null && getLogger().isDebugEnabled()) {
-            StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" Mime message is null");
-            getLogger().debug(logBuffer.toString());
+            String logBuffer = this.getClass().getName() + " Mime message is null";
+            getLogger().debug(logBuffer);
         }
 
         /*
@@ -275,9 +273,9 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
     private String generateKeyValue(String emailBody) throws NoSuchAlgorithmException {
         // MD5 the email body for a reilable (ha ha) key
         byte[] digArray = MessageDigest.getInstance("MD5").digest(emailBody.getBytes());
-        StringBuffer digest = new StringBuffer();
-        for (int i = 0; i < digArray.length; i++) {
-            digest.append(Integer.toString(digArray[i], Character.MAX_RADIX).toUpperCase(Locale.US));
+        StringBuilder digest = new StringBuilder();
+        for (byte aDigArray : digArray) {
+            digest.append(Integer.toString(aDigArray, Character.MAX_RADIX).toUpperCase(Locale.US));
         }
         return digest.toString();
     }
@@ -292,10 +290,10 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
      *            The action to take when a message is found
      */
     private MimeMessage parseMboxFile(RandomAccessFile ins, MessageAction messAct) {
-        if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-            StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" Start parsing ").append(mboxFile);
+        if ((getLogger().isDebugEnabled())) {
+            String logBuffer = this.getClass().getName() + " Start parsing " + mboxFile;
 
-            getLogger().debug(logBuffer.toString());
+            getLogger().debug(logBuffer);
         }
         try {
 
@@ -305,11 +303,11 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
             boolean inMessage = false;
             StringBuffer messageBuffer = new StringBuffer();
             String previousMessageSeparator = null;
-            boolean foundSep = false;
+            boolean foundSep;
 
             long prevMessageStart = ins.getFilePointer();
             if (BUFFERING) {
-                String line = null;
+                String line;
                 while ((line = ins.readLine()) != null) {
                     foundSep = sepMatchPattern.matcher(line).matches();
 
@@ -331,7 +329,7 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
                     }
                     // Only done at the start (first header)
                     if (foundSep && !inMessage) {
-                        previousMessageSeparator = line.toString();
+                        previousMessageSeparator = line;
                         inMessage = true;
                     }
                     if (!foundSep && inMessage) {
@@ -361,7 +359,7 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
                             inMessage = true;
                         }
                         // Only done at the start (first header)
-                        if (foundSep && inMessage == false) {
+                        if (foundSep && !inMessage) {
                             previousMessageSeparator = line.toString();
                             inMessage = true;
                         }
@@ -384,10 +382,10 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
         } catch (PatternSyntaxException e) {
             getLogger().error("Bad regex passed " + mboxFile, e);
         } finally {
-            if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-                StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" Finished parsing ").append(mboxFile);
+            if ((getLogger().isDebugEnabled())) {
+                String logBuffer = this.getClass().getName() + " Finished parsing " + mboxFile;
 
-                getLogger().debug(logBuffer.toString());
+                getLogger().debug(logBuffer);
             }
         }
         return null;
@@ -403,7 +401,7 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
      *            The key of the message to find
      */
     private MimeMessage findMessage(String key) {
-        MimeMessage foundMessage = null;
+        MimeMessage foundMessage;
 
         // See if we can get the message by using the cache position first
         foundMessage = selectMessage(key);
@@ -430,18 +428,18 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
         // Can we find the key first
         if (mList == null || !mList.containsKey(key)) {
             // Not initiailised so no point looking
-            if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-                StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" mList - key not found ").append(mboxFile);
+            if ((getLogger().isDebugEnabled())) {
+                String logBuffer = this.getClass().getName() + " mList - key not found " + mboxFile;
 
-                getLogger().debug(logBuffer.toString());
+                getLogger().debug(logBuffer);
             }
             return foundMessage;
         }
-        long messageStart = ((Long) mList.get(key)).longValue();
-        if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-            StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" Load message starting at offset ").append(messageStart).append(" from file ").append(mboxFile);
+        long messageStart = mList.get(key);
+        if ((getLogger().isDebugEnabled())) {
+            String logBuffer = this.getClass().getName() + " Load message starting at offset " + messageStart + " from file " + mboxFile;
 
-            getLogger().debug(logBuffer.toString());
+            getLogger().debug(logBuffer);
         }
         // Now try and find the position in the file
         RandomAccessFile ins = null;
@@ -474,10 +472,10 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
             getLogger().error("Unable to write file (General I/O problem) " + mboxFile, e);
         } finally {
             if (foundMessage == null) {
-                if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-                    StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" select - message not found ").append(mboxFile);
+                if ((getLogger().isDebugEnabled())) {
+                    String logBuffer = this.getClass().getName() + " select - message not found " + mboxFile;
 
-                    getLogger().debug(logBuffer.toString());
+                    getLogger().debug(logBuffer);
                 }
             }
             if (ins != null)
@@ -516,8 +514,8 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
                 public MimeMessage messageAction(String messageSeparator, String bodyText, long messageStart) {
                     try {
                         String key = generateKeyValue(bodyText);
-                        mList.put(key, Long.valueOf(messageStart));
-                        if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
+                        mList.put(key, messageStart);
+                        if ((getLogger().isDebugEnabled())) {
                             getLogger().debug(this.getClass().getName() + " Key " + key + " at " + messageStart);
                         }
 
@@ -548,10 +546,10 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
      */
     public void store(Mail mc) {
 
-        if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-            StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" Will store message to file ").append(mboxFile);
+        if ((getLogger().isDebugEnabled())) {
+            String logBuffer = this.getClass().getName() + " Will store message to file " + mboxFile;
 
-            getLogger().debug(logBuffer.toString());
+            getLogger().debug(logBuffer);
         }
         this.mList = null;
         // Now make up the from header
@@ -572,7 +570,7 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
             getLogger().error("Unable to parse mime message for " + mboxFile, e);
         }
         // And save only the new stuff to disk
-        RandomAccessFile saveFile = null;
+        RandomAccessFile saveFile;
         try {
             saveFile = new RandomAccessFile(mboxFile, "rw");
             saveFile.seek(saveFile.length()); // Move to the end
@@ -594,16 +592,16 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
         loadKeys();
         ArrayList<String> keys = new ArrayList<String>(mList.keySet());
 
-        if (keys.isEmpty() == false) {
+        if (!keys.isEmpty()) {
             // find the first message. This is a trick to make sure that if
             // the file is changed out from under us, we will detect it and
             // correct for it BEFORE we return the iterator.
-            findMessage((String) keys.iterator().next());
+            findMessage(keys.iterator().next());
         }
-        if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-            StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" ").append(keys.size()).append(" keys to be iterated over.");
+        if ((getLogger().isDebugEnabled())) {
+            String logBuffer = this.getClass().getName() + " " + keys.size() + " keys to be iterated over.";
 
-            getLogger().debug(logBuffer.toString());
+            getLogger().debug(logBuffer);
         }
         if (fifo)
             Collections.sort(keys); // Keys is a HashSet; impose FIFO for apps
@@ -617,7 +615,7 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
     public Mail retrieve(String key) {
 
         loadKeys();
-        MailImpl res = null;
+        MailImpl res;
 
         MimeMessage foundMessage = findMessage(key);
         if (foundMessage == null) {
@@ -627,10 +625,10 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
         res = new MailImpl();
         res.setMessage(foundMessage);
         res.setName(key);
-        if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-            StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" Retrieving entry for key ").append(key);
+        if ((getLogger().isDebugEnabled())) {
+            String logBuffer = this.getClass().getName() + " Retrieving entry for key " + key;
 
-            getLogger().debug(logBuffer.toString());
+            getLogger().debug(logBuffer);
         }
         return res;
     }
@@ -659,10 +657,10 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
             // So wait for a file
             while (!mBoxLock.createNewFile() && sleepCount < MAXSLEEPTIMES) {
                 try {
-                    if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-                        StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" Waiting for lock on file ").append(mboxFile);
+                    if ((getLogger().isDebugEnabled())) {
+                        String logBuffer = this.getClass().getName() + " Waiting for lock on file " + mboxFile;
 
-                        getLogger().debug(logBuffer.toString());
+                        getLogger().debug(logBuffer);
                     }
 
                     Thread.sleep(LOCKSLEEPDELAY);
@@ -686,8 +684,8 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
         String lockFileName = mboxFile + LOCKEXT;
         File mBoxLock = new File(lockFileName);
         if (!mBoxLock.delete()) {
-            StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" Failed to delete lock file ").append(lockFileName);
-            getLogger().error(logBuffer.toString());
+            String logBuffer = this.getClass().getName() + " Failed to delete lock file " + lockFileName;
+            getLogger().error(logBuffer);
         }
     }
 
@@ -695,10 +693,10 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
      * @see org.apache.james.mailrepository.api.MailRepository#remove(Collection)
      */
     public void remove(final Collection<Mail> mails) {
-        if ((DEEP_DEBUG) && (getLogger().isDebugEnabled())) {
-            StringBuffer logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(" Removing entry for key ").append(mails);
+        if ((getLogger().isDebugEnabled())) {
+            String logBuffer = this.getClass().getName() + " Removing entry for key " + mails;
 
-            getLogger().debug(logBuffer.toString());
+            getLogger().debug(logBuffer);
         }
         // The plan is as follows:
         // Attempt to locate the message in the file
@@ -731,7 +729,7 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
                                 break;
                             }
                         }
-                        if (foundKey == false) {
+                        if (!foundKey) {
                             // We didn't find the key in the array so we will
                             // keep it
                             outputFile.writeBytes(messageSeparator + "\n");

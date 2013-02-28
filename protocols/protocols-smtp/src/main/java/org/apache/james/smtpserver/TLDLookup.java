@@ -50,7 +50,7 @@ public class TLDLookup {
     static private final HashSet<String> threePartTLDs = initThreePartTLDs();
 
     /** controls testing/debug output */
-    static private boolean testing = false;
+    static private final boolean testing = false;
 
     /**
      * Determines if a two-part domain string (xxx.xxx) is contained in the
@@ -83,10 +83,10 @@ public class TLDLookup {
      */
     static private HashSet<String> initTwoPartTLDs() {
         HashSet<String> set = new HashSet<String>(900);
-        for (int i = 0; i < multiPartTLDs.length; i++) {
+        for (String multiPartTLD : multiPartTLDs) {
             try {
-                if (multiPartTLDs[i].matches("^" + tld2 + "$")) {
-                    set.add(multiPartTLDs[i]);
+                if (multiPartTLD.matches("^" + tld2 + "$")) {
+                    set.add(multiPartTLD);
                 }
             } catch (Exception ex) {
                 debugOut(ex);
@@ -103,11 +103,11 @@ public class TLDLookup {
      */
     static private HashSet<String> initThreePartTLDs() {
         HashSet<String> set = new HashSet<String>();
-        for (int i = 0; i < multiPartTLDs.length; i++) {
+        for (String multiPartTLD : multiPartTLDs) {
             try {
-                if (multiPartTLDs[i].matches("^" + tld3 + "$")) {
-                    debugOut("adding \"" + multiPartTLDs[i] + "\"");
-                    set.add(multiPartTLDs[i]);
+                if (multiPartTLD.matches("^" + tld3 + "$")) {
+                    debugOut("adding \"" + multiPartTLD + "\"");
+                    set.add(multiPartTLD);
                 }
             } catch (Exception ex) {
                 debugOut(ex);
@@ -167,7 +167,7 @@ public class TLDLookup {
      * Debugging output
      */
     private static void debugOut(String msg) {
-        if (true == testing) {
+        if (testing) {
             System.out.println(msg);
         }
     }
@@ -176,7 +176,7 @@ public class TLDLookup {
      * Debugging output
      */
     private static void debugOut(Throwable th) {
-        if (true == testing) {
+        if (testing) {
             System.out.println(th);
         }
     }

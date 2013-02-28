@@ -91,12 +91,9 @@ public class SpamAssassin extends GenericMailet {
             SpamAssassinInvoker sa = new SpamAssassinInvoker(spamdHost, spamdPort);
             sa.scanMail(message);
 
-            Iterator<String> headers = sa.getHeadersAsAttribute().keySet().iterator();
-
             // Add headers as attribute to mail object
-            while (headers.hasNext()) {
-                String key = headers.next();
-                mail.setAttribute(key, (String) sa.getHeadersAsAttribute().get(key));
+            for (String key : sa.getHeadersAsAttribute().keySet()) {
+                mail.setAttribute(key, sa.getHeadersAsAttribute().get(key));
             }
 
             message.saveChanges();

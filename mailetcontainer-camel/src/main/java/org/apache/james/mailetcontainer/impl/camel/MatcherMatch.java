@@ -35,9 +35,6 @@ public class MatcherMatch implements Predicate {
      */
     public boolean matches(Exchange arg0) {
         Mail m = arg0.getIn().getBody(Mail.class);
-        if (m.removeAttribute(MatcherSplitter.MATCHER_MATCHED_ATTRIBUTE) != null) {
-            return true;
-        }
-        return false;
+        return m.removeAttribute(MatcherSplitter.MATCHER_MATCHED_ATTRIBUTE) != null;
     }
 }

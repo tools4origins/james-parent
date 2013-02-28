@@ -28,8 +28,8 @@ import org.apache.mailet.MailetContext;
  */
 public class MockMailetConfig extends Properties implements MailetConfig {
 
-    private String mailetName;
-    private MailetContext mc;
+    private final String mailetName;
+    private final MailetContext mc;
 
     public MockMailetConfig(String mailetName, MailetContext mc) {
         super();

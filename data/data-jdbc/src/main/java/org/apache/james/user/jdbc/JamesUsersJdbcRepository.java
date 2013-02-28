@@ -53,8 +53,8 @@ public class JamesUsersJdbcRepository extends AbstractJdbcUsersRepository {
             try {
                 forwardAddress = new MailAddress(forwardingDestination);
             } catch (javax.mail.internet.ParseException pe) {
-                StringBuffer exceptionBuffer = new StringBuffer(256).append("Invalid mail address in database: ").append(forwardingDestination).append(", for user ").append(username).append(".");
-                throw new RuntimeException(exceptionBuffer.toString());
+                String exceptionBuffer = "Invalid mail address in database: " + forwardingDestination + ", for user " + username + ".";
+                throw new RuntimeException(exceptionBuffer);
             }
         }
 

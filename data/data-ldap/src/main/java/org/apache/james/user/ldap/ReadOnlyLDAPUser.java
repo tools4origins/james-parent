@@ -81,7 +81,7 @@ public class ReadOnlyLDAPUser implements User, Serializable {
      * 
      * @param userName
      *            The user-identifier/name. This is the value with which the
-     *            field {@link #userName} will be initialised, and which will be
+     *            field  will be initialised, and which will be
      *            returned by invoking {@link #getUserName()}.
      * @param userDN
      *            The distinguished (unique-key) of the user details as stored
@@ -93,7 +93,7 @@ public class ReadOnlyLDAPUser implements User, Serializable {
      *            invoked.
      * @throws NamingException 
      */
-    public ReadOnlyLDAPUser(String userName, String userDN, LdapContext ldapContext) throws NamingException {
+    public ReadOnlyLDAPUser(String userName, String userDN, LdapContext ldapContext) {
         this();
         _userName = userName;
         _userDN = userDN;
@@ -102,7 +102,7 @@ public class ReadOnlyLDAPUser implements User, Serializable {
 
     /**
      * Fulfils the contract {@link User#getUserName()}. It returns the value of
-     * the field {@link #userName}. This is generally the value from which the
+     * the field . This is generally the value from which the
      * user email address is built, by appending the domain name to it.
      * 
      * @return The user's identifier or name.

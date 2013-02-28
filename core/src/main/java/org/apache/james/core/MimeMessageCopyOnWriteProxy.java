@@ -104,30 +104,16 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
 
     protected MessageReferenceTracker refCount;
 
-    /**
-     * @param original
-     *            MimeMessageWrapper
-     * @throws MessagingException
-     */
     public MimeMessageCopyOnWriteProxy(MimeMessage original) {
         this(original, false);
     }
 
-    /**
-     * @param original
-     *            MimeMessageSource
-     * @throws MessagingException
-     */
     public MimeMessageCopyOnWriteProxy(MimeMessageSource original) throws MessagingException {
         this(new MimeMessageWrapper(original), true);
     }
 
     /**
      * Private constructor providing an external reference counter.
-     * 
-     * @param original
-     * @param writeable
-     * @throws MessagingException
      */
     private MimeMessageCopyOnWriteProxy(MimeMessage original, boolean writeable) {
         super(Session.getDefaultInstance(System.getProperties(), null));
@@ -167,9 +153,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
         return refCount.getWrapped();
     }
 
-    /**
-     * @see org.apache.james.lifecycle.api.Disposable#dispose()
-     */
+    @Override
     public synchronized void dispose() {
         if (refCount != null) {
             refCount.decrementReferenceCount();
@@ -177,9 +161,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
         }
     }
 
-    /**
-     * Rewritten for optimization purposes
-     */
+    @Override
     public void writeTo(OutputStream os) throws IOException, MessagingException {
         getWrappedMessage().writeTo(os);
     }
@@ -187,6 +169,7 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
     /**
      * Rewritten for optimization purposes
      */
+    @Override
     public void writeTo(OutputStream os, String[] ignoreList) throws IOException, MessagingException {
         getWrappedMessage().writeTo(os, ignoreList);
     }
@@ -195,511 +178,350 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
      * Various reader methods
      */
 
-    /**
-     * @see javax.mail.Message#getFrom()
-     */
+    @Override
     public Address[] getFrom() throws MessagingException {
         return getWrappedMessage().getFrom();
     }
 
-    /**
-     * @see javax.mail.Message#getRecipients(javax.mail.Message.RecipientType)
-     */
+    @Override
     public Address[] getRecipients(Message.RecipientType type) throws MessagingException {
         return getWrappedMessage().getRecipients(type);
     }
 
-    /**
-     * @see javax.mail.Message#getAllRecipients()
-     */
+    @Override
     public Address[] getAllRecipients() throws MessagingException {
         return getWrappedMessage().getAllRecipients();
     }
 
-    /**
-     * @see javax.mail.Message#getReplyTo()
-     */
+    @Override
     public Address[] getReplyTo() throws MessagingException {
         return getWrappedMessage().getReplyTo();
     }
 
-    /**
-     * @see javax.mail.Message#getSubject()
-     */
+    @Override
     public String getSubject() throws MessagingException {
         return getWrappedMessage().getSubject();
     }
 
-    /**
-     * @see javax.mail.Message#getSentDate()
-     */
+    @Override
     public Date getSentDate() throws MessagingException {
         return getWrappedMessage().getSentDate();
     }
 
-    /**
-     * @see javax.mail.Message#getReceivedDate()
-     */
+    @Override
     public Date getReceivedDate() throws MessagingException {
         return getWrappedMessage().getReceivedDate();
     }
 
-    /**
-     * @see javax.mail.Part#getSize()
-     */
+    @Override
     public int getSize() throws MessagingException {
         return getWrappedMessage().getSize();
     }
 
-    /**
-     * @see javax.mail.Part#getLineCount()
-     */
+    @Override
     public int getLineCount() throws MessagingException {
         return getWrappedMessage().getLineCount();
     }
 
-    /**
-     * @see javax.mail.Part#getContentType()
-     */
+    @Override
     public String getContentType() throws MessagingException {
         return getWrappedMessage().getContentType();
     }
 
-    /**
-     * @see javax.mail.Part#isMimeType(java.lang.String)
-     */
+    @Override
     public boolean isMimeType(String mimeType) throws MessagingException {
         return getWrappedMessage().isMimeType(mimeType);
     }
 
-    /**
-     * @see javax.mail.Part#getDisposition()
-     */
+    @Override
     public String getDisposition() throws MessagingException {
         return getWrappedMessage().getDisposition();
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#getEncoding()
-     */
+    @Override
     public String getEncoding() throws MessagingException {
         return getWrappedMessage().getEncoding();
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#getContentID()
-     */
+    @Override
     public String getContentID() throws MessagingException {
         return getWrappedMessage().getContentID();
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#getContentMD5()
-     */
+    @Override
     public String getContentMD5() throws MessagingException {
         return getWrappedMessage().getContentMD5();
     }
 
-    /**
-     * @see javax.mail.Part#getDescription()
-     */
+    @Override
     public String getDescription() throws MessagingException {
         return getWrappedMessage().getDescription();
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#getContentLanguage()
-     */
+    @Override
     public String[] getContentLanguage() throws MessagingException {
         return getWrappedMessage().getContentLanguage();
     }
 
-    /**
-     * @see javax.mail.internet.MimeMessage#getMessageID()
-     */
+    @Override
     public String getMessageID() throws MessagingException {
         return getWrappedMessage().getMessageID();
     }
 
-    /**
-     * @see javax.mail.Part#getFileName()
-     */
+    @Override
     public String getFileName() throws MessagingException {
         return getWrappedMessage().getFileName();
     }
 
-    /**
-     * @see javax.mail.Part#getInputStream()
-     */
+    @Override
     public InputStream getInputStream() throws IOException, MessagingException {
         return getWrappedMessage().getInputStream();
     }
 
-    /**
-     * @see javax.mail.Part#getDataHandler()
-     */
+    @Override
     public DataHandler getDataHandler() throws MessagingException {
         return getWrappedMessage().getDataHandler();
     }
 
-    /**
-     * @see javax.mail.Part#getContent()
-     */
+    @Override
     public Object getContent() throws IOException, MessagingException {
         return getWrappedMessage().getContent();
     }
 
-    /**
-     * @see javax.mail.Part#getHeader(java.lang.String)
-     */
+    @Override
     public String[] getHeader(String name) throws MessagingException {
         return getWrappedMessage().getHeader(name);
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#getHeader(java.lang.String,
-     *      java.lang.String)
-     */
+    @Override
     public String getHeader(String name, String delimiter) throws MessagingException {
         return getWrappedMessage().getHeader(name, delimiter);
     }
 
-    /**
-     * @see javax.mail.Part#getAllHeaders()
-     */
+    @Override
     public Enumeration getAllHeaders() throws MessagingException {
         return getWrappedMessage().getAllHeaders();
     }
 
-    /**
-     * @see javax.mail.Part#getMatchingHeaders(java.lang.String[])
-     */
+    @Override
     public Enumeration getMatchingHeaders(String[] names) throws MessagingException {
         return getWrappedMessage().getMatchingHeaders(names);
     }
 
-    /**
-     * @see javax.mail.Part#getNonMatchingHeaders(java.lang.String[])
-     */
+    @Override
     public Enumeration getNonMatchingHeaders(String[] names) throws MessagingException {
         return getWrappedMessage().getNonMatchingHeaders(names);
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#getAllHeaderLines()
-     */
+    @Override
     public Enumeration getAllHeaderLines() throws MessagingException {
         return getWrappedMessage().getAllHeaderLines();
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#getMatchingHeaderLines(java.lang.String[])
-     */
+    @Override
     public Enumeration getMatchingHeaderLines(String[] names) throws MessagingException {
         return getWrappedMessage().getMatchingHeaderLines(names);
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#getNonMatchingHeaderLines(java.lang.String[])
-     */
+    @Override
     public Enumeration getNonMatchingHeaderLines(String[] names) throws MessagingException {
         return getWrappedMessage().getNonMatchingHeaderLines(names);
     }
 
-    /**
-     * @see javax.mail.Message#getFlags()
-     */
+    @Override
     public Flags getFlags() throws MessagingException {
         return getWrappedMessage().getFlags();
     }
 
-    /**
-     * @see javax.mail.Message#isSet(javax.mail.Flags.Flag)
-     */
+    @Override
     public boolean isSet(Flags.Flag flag) throws MessagingException {
         return getWrappedMessage().isSet(flag);
     }
 
-    /**
-     * @see javax.mail.internet.MimeMessage#getSender()
-     */
+    @Override
     public Address getSender() throws MessagingException {
         return getWrappedMessage().getSender();
     }
 
-    /**
-     * @see javax.mail.Message#match(javax.mail.search.SearchTerm)
-     */
+    @Override
     public boolean match(SearchTerm arg0) throws MessagingException {
         return getWrappedMessage().match(arg0);
     }
 
-    /**
-     * @see javax.mail.internet.MimeMessage#getRawInputStream()
-     */
+    @Override
     public InputStream getRawInputStream() throws MessagingException {
         return getWrappedMessage().getRawInputStream();
     }
 
-    /**
-     * @see javax.mail.Message#getFolder()
-     */
+    @Override
     public Folder getFolder() {
         return getWrappedMessage().getFolder();
     }
 
-    /**
-     * @see javax.mail.Message#getMessageNumber()
-     */
+    @Override
     public int getMessageNumber() {
         return getWrappedMessage().getMessageNumber();
     }
 
-    /**
-     * @see javax.mail.Message#isExpunged()
-     */
+    @Override
     public boolean isExpunged() {
         return getWrappedMessage().isExpunged();
     }
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object arg0) {
         return getWrappedMessage().equals(arg0);
     }
 
-    /**
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return getWrappedMessage().hashCode();
     }
 
-    /**
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return getWrappedMessage().toString();
     }
 
-    /*
-     * Various writer methods
-     */
-
-    /**
-     * @see javax.mail.Message#setFrom(javax.mail.Address)
-     */
     @Override
     public void setFrom(Address address) throws MessagingException {
         getWrappedMessageForWriting().setFrom(address);
     }
 
-    /**
-     * @see javax.mail.Message#setFrom()
-     */
     @Override
     public void setFrom() throws MessagingException {
         getWrappedMessageForWriting().setFrom();
     }
 
-    /**
-     * @see javax.mail.Message#addFrom(javax.mail.Address[])
-     */
     @Override
     public void addFrom(Address[] addresses) throws MessagingException {
         getWrappedMessageForWriting().addFrom(addresses);
     }
 
-    /**
-     * @see javax.mail.Message#setRecipients(javax.mail.Message.RecipientType,
-     *      javax.mail.Address[])
-     */
     @Override
     public void setRecipients(Message.RecipientType type, Address[] addresses) throws MessagingException {
         getWrappedMessageForWriting().setRecipients(type, addresses);
     }
 
-    /**
-     * @see javax.mail.Message#addRecipients(javax.mail.Message.RecipientType,
-     *      javax.mail.Address[])
-     */
     @Override
     public void addRecipients(Message.RecipientType type, Address[] addresses) throws MessagingException {
         getWrappedMessageForWriting().addRecipients(type, addresses);
     }
 
-    /**
-     * @see javax.mail.Message#setReplyTo(javax.mail.Address[])
-     */
     @Override
     public void setReplyTo(Address[] addresses) throws MessagingException {
         getWrappedMessageForWriting().setReplyTo(addresses);
     }
 
-    /**
-     * @see javax.mail.Message#setSubject(java.lang.String)
-     */
     @Override
     public void setSubject(String subject) throws MessagingException {
         getWrappedMessageForWriting().setSubject(subject);
     }
 
-    /**
-     * @see javax.mail.internet.MimeMessage#setSubject(java.lang.String,
-     *      java.lang.String)
-     */
     @Override
     public void setSubject(String subject, String charset) throws MessagingException {
         getWrappedMessageForWriting().setSubject(subject, charset);
     }
 
-    /**
-     * @see javax.mail.Message#setSentDate(java.util.Date)
-     */
     @Override
     public void setSentDate(Date d) throws MessagingException {
         getWrappedMessageForWriting().setSentDate(d);
     }
 
-    /**
-     * @see javax.mail.Part#setDisposition(java.lang.String)
-     */
     @Override
     public void setDisposition(String disposition) throws MessagingException {
         getWrappedMessageForWriting().setDisposition(disposition);
     }
 
-    /**
-     * @see javax.mail.internet.MimeMessage#setContentID(java.lang.String)
-     */
     @Override
     public void setContentID(String cid) throws MessagingException {
         getWrappedMessageForWriting().setContentID(cid);
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#setContentMD5(java.lang.String)
-     */
+    @Override
     public void setContentMD5(String md5) throws MessagingException {
         getWrappedMessageForWriting().setContentMD5(md5);
     }
 
-    /**
-     * @see javax.mail.Part#setDescription(java.lang.String)
-     */
+    @Override
     public void setDescription(String description) throws MessagingException {
         getWrappedMessageForWriting().setDescription(description);
     }
 
-    /**
-     * @see javax.mail.internet.MimeMessage#setDescription(java.lang.String,
-     *      java.lang.String)
-     */
+    @Override
     public void setDescription(String description, String charset) throws MessagingException {
         getWrappedMessageForWriting().setDescription(description, charset);
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#setContentLanguage(java.lang.String[])
-     */
+    @Override
     public void setContentLanguage(String[] languages) throws MessagingException {
         getWrappedMessageForWriting().setContentLanguage(languages);
     }
 
-    /**
-     * @see javax.mail.Part#setFileName(java.lang.String)
-     */
+    @Override
     public void setFileName(String filename) throws MessagingException {
         getWrappedMessageForWriting().setFileName(filename);
     }
 
-    /**
-     * @see javax.mail.Part#setDataHandler(javax.activation.DataHandler)
-     */
+    @Override
     public void setDataHandler(DataHandler dh) throws MessagingException {
         getWrappedMessageForWriting().setDataHandler(dh);
     }
 
-    /**
-     * @see javax.mail.Part#setContent(java.lang.Object, java.lang.String)
-     */
+    @Override
     public void setContent(Object o, String type) throws MessagingException {
         getWrappedMessageForWriting().setContent(o, type);
     }
 
-    /**
-     * @see javax.mail.Part#setText(java.lang.String)
-     */
+    @Override
     public void setText(String text) throws MessagingException {
         getWrappedMessageForWriting().setText(text);
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#setText(java.lang.String,
-     *      java.lang.String)
-     */
+    @Override
     public void setText(String text, String charset) throws MessagingException {
         getWrappedMessageForWriting().setText(text, charset);
     }
 
-    /**
-     * @see javax.mail.Part#setContent(javax.mail.Multipart)
-     */
+    @Override
     public void setContent(Multipart mp) throws MessagingException {
         getWrappedMessageForWriting().setContent(mp);
     }
 
     /**
      * This does not need a writable message
-     * 
-     * @see javax.mail.Message#reply(boolean)
      */
+    @Override
     public Message reply(boolean replyToAll) throws MessagingException {
         return getWrappedMessage().reply(replyToAll);
     }
 
-    /**
-     * @see javax.mail.Part#setHeader(java.lang.String, java.lang.String)
-     */
+    @Override
     public void setHeader(String name, String value) throws MessagingException {
         getWrappedMessageForWriting().setHeader(name, value);
     }
 
-    /**
-     * @see javax.mail.Part#addHeader(java.lang.String, java.lang.String)
-     */
+    @Override
     public void addHeader(String name, String value) throws MessagingException {
         getWrappedMessageForWriting().addHeader(name, value);
     }
 
-    /**
-     * @see javax.mail.Part#removeHeader(java.lang.String)
-     */
+    @Override
     public void removeHeader(String name) throws MessagingException {
         getWrappedMessageForWriting().removeHeader(name);
     }
 
-    /**
-     * @see javax.mail.internet.MimePart#addHeaderLine(java.lang.String)
-     */
+    @Override
     public void addHeaderLine(String line) throws MessagingException {
         getWrappedMessageForWriting().addHeaderLine(line);
     }
 
-    /**
-     * @see javax.mail.Message#setFlags(javax.mail.Flags, boolean)
-     */
+    @Override
     public void setFlags(Flags flag, boolean set) throws MessagingException {
         getWrappedMessageForWriting().setFlags(flag, set);
     }
 
-    /**
-     * @see javax.mail.Message#saveChanges()
-     */
+    @Override
     public void saveChanges() throws MessagingException {
         getWrappedMessageForWriting().saveChanges();
     }
@@ -708,48 +530,30 @@ public class MimeMessageCopyOnWriteProxy extends MimeMessage implements Disposab
      * Since JavaMail 1.2
      */
 
-    /**
-     * @see javax.mail.internet.MimeMessage#addRecipients(javax.mail.Message.RecipientType,
-     *      java.lang.String)
-     */
+    @Override
     public void addRecipients(Message.RecipientType type, String addresses) throws MessagingException {
         getWrappedMessageForWriting().addRecipients(type, addresses);
     }
 
-    /**
-     * @see javax.mail.internet.MimeMessage#setRecipients(javax.mail.Message.RecipientType,
-     *      java.lang.String)
-     */
+    @Override
     public void setRecipients(Message.RecipientType type, String addresses) throws MessagingException {
         getWrappedMessageForWriting().setRecipients(type, addresses);
     }
 
-    /**
-     * @see javax.mail.internet.MimeMessage#setSender(javax.mail.Address)
-     */
+    @Override
     public void setSender(Address arg0) throws MessagingException {
         getWrappedMessageForWriting().setSender(arg0);
     }
 
-    /**
-     * @see javax.mail.Message#addRecipient(javax.mail.Message.RecipientType,
-     *      javax.mail.Address)
-     */
     public void addRecipient(RecipientType arg0, Address arg1) throws MessagingException {
         getWrappedMessageForWriting().addRecipient(arg0, arg1);
     }
 
-    /**
-     * @see javax.mail.Message#setFlag(javax.mail.Flags.Flag, boolean)
-     */
+    @Override
     public void setFlag(Flag arg0, boolean arg1) throws MessagingException {
         getWrappedMessageForWriting().setFlag(arg0, arg1);
     }
 
-    /**
-     * @return the message size
-     * @throws MessagingException
-     */
     public long getMessageSize() throws MessagingException {
         return MimeMessageUtil.getMessageSize(getWrappedMessage());
     }

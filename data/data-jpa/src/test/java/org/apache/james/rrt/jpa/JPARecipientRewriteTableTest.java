@@ -38,17 +38,16 @@ public class JPARecipientRewriteTableTest extends AbstractRecipientRewriteTableT
      * The OpenJPA Entity Manager used for the tests.
      */
     private OpenJPAEntityManagerFactory factory;
-    /**
-     * The properties for the OpenJPA Entity Manager.
-     */
-    private HashMap<String, String> properties;
 
     @Before
     @Override
     public void setUp() throws Exception {
 
         // Use a memory database.
-        properties = new HashMap<String, String>();
+        /*
+      The properties for the OpenJPA Entity Manager.
+     */
+        HashMap<String, String> properties = new HashMap<String, String>();
         properties.put("openjpa.ConnectionDriverName", "org.h2.Driver");
         properties.put("openjpa.ConnectionURL", "jdbc:h2:target/users/db");
         properties.put("openjpa.Log", "JDBC=WARN, SQL=WARN, Runtime=WARN");
@@ -61,9 +60,6 @@ public class JPARecipientRewriteTableTest extends AbstractRecipientRewriteTableT
         super.setUp();
     }
 
-    /**
-     * @see org.apache.james.rrt.lib.AbstractRecipientRewriteTableTest#getRecipientRewriteTable()
-     */
     @Override
     protected AbstractRecipientRewriteTable getRecipientRewriteTable() throws Exception {
         JPARecipientRewriteTable localVirtualUserTable = new JPARecipientRewriteTable();
@@ -74,10 +70,6 @@ public class JPARecipientRewriteTableTest extends AbstractRecipientRewriteTableT
         return localVirtualUserTable;
     }
 
-    /**
-     * @see org.apache.james.rrt.lib.AbstractRecipientRewriteTableTest#addMapping(java.lang.String,
-     *      java.lang.String, java.lang.String, int)
-     */
     @Override
     protected boolean addMapping(String user, String domain, String mapping, int type) throws
             RecipientRewriteTableException {
@@ -99,10 +91,6 @@ public class JPARecipientRewriteTableTest extends AbstractRecipientRewriteTableT
         }
     }
 
-    /**
-     * @see org.apache.james.rrt.lib.AbstractRecipientRewriteTableTest#removeMapping(java.lang.String,
-     *      java.lang.String, java.lang.String, int)
-     */
     @Override
     protected boolean removeMapping(String user, String domain, String mapping, int type) throws
             RecipientRewriteTableException {

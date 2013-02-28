@@ -50,7 +50,6 @@ abstract public class NamingExceptionRetryHandler extends ExceptionRetryHandler 
     }
 
     /**
-     * @see org.apache.james.user.ldap.ExceptionRetryHandler#perform()
      */
     @Override
     public Object perform() throws NamingException {
@@ -65,7 +64,6 @@ abstract public class NamingExceptionRetryHandler extends ExceptionRetryHandler 
     }
 
     /**
-     * @see org.apache.james.user.ldap.api.RetryHandler#postFailure(java.lang.Exception, int)
      */
     @Override
     public void postFailure(Exception ex, int retryCount) {

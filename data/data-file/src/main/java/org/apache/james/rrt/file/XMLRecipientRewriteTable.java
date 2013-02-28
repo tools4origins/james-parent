@@ -80,10 +80,8 @@ public class XMLRecipientRewriteTable extends AbstractRecipientRewriteTable {
     protected Map<String, Collection<String>> getAllMappingsInternal() throws RecipientRewriteTableException {
         if (mappings != null && mappings.size() > 0) {
             Map<String, Collection<String>> mappingsNew = new HashMap<String, Collection<String>>();
-            Iterator<String> maps = mappings.keySet().iterator();
-            while (maps.hasNext()) {
-                String key = maps.next();
-                mappingsNew.put(key, RecipientRewriteTableUtil.mappingToCollection(mappings.get(key).toString()));
+            for (String key : mappings.keySet()) {
+                mappingsNew.put(key, RecipientRewriteTableUtil.mappingToCollection(mappings.get(key)));
             }
             return mappingsNew;
         } else {

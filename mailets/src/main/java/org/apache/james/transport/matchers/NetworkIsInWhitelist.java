@@ -104,7 +104,7 @@ public class NetworkIsInWhitelist extends AbstractSQLWhitelistMatcher {
             NetMatcher matcher = new NetMatcher(nets, dns);
             boolean matched = matcher.matchInetNetwork(mail.getRemoteAddr());
 
-            if (matched == false) {
+            if (!matched) {
                 selectStmt = conn.prepareStatement(selectNetworks);
                 selectStmt.setString(1, "*");
                 selectStmt.setString(2, recipientHost);

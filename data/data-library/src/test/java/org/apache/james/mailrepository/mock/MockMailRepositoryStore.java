@@ -29,7 +29,7 @@ import org.apache.james.mailrepository.api.MailRepositoryStore;
 
 public class MockMailRepositoryStore implements MailRepositoryStore {
 
-    Map<String, MailRepository> m_storedObjectMap = new HashMap<String, MailRepository>();
+    final Map<String, MailRepository> m_storedObjectMap = new HashMap<String, MailRepository>();
 
     public void add(String url, MailRepository obj) {
         m_storedObjectMap.put(url, obj);

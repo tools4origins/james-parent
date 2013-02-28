@@ -40,7 +40,7 @@ import java.io.FilenameFilter;
  * </pre>
  */
 public class ExtensionFileFilter implements FilenameFilter {
-    private String[] m_extensions;
+    private final String[] m_extensions;
 
     public ExtensionFileFilter(final String[] extensions) {
         m_extensions = extensions;
@@ -51,8 +51,8 @@ public class ExtensionFileFilter implements FilenameFilter {
     }
 
     public boolean accept(final File file, final String name) {
-        for (int i = 0; i < m_extensions.length; i++) {
-            if (name.endsWith(m_extensions[i])) {
+        for (String m_extension : m_extensions) {
+            if (name.endsWith(m_extension)) {
                 return true;
             }
         }

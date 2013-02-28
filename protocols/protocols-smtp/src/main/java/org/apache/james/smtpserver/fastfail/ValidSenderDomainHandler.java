@@ -48,12 +48,9 @@ public class ValidSenderDomainHandler extends org.apache.james.protocols.smtp.co
             } catch (org.apache.james.dnsservice.api.TemporaryResolutionException e) {
                 // TODO: Should we reject temporary ?
             }
-    
-        if (records == null || records.size() == 0) {
-            return false;
-        }
 
-        return true;
+        return !(records == null || records.size() == 0);
+
     }
 
 }

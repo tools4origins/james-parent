@@ -32,11 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 public class JPADomainListTest extends AbstractDomainListTest {
 
-    /**
-     * The OpenJPA Entity Manager used for the tests.
-     */
-    private OpenJPAEntityManagerFactory factory;
-
     @Override
     protected DomainList createDomainList() {
         // Use a memory database.
@@ -47,7 +42,10 @@ public class JPADomainListTest extends AbstractDomainListTest {
         properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72");
         properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
         properties.put("openjpa.MetaDataFactory", "jpa(Types=" + JPADomain.class.getName() + ")");
-        factory = OpenJPAPersistence.getEntityManagerFactory(properties);
+        /*
+      The OpenJPA Entity Manager used for the tests.
+     */
+        OpenJPAEntityManagerFactory factory = OpenJPAPersistence.getEntityManagerFactory(properties);
 
         // Initialize the JPADomainList (no autodetect,...).
         JPADomainList jpaDomainList = new JPADomainList();

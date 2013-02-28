@@ -136,14 +136,13 @@ public class BayesianAnalysis extends GenericMailet {
     /**
      * The JDBCBayesianAnalyzer class that does all the work.
      */
-    private JDBCBayesianAnalyzer analyzer = new JDBCBayesianAnalyzer() {
+    private final JDBCBayesianAnalyzer analyzer = new JDBCBayesianAnalyzer() {
         protected void delegatedLog(String logString) {
             log("BayesianAnalysis: " + logString);
         }
     };
 
     private DataSource datasource;
-    private String repositoryPath;
 
     private static final String MAIL_ATTRIBUTE_NAME = "org.apache.james.spam.probability";
     private static final String HEADER_NAME = "X-MessageIsSpamProbability";
@@ -229,7 +228,7 @@ public class BayesianAnalysis extends GenericMailet {
      *             if a problem arises
      */
     public void init() throws MessagingException {
-        repositoryPath = getInitParameter("repositoryPath");
+        String repositoryPath = getInitParameter("repositoryPath");
 
         if (repositoryPath == null) {
             throw new MessagingException("repositoryPath is null");
@@ -237,7 +236,7 @@ public class BayesianAnalysis extends GenericMailet {
 
         headerName = getInitParameter("headerName", HEADER_NAME);
 
-        ignoreLocalSender = Boolean.valueOf(getInitParameter("ignoreLocalSender")).booleanValue();
+        ignoreLocalSender = Boolean.valueOf(getInitParameter("ignoreLocalSender"));
 
         if (ignoreLocalSender) {
             log("Will ignore messages coming from local senders");
@@ -316,7 +315,7 @@ public class BayesianAnalysis extends GenericMailet {
                 probability = 0.0;
             }
 
-            mail.setAttribute(MAIL_ATTRIBUTE_NAME, new Double(probability));
+            mail.setAttribute(MAIL_ATTRIBUTE_NAME, probability);
             message.setHeader(headerName, Double.toString(probability));
 
             DecimalFormat probabilityForm = (DecimalFormat) DecimalFormat.getInstance();
@@ -375,7 +374,7 @@ public class BayesianAnalysis extends GenericMailet {
         }
 
         Iterator<MailAddress> iter = addresses.iterator();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append('[');
         for (int i = 0; iter.hasNext(); i++) {
             sb.append(iter.next());
@@ -413,7 +412,7 @@ public class BayesianAnalysis extends GenericMailet {
 
     private static class CorpusLoader extends Thread {
 
-        private BayesianAnalysis analysis;
+        private final BayesianAnalysis analysis;
 
         private CorpusLoader(BayesianAnalysis analysis) {
             super("BayesianAnalysis Corpus Loader");

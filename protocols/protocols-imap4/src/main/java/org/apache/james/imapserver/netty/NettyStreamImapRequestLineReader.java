@@ -29,7 +29,7 @@ import org.jboss.netty.channel.Channel;
 
 public class NettyStreamImapRequestLineReader extends AbstractNettyImapRequestLineReader {
 
-    private InputStream in;
+    private final InputStream in;
 
     public NettyStreamImapRequestLineReader(Channel channel, InputStream in, boolean retry) {
         super(channel, retry);
@@ -50,7 +50,7 @@ public class NettyStreamImapRequestLineReader extends AbstractNettyImapRequestLi
     public char nextChar() throws DecodingException {
         
         if (!nextSeen) {
-            int next = -1;
+            int next;
             try {
                 next = in.read();
             } catch (IOException e) {

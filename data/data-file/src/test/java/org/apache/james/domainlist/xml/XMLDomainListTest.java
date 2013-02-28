@@ -37,8 +37,8 @@ public class XMLDomainListTest {
 
         configuration.addProperty("autodetect", auto);
         configuration.addProperty("autodetectIP", autoIP);
-        for (int i = 0; i < names.size(); i++) {
-            configuration.addProperty("domainnames.domainname", names.get(i).toString());
+        for (String name : names) {
+            configuration.addProperty("domainnames.domainname", name);
         }
         return configuration;
     }

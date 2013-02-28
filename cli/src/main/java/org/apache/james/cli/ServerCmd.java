@@ -45,10 +45,9 @@ public class ServerCmd {
     private static final String PORT_OPT_LONG = "port";
     private static final String PORT_OPT_SHORT = "p";
     private static final int defaultPort = 9999;
-    private static Options options = null;
+    private static final Options options = new Options();
 
     static {
-        options = new Options();
         Option optHost = new Option(HOST_OPT_SHORT, HOST_OPT_LONG, true, "node hostname or ip address");
         optHost.setRequired(true);
         options.addOption(optHost);

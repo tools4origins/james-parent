@@ -29,7 +29,7 @@ import org.apache.james.domainlist.api.DomainListException;
  */
 public class SimpleDomainList implements DomainList {
 
-    private List<String> domains = new LinkedList<String>();
+    private final List<String> domains = new LinkedList<String>();
 
     @Override
     public boolean containsDomain(String domain) throws DomainListException {
@@ -51,7 +51,7 @@ public class SimpleDomainList implements DomainList {
 
     @Override
     public void removeDomain(String domain) throws DomainListException {
-        if (domains.remove(domain) == false) {
+        if (!domains.remove(domain)) {
             throw new DomainListException("Domain " + domain + " does not exist");
         }
     }

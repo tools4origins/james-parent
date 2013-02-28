@@ -36,9 +36,9 @@ import org.apache.james.protocols.lib.jmx.AbstractCommandHandlerStats;
  */
 public class SMTPCommandHandlerStats extends AbstractCommandHandlerStats implements SMTPCommandHandlerStatsMBean, Disposable {
 
-    private AtomicLong temp = new AtomicLong(0);
-    private AtomicLong perm = new AtomicLong(0);
-    private AtomicLong ok = new AtomicLong(0);
+    private final AtomicLong temp = new AtomicLong(0);
+    private final AtomicLong perm = new AtomicLong(0);
+    private final AtomicLong ok = new AtomicLong(0);
 
     public SMTPCommandHandlerStats(String jmxPath, String handlerName, String[] commands) throws NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException {
         super(SMTPCommandHandlerStatsMBean.class, jmxPath, handlerName, commands);

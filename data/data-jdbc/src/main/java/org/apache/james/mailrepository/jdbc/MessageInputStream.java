@@ -62,7 +62,7 @@ final class MessageInputStream extends InputStream {
     /**
      * Stream repository used for dbfiles (null otherwise)
      */
-    private StreamRepository streamRep;
+    private final StreamRepository streamRep;
 
     /**
      * Main constructor. If srep is not null than we are using dbfiles and we

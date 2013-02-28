@@ -31,11 +31,11 @@ import org.apache.mailet.MailetConfig;
 
 public final class MailetManagement extends StandardMBean implements MailetManagementMBean {
 
-    private AtomicLong errorCount = new AtomicLong(0);
-    private AtomicLong successCount = new AtomicLong(0);
-    private AtomicLong fastestProcessing = new AtomicLong(-1);
-    private AtomicLong slowestProcessing = new AtomicLong(-1);
-    private AtomicLong lastProcessing = new AtomicLong(-1);
+    private final AtomicLong errorCount = new AtomicLong(0);
+    private final AtomicLong successCount = new AtomicLong(0);
+    private final AtomicLong fastestProcessing = new AtomicLong(-1);
+    private final AtomicLong slowestProcessing = new AtomicLong(-1);
+    private final AtomicLong lastProcessing = new AtomicLong(-1);
 
     private final MailetConfig config;
 
@@ -79,11 +79,11 @@ public final class MailetManagement extends StandardMBean implements MailetManag
         List<String> parameterList = new ArrayList<String>();
         Iterator<String> iterator = config.getInitParameterNames();
         while (iterator.hasNext()) {
-            String name = (String) iterator.next();
+            String name = iterator.next();
             String value = config.getInitParameter(name);
             parameterList.add(name + "=" + value);
         }
-        String[] result = (String[]) parameterList.toArray(new String[] {});
+        String[] result = parameterList.toArray(new String[parameterList.size()]);
         return result;
     }
 

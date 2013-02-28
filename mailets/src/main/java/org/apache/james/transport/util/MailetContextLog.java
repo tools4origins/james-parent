@@ -28,8 +28,8 @@ import org.slf4j.Marker;
  */
 public class MailetContextLog implements Logger {
 
-    private boolean isDebug;
-    private MailetContext context;
+    private final boolean isDebug;
+    private final MailetContext context;
 
     public MailetContextLog(MailetContext context, boolean isDebug) {
         this.context = context;
@@ -132,19 +132,6 @@ public class MailetContextLog implements Logger {
      */
     public boolean isWarnEnabled() {
         return true;
-    }
-
-    /**
-     * Do nothing
-     */
-    public void trace(Object arg0) {
-    }
-
-    /**
-     * Do nothing
-     */
-    public void trace(Object arg0, Throwable arg1) {
-
     }
 
     /**
@@ -526,7 +513,7 @@ public class MailetContextLog implements Logger {
     }
 
     private void debugLog(Marker marker, String msg, Object... obj) {
-        StringBuffer s = new StringBuffer("[");
+        StringBuilder s = new StringBuilder("[");
         s.append(marker.toString()).append("] ").append(msg);
         Throwable t = null;
         if (obj != null) {
@@ -558,7 +545,7 @@ public class MailetContextLog implements Logger {
     }
 
     private void debugLog(String msg, Object... obj) {
-        StringBuffer s = new StringBuffer(msg);
+        StringBuilder s = new StringBuilder(msg);
         Throwable t = null;
         if (obj != null) {
             s.append(" args=[");
@@ -589,7 +576,7 @@ public class MailetContextLog implements Logger {
     }
 
     private void errorLog(Marker marker, String msg, Object... obj) {
-        StringBuffer s = new StringBuffer("[");
+        StringBuilder s = new StringBuilder("[");
         s.append(marker.toString()).append("] ").append(msg);
         Throwable t = null;
         if (obj != null) {
@@ -621,7 +608,7 @@ public class MailetContextLog implements Logger {
     }
 
     private void errorLog(String msg, Object... obj) {
-        StringBuffer s = new StringBuffer(msg);
+        StringBuilder s = new StringBuilder(msg);
         Throwable t = null;
         if (obj != null) {
             s.append(" args=[");
@@ -652,7 +639,7 @@ public class MailetContextLog implements Logger {
     }
 
     private void infoLog(Marker marker, String msg, Object... obj) {
-        StringBuffer s = new StringBuffer("[");
+        StringBuilder s = new StringBuilder("[");
         s.append(marker.toString()).append("] ").append(msg);
         Throwable t = null;
         if (obj != null) {
@@ -684,7 +671,7 @@ public class MailetContextLog implements Logger {
     }
 
     private void infoLog(String msg, Object... obj) {
-        StringBuffer s = new StringBuffer(msg);
+        StringBuilder s = new StringBuilder(msg);
         Throwable t = null;
         if (obj != null) {
             s.append(" args=[");
@@ -715,7 +702,7 @@ public class MailetContextLog implements Logger {
     }
 
     private void warnLog(Marker marker, String msg, Object... obj) {
-        StringBuffer s = new StringBuffer("[");
+        StringBuilder s = new StringBuilder("[");
         s.append(marker.toString()).append("] ").append(msg);
         Throwable t = null;
         if (obj != null) {
@@ -747,7 +734,7 @@ public class MailetContextLog implements Logger {
     }
 
     private void warnLog(String msg, Object... obj) {
-        StringBuffer s = new StringBuffer(msg);
+        StringBuilder s = new StringBuilder(msg);
         Throwable t = null;
         if (obj != null) {
             s.append(" args=[");

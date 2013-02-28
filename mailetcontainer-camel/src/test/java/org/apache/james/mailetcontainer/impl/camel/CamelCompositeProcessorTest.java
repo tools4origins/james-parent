@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class CamelCompositeProcessorTest extends AbstractStateCompositeProcessorTest {
 
     @Override
-    protected AbstractStateCompositeProcessor createProcessor(HierarchicalConfiguration config) throws ConfigurationException, Exception {
+    protected AbstractStateCompositeProcessor createProcessor(HierarchicalConfiguration config) throws Exception {
         CamelCompositeProcessor processor = new CamelCompositeProcessor();
         try {
             processor.setLog(LoggerFactory.getLogger("MockLog"));

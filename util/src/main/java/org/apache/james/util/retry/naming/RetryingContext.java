@@ -61,7 +61,7 @@ abstract public class RetryingContext implements Context, ExceptionRetryingProxy
      * @throws NamingException
      * 
      */
-    private RetryingContext() throws NamingException {
+    private RetryingContext() {
         super();
     }
     
@@ -560,7 +560,6 @@ abstract public class RetryingContext implements Context, ExceptionRetryingProxy
     }
 
     /**
-     * @see org.apache.james.user.ldap.api.ExceptionRetryingProxy#getDelegate()
      */
     public Context getDelegate() {
         return _delegate;
@@ -568,7 +567,6 @@ abstract public class RetryingContext implements Context, ExceptionRetryingProxy
     
     
     /**
-     * @see org.apache.james.user.ldap.api.ExceptionRetryingProxy#resetDelegate()
      */
     @Override
     public void resetDelegate() throws Exception {

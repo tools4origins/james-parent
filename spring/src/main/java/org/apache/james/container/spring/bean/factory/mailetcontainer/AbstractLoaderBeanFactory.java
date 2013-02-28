@@ -65,9 +65,8 @@ public abstract class AbstractLoaderBeanFactory<T> extends AbstractBeanFactory {
      * @return not null
      */
     protected MailetException loadFailed(String name, String type, Exception e) {
-        final StringBuilder builder = new StringBuilder(128).append("Could not load ").append(type).append(" (").append(name).append(")");
-        final MailetException mailetException = new MailetException(builder.toString(), e);
-        return mailetException;
+        final String builder = "Could not load " + type + " (" + name + ")";
+        return new MailetException(builder.toString(), e);
     }
 
     /**

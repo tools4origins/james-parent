@@ -69,12 +69,12 @@ public class SPF extends GenericMailet {
      * @see org.apache.mailet.base.GenericMailet#service(org.apache.mailet.Mail)
      */
     public void service(Mail mail) throws MessagingException {
-        String sender = null;
+        String sender;
         MailAddress senderAddr = mail.getSender();
         String remoteAddr = mail.getRemoteAddr();
         String helo = mail.getRemoteHost();
 
-        if (remoteAddr.equals("127.0.0.1") == false) {
+        if (!remoteAddr.equals("127.0.0.1")) {
             if (senderAddr != null) {
                 sender = senderAddr.toString();
             } else {

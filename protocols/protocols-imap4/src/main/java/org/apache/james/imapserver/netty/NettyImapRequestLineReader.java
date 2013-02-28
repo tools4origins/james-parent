@@ -38,7 +38,7 @@ import org.jboss.netty.channel.Channel;
  */
 public class NettyImapRequestLineReader extends AbstractNettyImapRequestLineReader {
 
-    private ChannelBuffer buffer;
+    private final ChannelBuffer buffer;
     private int read = 0;
     private final int maxLiteralSize;
 
@@ -59,7 +59,7 @@ public class NettyImapRequestLineReader extends AbstractNettyImapRequestLineRead
      */
     public char nextChar() throws DecodingException {
         if (!nextSeen) {
-            int next = -1;
+            int next;
 
             if (buffer.readable()) {
                 next = buffer.readByte();
@@ -117,7 +117,7 @@ public class NettyImapRequestLineReader extends AbstractNettyImapRequestLineRead
     public final class NotEnoughDataException extends RuntimeException {
 
         public final static int UNKNOWN_SIZE = -1;
-        private int size;
+        private final int size;
 
         public NotEnoughDataException(int size) {
             this.size = size;

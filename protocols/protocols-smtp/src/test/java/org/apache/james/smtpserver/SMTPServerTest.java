@@ -157,7 +157,7 @@ public class SMTPServerTest {
     protected final int smtpListenerPort;
     
     protected SMTPTestConfiguration smtpConfiguration;
-    protected MockUsersRepository usersRepository = new MockUsersRepository();
+    protected final MockUsersRepository usersRepository = new MockUsersRepository();
     protected AlterableDNSServer dnsServer;
     protected MockMailRepositoryStore store;
     protected MockFileSystem fileSystem;
@@ -185,7 +185,7 @@ public class SMTPServerTest {
         return new SMTPServer();
     }
 
-    protected void setUpSMTPServer() throws Exception {
+    protected void setUpSMTPServer() {
         
         Logger log = LoggerFactory.getLogger("SMTP");
         // slf4j can't set programmatically any log level. It's just a facade
@@ -209,7 +209,7 @@ public class SMTPServerTest {
         smtpServer.init();
     }
 
-    protected void setUpFakeLoader() throws Exception {
+    protected void setUpFakeLoader() {
 
         chain = new MockProtocolHandlerLoader();
     

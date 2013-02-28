@@ -37,8 +37,8 @@ public class ConnectHandlerStats extends StandardMBean implements HandlerStatsMB
     private String name;
     private String handlerName;
     private MBeanServer mbeanserver;
-    private AtomicLong all = new AtomicLong(0);
-    private AtomicLong disconnect = new AtomicLong(0);
+    private final AtomicLong all = new AtomicLong(0);
+    private final AtomicLong disconnect = new AtomicLong(0);
 
     public ConnectHandlerStats(String jmxName, String handlerName) throws NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException {
         super(HandlerStatsMBean.class);

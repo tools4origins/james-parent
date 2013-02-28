@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class CamelMailetProcessorTest extends AbstractStateMailetProcessorTest {
 
     @Override
-    protected AbstractStateMailetProcessor createProcessor(HierarchicalConfiguration configuration) throws ConfigurationException, Exception {
+    protected AbstractStateMailetProcessor createProcessor(HierarchicalConfiguration configuration) throws Exception {
         CamelMailetProcessor processor = null;
         try {
             processor = new CamelMailetProcessor();

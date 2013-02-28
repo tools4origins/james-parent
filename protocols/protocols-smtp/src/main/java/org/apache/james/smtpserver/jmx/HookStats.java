@@ -37,11 +37,11 @@ import org.apache.james.protocols.smtp.hook.HookReturnCode;
  */
 public class HookStats extends StandardMBean implements HookStatsMBean, Disposable {
 
-    private AtomicLong ok = new AtomicLong(0);
-    private AtomicLong declined = new AtomicLong(0);
-    private AtomicLong deny = new AtomicLong(0);
-    private AtomicLong denysoft = new AtomicLong(0);
-    private AtomicLong all = new AtomicLong(0);
+    private final AtomicLong ok = new AtomicLong(0);
+    private final AtomicLong declined = new AtomicLong(0);
+    private final AtomicLong deny = new AtomicLong(0);
+    private final AtomicLong denysoft = new AtomicLong(0);
+    private final AtomicLong all = new AtomicLong(0);
 
     private String name;
     private MBeanServer mbeanserver;

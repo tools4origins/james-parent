@@ -86,8 +86,8 @@ public class ToRepository extends GenericMailet {
      *            the mail to process
      */
     public void service(Mail mail) throws javax.mail.MessagingException {
-        StringBuffer logBuffer = new StringBuffer(160).append("Storing mail ").append(mail.getName()).append(" in ").append(repositoryPath);
-        log(logBuffer.toString());
+        String logBuffer = "Storing mail " + mail.getName() + " in " + repositoryPath;
+        log(logBuffer);
         repository.store(mail);
         if (!passThrough) {
             mail.setState(Mail.GHOST);

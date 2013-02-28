@@ -30,7 +30,7 @@ import java.rmi.server.RMISocketFactory;
  */
 public class RestrictingRMISocketFactory extends RMISocketFactory {
 
-    private String address;
+    private final String address;
 
     public RestrictingRMISocketFactory(String address) {
         this.address = address;

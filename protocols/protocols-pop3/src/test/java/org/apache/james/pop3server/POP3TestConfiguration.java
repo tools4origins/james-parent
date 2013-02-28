@@ -25,7 +25,7 @@ import org.apache.james.pop3server.core.CoreCmdHandlerLoader;
 @SuppressWarnings("serial")
 public class POP3TestConfiguration extends DefaultConfigurationBuilder {
 
-    private int pop3ListenerPort;
+    private final int pop3ListenerPort;
 
     public POP3TestConfiguration(int pop3ListenerPort) {
         this.pop3ListenerPort = pop3ListenerPort;

@@ -30,7 +30,7 @@ public class MockMailQueue implements MailQueue {
 
     private final LinkedBlockingQueue<Mail> queue = new LinkedBlockingQueue<Mail>();
     private boolean throwException;
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private Mail lastMail;
 
     /**

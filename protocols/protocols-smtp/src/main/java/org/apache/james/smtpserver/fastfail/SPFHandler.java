@@ -52,7 +52,7 @@ public class SPFHandler implements JamesMessageHook, MailHook, RcptHook, Initial
      * Non context specific log should only be used when no context specific log
      * is available
      */
-    private Logger serviceLog = FALLBACK_LOG;
+    private final Logger serviceLog = FALLBACK_LOG;
 
     public static final String SPF_BLOCKLISTED = "SPF_BLOCKLISTED";
 
@@ -147,8 +147,6 @@ public class SPFHandler implements JamesMessageHook, MailHook, RcptHook, Initial
     }
 
     /**
-     * @see org.apache.james.protocols.smtp.hook.RcptHook#doRcpt(org.apache.james.protocols.smtp.SMTPSession,
-     *      org.apache.mailet.MailAddress, org.apache.mailet.MailAddress)
      */
     public HookResult doRcpt(SMTPSession session, MailAddress sender, MailAddress rcpt) {
         if (!session.isRelayingAllowed()) {
@@ -163,8 +161,6 @@ public class SPFHandler implements JamesMessageHook, MailHook, RcptHook, Initial
     }
 
     /**
-     * @see org.apache.james.protocols.smtp.hook.MailHook#doMail(org.apache.james.protocols.smtp.SMTPSession,
-     *      org.apache.mailet.MailAddress)
      */
     public HookResult doMail(SMTPSession session, MailAddress sender) {
         doSPFCheck(session, sender);

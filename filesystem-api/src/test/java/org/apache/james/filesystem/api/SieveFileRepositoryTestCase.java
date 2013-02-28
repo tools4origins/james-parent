@@ -34,7 +34,7 @@ import org.junit.Test;
 public class SieveFileRepositoryTestCase {
 
     private static final String SIEVE_ROOT = FileSystem.FILE_PROTOCOL + "sieve";
-    private FileSystem fs = new FileSystem() {
+    private final FileSystem fs = new FileSystem() {
 
         @Override
         public File getBasedir() throws FileNotFoundException {
@@ -68,17 +68,7 @@ public class SieveFileRepositoryTestCase {
     }
 
     /**
-     * tearDown.
-     *
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-        // Files from the current run are not removed to allow post run analysis
-    }
-
-    /**
-     * Test method for {@link org.apache.james.managesieve.file.SieveFileRepository#SieveFileRepository(org.apache.james.filesystem.api.FileSystem)}.
+     * Test method for .
      */
     @Test
     public final void testSieveFileRepository() {
@@ -88,7 +78,7 @@ public class SieveFileRepositoryTestCase {
     }
 
     /**
-     * Test method for {@link org.apache.james.managesieve.file.SieveFileRepository#deleteScript(java.lang.String, java.lang.String)}.
+     * Test method for .
      * @throws StorageException 
      * @throws DuplicateUserException 
      * @throws QuotaExceededException 
@@ -135,7 +125,7 @@ public class SieveFileRepositoryTestCase {
     }
 
     /**
-     * Test method for {@link org.apache.james.managesieve.file.SieveFileRepository#getScript(java.lang.String, java.lang.String)}.
+     * Test method for .
      * @throws StorageException 
      * @throws DuplicateUserException 
      * @throws UserNotFoundException 
@@ -166,7 +156,7 @@ public class SieveFileRepositoryTestCase {
     }
 
     /**
-     * Test method for {@link org.apache.james.managesieve.file.SieveFileRepository#haveSpace(java.lang.String, java.lang.String, long)}.
+     * Test method for .
      * @throws DuplicateUserException 
      * @throws QuotaExceededException 
      * @throws UserNotFoundException 
@@ -182,7 +172,7 @@ public class SieveFileRepositoryTestCase {
         String scriptName = "script";
         long defaultQuota = Long.MAX_VALUE - 1;
         long userQuota = Long.MAX_VALUE / 2;
-        boolean quotaExceededExceptionThrown = false;
+        boolean quotaExceededExceptionThrown;
 
         // No quota
         repo.haveSpace(user, scriptName, defaultQuota + 1);
@@ -234,7 +224,7 @@ public class SieveFileRepositoryTestCase {
     }
 
     /**
-     * Test method for {@link org.apache.james.managesieve.file.SieveFileRepository#listScripts(java.lang.String)}.
+     * Test method for .
      * @throws StorageException 
      * @throws DuplicateUserException 
      * @throws UserNotFoundException 
@@ -280,7 +270,7 @@ public class SieveFileRepositoryTestCase {
     }
 
     /**
-     * Test method for {@link org.apache.james.managesieve.file.SieveFileRepository#putScript(java.lang.String, java.lang.String, java.lang.String)}.
+     * Test method for .
      * @throws DuplicateUserException 
      * @throws QuotaExceededException 
      * @throws StorageException 
@@ -320,7 +310,7 @@ public class SieveFileRepositoryTestCase {
     }
 
     /**
-     * Test method for {@link org.apache.james.managesieve.file.SieveFileRepository#renameScript(java.lang.String, java.lang.String, java.lang.String)}.
+     * Test method for .
      * @throws StorageException 
      * @throws DuplicateUserException 
      * @throws DuplicateException 
@@ -370,7 +360,7 @@ public class SieveFileRepositoryTestCase {
     }
 
     /**
-     * Test method for {@link org.apache.james.managesieve.file.SieveFileRepository#getActive(java.lang.String)}.
+     * Test method for .
      * @throws StorageException 
      * @throws DuplicateUserException 
      * @throws QuotaExceededException 
@@ -411,7 +401,7 @@ public class SieveFileRepositoryTestCase {
     }
 
     /**
-     * Test method for {@link org.apache.james.managesieve.file.SieveFileRepository#setActive(java.lang.String, java.lang.String)}.
+     * Test method for .
      * @throws StorageException 
      * @throws DuplicateUserException 
      * @throws UserNotFoundException 

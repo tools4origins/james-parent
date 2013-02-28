@@ -19,14 +19,13 @@
 
 package org.apache.james.transport.mailets;
 
-import java.util.Collection;
-import java.util.HashSet;
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
-
-import org.apache.mailet.Mail;
-import org.apache.mailet.MailAddress;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * <p>
@@ -51,11 +50,11 @@ import org.apache.mailet.MailAddress;
  * <p>
  * Supports the <code>passThrough</code> init parameter (true if missing).
  * </p>
- * 
+ * <p/>
  * <p>
  * Sample configuration:
  * </p>
- * 
+ * <p/>
  * <pre>
  * <code>
  * &lt;mailet match="All" class="Bounce">
@@ -71,12 +70,12 @@ import org.apache.mailet.MailAddress;
  * &lt;/mailet&gt;
  * </code>
  * </pre>
- * 
+ * <p/>
  * <p>
  * The behaviour of this mailet is equivalent to using Resend with the following
  * configuration:
  * </p>
- * 
+ * <p/>
  * <pre>
  * <code>
  * &lt;mailet match="All" class="Resend">
@@ -99,31 +98,35 @@ import org.apache.mailet.MailAddress;
  * <i>notice</i> and <i>sendingAddress</i> can be used instead of <i>message</i>
  * and <i>sender</i>; such names are kept for backward compatibility.
  * </p>
- * 
+ *
  * @since 2.2.0
  */
 public class Bounce extends AbstractNotify {
 
     /**
      * Return a string describing this mailet.
-     * 
+     *
      * @return a string describing this mailet
      */
+    @Override
     public String getMailetInfo() {
         return "Bounce Mailet";
     }
 
-    /** Gets the expected init parameters. */
+    /**
+     * Gets the expected init parameters.
+     */
+    @Override
     protected String[] getAllowedInitParameters() {
-        String[] allowedArray = {
+        return new String[]{
                 // "static",
-                "debug", "passThrough", "fakeDomainCheck", "inline", "attachment", "message", "notice", "sender", "sendingAddress", "prefix", "attachError", };
-        return allowedArray;
+                "debug", "passThrough", "fakeDomainCheck", "inline", "attachment", "message", "notice", "sender", "sendingAddress", "prefix", "attachError",};
     }
 
     /**
      * @return <code>SpecialAddress.REVERSE_PATH</code>
      */
+    @Override
     protected Collection getRecipients() {
         Collection newRecipients = new HashSet();
         newRecipients.add(SpecialAddress.REVERSE_PATH);
@@ -133,6 +136,7 @@ public class Bounce extends AbstractNotify {
     /**
      * @return <code>SpecialAddress.REVERSE_PATH</code>
      */
+    @Override
     protected InternetAddress[] getTo() {
         InternetAddress[] apparentlyTo = new InternetAddress[1];
         apparentlyTo[0] = SpecialAddress.REVERSE_PATH.toInternetAddress();
@@ -142,6 +146,7 @@ public class Bounce extends AbstractNotify {
     /**
      * @return <code>SpecialAddress.NULL</code> (the meaning of bounce)
      */
+    @Override
     protected MailAddress getReversePath(Mail originalMail) {
         return SpecialAddress.NULL;
     }
@@ -150,12 +155,11 @@ public class Bounce extends AbstractNotify {
      * Service does the hard work,and redirects the originalMail in the form
      * specified. Checks that the original return path is not empty, and then
      * calls super.service(originalMail), otherwise just returns.
-     * 
-     * @param originalMail
-     *            the mail to process and redirect
-     * @throws MessagingException
-     *             if a problem arises formulating the redirected mail
+     *
+     * @param originalMail the mail to process and redirect
+     * @throws MessagingException if a problem arises formulating the redirected mail
      */
+    @Override
     public void service(Mail originalMail) throws MessagingException {
         if (originalMail.getSender() == null) {
             if (isDebug)

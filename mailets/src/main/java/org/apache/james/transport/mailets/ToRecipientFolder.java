@@ -70,7 +70,7 @@ public class ToRecipientFolder extends GenericMailet {
      */
     @Override
     public void service(Mail mail) throws MessagingException {
-        if (mail.getState() != Mail.GHOST) {
+        if (!mail.getState().equals(Mail.GHOST)) {
             sieveMailet.service(mail);
         }
     }

@@ -112,7 +112,7 @@ public class MimeMessageWrapper extends MimeMessage implements Disposable {
      * @throws MessagingException
      * @throws MessagingException
      */
-    public MimeMessageWrapper(MimeMessageSource source) throws MessagingException {
+    public MimeMessageWrapper(MimeMessageSource source) {
         this(Session.getDefaultInstance(System.getProperties()), source);
     }
 

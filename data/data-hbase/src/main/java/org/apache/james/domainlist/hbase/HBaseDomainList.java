@@ -45,7 +45,7 @@ public class HBaseDomainList extends AbstractDomainList {
     /**
      * The Logger.
      */
-    private static Logger log = LoggerFactory.getLogger(HBaseDomainList.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(HBaseDomainList.class.getName());
 
     /**
      * @see org.apache.james.domainlist.api.DomainList#containsDomain(String)
@@ -141,7 +141,7 @@ public class HBaseDomainList extends AbstractDomainList {
             scan.addFamily(HDomainList.COLUMN_FAMILY_NAME);
             scan.setCaching(table.getScannerCaching() * 2);
             resultScanner = table.getScanner(scan);
-            Result result = null;
+            Result result;
             while ((result = resultScanner.next()) != null) {
                 list.add(Bytes.toString(result.getRow()));
             }

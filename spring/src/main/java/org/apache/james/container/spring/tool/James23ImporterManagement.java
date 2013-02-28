@@ -18,33 +18,25 @@
  ****************************************************************/
 package org.apache.james.container.spring.tool;
 
-import java.io.IOException;
+import org.apache.james.domainlist.api.DomainListException;
+import org.apache.james.mailrepository.api.MailRepositoryStore.MailRepositoryStoreException;
+import org.apache.james.user.api.UsersRepositoryException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.MessagingException;
-
-import org.apache.james.domainlist.api.DomainListException;
-import org.apache.james.mailrepository.api.MailRepositoryStore.MailRepositoryStoreException;
-import org.apache.james.user.api.UsersRepositoryException;
+import java.io.IOException;
 
 /**
  * {@link James23Importer} support via JMX.
  */
 public class James23ImporterManagement implements James23ImporterManagementMBean {
 
-    /**
-     * 
-     */
     @Inject
     @Named("james23importer")
     private James23Importer james23Importer;
 
-    /**
-     * @see
-     * org.apache.james.container.spring.tool.James23ImporterManagementMBean
-     * #importUsersAndMailsFromJames23(java.lang.String, java.lang.String)
-     */
+    @Override
     public void importUsersAndMailsFromJames23(String james23MailRepositoryPath, String defaultPassword) throws Exception {
         try {
             james23Importer.importUsersAndMailsFromJames23(james23MailRepositoryPath, defaultPassword);
@@ -61,11 +53,7 @@ public class James23ImporterManagement implements James23ImporterManagementMBean
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.container.spring.tool.James23ImporterManagementMBean
-     * #importUsersFromJames23(java.lang.String)
-     */
+    @Override
     public void importUsersFromJames23(String defaultPassword) throws Exception {
         try {
             james23Importer.importUsersFromJames23(defaultPassword);
@@ -78,11 +66,7 @@ public class James23ImporterManagement implements James23ImporterManagementMBean
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.container.spring.tool.James23ImporterManagementMBean
-     * #importMailsFromJames23(java.lang.String)
-     */
+    @Override
     public void importMailsFromJames23(String james23MailRepositoryPath) throws Exception {
         try {
             james23Importer.importMailsFromJames23(james23MailRepositoryPath);

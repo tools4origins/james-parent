@@ -98,13 +98,13 @@ public class JDBCAlias extends GenericMailet {
             // DatabaseMetaInfo.
             // Try UPPER, lower, and MixedCase, to see if the table is there.
             if (!(theJDBCUtil.tableExists(dbMetaData, tableName))) {
-                StringBuffer exceptionBuffer = new StringBuffer(128).append("Could not find table '").append(tableName).append("' in datasource '").append(datasourceName).append("'");
-                throw new MailetException(exceptionBuffer.toString());
+                String exceptionBuffer = "Could not find table '" + tableName + "' in datasource '" + datasourceName + "'";
+                throw new MailetException(exceptionBuffer);
             }
 
             // Build the query
-            StringBuffer queryBuffer = new StringBuffer(128).append("SELECT ").append(getInitParameter("target_column")).append(" FROM ").append(tableName).append(" WHERE ").append(getInitParameter("source_column")).append(" = ?");
-            query = queryBuffer.toString();
+            String queryBuffer = "SELECT " + getInitParameter("target_column") + " FROM " + tableName + " WHERE " + getInitParameter("source_column") + " = ?";
+            query = queryBuffer;
         } catch (MailetException me) {
             throw me;
         } catch (Exception e) {
@@ -129,9 +129,9 @@ public class JDBCAlias extends GenericMailet {
             conn = datasource.getConnection();
             mappingStmt = conn.prepareStatement(query);
 
-            for (Iterator<MailAddress> i = recipients.iterator(); i.hasNext();) {
+            for (MailAddress recipient : recipients) {
                 try {
-                    MailAddress source = i.next();
+                    MailAddress source = recipient;
                     mappingStmt.setString(1, source.toString());
                     mappingRS = mappingStmt.executeQuery();
                     if (!mappingRS.next()) {
@@ -149,9 +149,8 @@ public class JDBCAlias extends GenericMailet {
                     } catch (ParseException pe) {
                         // Don't alias this address... there's an invalid
                         // address mapping here
-                        StringBuffer exceptionBuffer = new StringBuffer(128).append("There is an invalid alias from ").append(source).append(" to ").append(mappingRS.getString(1));
-                        log(exceptionBuffer.toString());
-                        continue;
+                        String exceptionBuffer = "There is an invalid alias from " + source + " to " + mappingRS.getString(1);
+                        log(exceptionBuffer);
                     }
                 } finally {
                     ResultSet localRS = mappingRS;

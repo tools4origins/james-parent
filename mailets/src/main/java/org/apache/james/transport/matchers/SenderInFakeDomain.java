@@ -42,7 +42,7 @@ public class SenderInFakeDomain extends AbstractNetworkMatcher {
             // criteria.
             log("No MX, A, or CNAME record found for domain: " + domain);
             return mail.getRecipients();
-        } else if (matchNetwork(servers.iterator().next().toString())) {
+        } else if (matchNetwork(servers.iterator().next())) {
             /*
              * It could be a wildcard address like these:
              *

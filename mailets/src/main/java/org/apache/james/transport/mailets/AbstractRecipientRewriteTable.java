@@ -86,17 +86,14 @@ public abstract class AbstractRecipientRewriteTable extends GenericMailet {
         Collection<MailAddress> recipients = mail.getRecipients();
         Map<MailAddress, String> recipientsMap = new HashMap<MailAddress, String>(recipients.size());
 
-        for (Iterator<MailAddress> iter = recipients.iterator(); iter.hasNext();) {
-            MailAddress address = iter.next();
-
+        for (MailAddress address : recipients) {
             // Assume all addresses are non-virtual at start
             recipientsMap.put(address, null);
         }
 
         mapRecipients(recipientsMap);
 
-        for (Iterator<MailAddress> iter = recipientsMap.keySet().iterator(); iter.hasNext();) {
-            MailAddress source = iter.next();
+        for (MailAddress source : recipientsMap.keySet()) {
             String targetString = recipientsMap.get(source);
 
             // Only non-null mappings are translated
@@ -140,15 +137,14 @@ public abstract class AbstractRecipientRewriteTable extends GenericMailet {
                                 recipientsToAddForward.add(target);
                             }
 
-                            StringBuffer buf = new StringBuffer().append("Translating virtual user ").append(source).append(" to ").append(target);
-                            log(buf.toString());
+                            String buf = "Translating virtual user " + source + " to " + target;
+                            log(buf);
 
                         } catch (ParseException pe) {
                             // Don't map this address... there's an invalid
                             // address mapping here
-                            StringBuffer exceptionBuffer = new StringBuffer(128).append("There is an invalid map from ").append(source).append(" to ").append(targetAddress);
-                            log(exceptionBuffer.toString());
-                            continue;
+                            String exceptionBuffer = "There is an invalid map from " + source + " to " + targetAddress;
+                            log(exceptionBuffer);
                         } catch (DomainListException e) {
                             log("Unable to access DomainList", e);
                         }
@@ -261,7 +257,7 @@ public abstract class AbstractRecipientRewriteTable extends GenericMailet {
      * @return the character to tokenize on
      */
     private String getSeparator(String targetString) {
-        return (targetString.indexOf(',') > -1 ? "," : (targetString.indexOf(';') > -1 ? ";" : (targetString.indexOf("regex:") > -1 ? "" : ":")));
+        return (targetString.indexOf(',') > -1 ? "," : (targetString.indexOf(';') > -1 ? ";" : (targetString.contains("regex:") ? "" : ":")));
     }
 
 }

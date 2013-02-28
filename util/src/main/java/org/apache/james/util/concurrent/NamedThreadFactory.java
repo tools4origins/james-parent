@@ -42,9 +42,7 @@ public class NamedThreadFactory implements ThreadFactory {
         this(name, Thread.NORM_PRIORITY);
     }
 
-    /**
-     * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
-     */
+    @Override
     public Thread newThread(Runnable r) {
         Thread t = new Thread(r);
         t.setName(name + "-" + count.incrementAndGet());
@@ -52,11 +50,6 @@ public class NamedThreadFactory implements ThreadFactory {
         return t;
     }
 
-    /**
-     * Return the name
-     * 
-     * @return name
-     */
     public String getName() {
         return name;
     }

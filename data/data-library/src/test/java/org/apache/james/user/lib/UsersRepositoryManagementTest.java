@@ -76,16 +76,14 @@ public class UsersRepositoryManagementTest {
         String[] usersArray = new String[]{"ccc", "aaa", "dddd", "bbbbb"};
         List<String> users = Arrays.asList(usersArray);
 
-        for (int i = 0; i < users.size(); i++) {
-            String user = users.get(i);
+        for (String user : users) {
             m_mockUsersRepository.addUser(user, "test");
         }
 
         String[] userNames = m_userManagement.listAllUsers();
         assertEquals("user count", users.size(), userNames.length);
 
-        for (int i = 0; i < userNames.length; i++) {
-            String user = userNames[i];
+        for (String user : userNames) {
             if (!users.contains(user)) {
                 fail("user not listed");
             }

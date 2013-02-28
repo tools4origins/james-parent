@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HBaseDomainListTest extends AbstractDomainListTest {
 
-    private static HBaseClusterSingleton cluster = HBaseClusterSingleton.build();
+    private static final HBaseClusterSingleton cluster = HBaseClusterSingleton.build();
 
     @BeforeClass
     public static void setMeUp() throws IOException {

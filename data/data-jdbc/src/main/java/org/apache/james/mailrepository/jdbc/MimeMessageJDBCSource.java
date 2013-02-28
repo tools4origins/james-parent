@@ -113,8 +113,8 @@ public class MimeMessageJDBCSource extends MimeMessageSource {
      * @return the String ID
      */
     public String getSourceId() {
-        StringBuffer sourceIdBuffer = new StringBuffer(128).append(repository.repositoryName).append("/").append(key);
-        return sourceIdBuffer.toString();
+        String sourceIdBuffer = repository.repositoryName + "/" + key;
+        return sourceIdBuffer;
     }
 
     /**
@@ -132,7 +132,7 @@ public class MimeMessageJDBCSource extends MimeMessageSource {
         try {
             conn = repository.getConnection();
 
-            byte[] headers = null;
+            byte[] headers;
 
             long start = 0;
             if (DEEP_DEBUG) {
@@ -217,7 +217,7 @@ public class MimeMessageJDBCSource extends MimeMessageSource {
                         size += ((org.apache.james.repository.file.FilePersistentStreamRepository) sr).getSize(key);
                     } else {
                         in = sr.get(key);
-                        int len = 0;
+                        int len;
                         byte[] block = new byte[1024];
                         while ((len = in.read(block)) > -1) {
                             size += len;
@@ -256,7 +256,7 @@ public class MimeMessageJDBCSource extends MimeMessageSource {
             // of
             // the equals equation
             MimeMessageJDBCSource source = (MimeMessageJDBCSource) obj;
-            return ((source.key == key) || ((source.key != null) && source.key.equals(key))) && ((source.repository == repository) || ((source.repository != null) && source.repository.equals(repository)));
+            return ((source.key.equals(key)) || ((source.key != null) && source.key.equals(key))) && ((source.repository == repository) || ((source.repository != null) && source.repository.equals(repository)));
         }
         return false;
     }

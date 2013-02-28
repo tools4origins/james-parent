@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class TimeConverter {
 
-    private static HashMap<String, Integer> multipliers = new HashMap<String, Integer>(10);
+    private static final HashMap<String, Integer> multipliers = new HashMap<String, Integer>(10);
 
     private static final String PATTERN_STRING = "\\s*([0-9]+)\\s*([a-z,A-Z]+)\\s*";
 
@@ -32,16 +32,16 @@ public class TimeConverter {
 
     static {
         // add allowed units and their respective multiplier
-        multipliers.put("msec", Integer.valueOf(1));
-        multipliers.put("msecs", Integer.valueOf(1));
-        multipliers.put("sec", Integer.valueOf(1000));
-        multipliers.put("secs", Integer.valueOf(1000));
-        multipliers.put("minute", Integer.valueOf(1000 * 60));
-        multipliers.put("minutes", Integer.valueOf(1000 * 60));
-        multipliers.put("hour", Integer.valueOf(1000 * 60 * 60));
-        multipliers.put("hours", Integer.valueOf(1000 * 60 * 60));
-        multipliers.put("day", Integer.valueOf(1000 * 60 * 60 * 24));
-        multipliers.put("days", Integer.valueOf(1000 * 60 * 60 * 24));
+        multipliers.put("msec", 1);
+        multipliers.put("msecs", 1);
+        multipliers.put("sec", 1000);
+        multipliers.put("secs", 1000);
+        multipliers.put("minute", 1000 * 60);
+        multipliers.put("minutes", 1000 * 60);
+        multipliers.put("hour", 1000 * 60 * 60);
+        multipliers.put("hours", 1000 * 60 * 60);
+        multipliers.put("day", 1000 * 60 * 60 * 24);
+        multipliers.put("days", 1000 * 60 * 60 * 24);
 
         PATTERN = Pattern.compile(PATTERN_STRING);
 
@@ -67,7 +67,7 @@ public class TimeConverter {
         if (multiplierObject == null) {
             throw new NumberFormatException("Unknown unit: " + unit);
         }
-        int multiplier = ((Integer) multiplierObject).intValue();
+        int multiplier = (Integer) multiplierObject;
         return (amount * multiplier);
     }
 

@@ -77,7 +77,6 @@ public class DoublingRetrySchedule implements RetrySchedule {
     }
 
     /**
-     * @see org.apache.james.user.ldap.api.RetrySchedule#getInterval(int)
      */
     @Override
     public long getInterval(int index) {

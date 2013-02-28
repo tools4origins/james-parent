@@ -52,7 +52,7 @@ public class DefaultUsersJdbcRepositoryTest extends AbstractUsersJdbcRepositoryT
         return res;
     }
 
-    protected void configureAbstractJdbcUsersRepository(AbstractJdbcUsersRepository res, String tableString) throws Exception, ConfigurationException {
+    protected void configureAbstractJdbcUsersRepository(AbstractJdbcUsersRepository res, String tableString) throws Exception {
         res.setFileSystem(new MockFileSystem());
         DataSource dataSource = getDataSource();
 
@@ -79,7 +79,7 @@ public class DefaultUsersJdbcRepositoryTest extends AbstractUsersJdbcRepositoryT
     protected void disposeUsersRepository() throws UsersRepositoryException {
         Iterator<String> i = this.usersRepository.list();
         while (i.hasNext()) {
-            this.usersRepository.removeUser((String) i.next());
+            this.usersRepository.removeUser(i.next());
         }
         LifecycleUtil.dispose(this.usersRepository);
     }

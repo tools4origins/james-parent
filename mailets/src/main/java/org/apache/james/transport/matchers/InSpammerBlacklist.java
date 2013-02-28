@@ -74,7 +74,7 @@ public class InSpammerBlacklist extends GenericMatcher {
         String host = mail.getRemoteAddr();
         try {
             // Have to reverse the octets first
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             StringTokenizer st = new StringTokenizer(host, " .", false);
 
             while (st.hasMoreTokens()) {

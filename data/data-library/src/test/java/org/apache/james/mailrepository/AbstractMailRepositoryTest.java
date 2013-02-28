@@ -39,9 +39,9 @@ import org.junit.Test;
 
 public abstract class AbstractMailRepositoryTest {
 
-    String content = "Subject: test\r\nAAAContent-Transfer-Encoding: text/plain";
-    String sep = "\r\n\r\n";
-    String body = "original body\r\n.\r\n";
+    final String content = "Subject: test\r\nAAAContent-Transfer-Encoding: text/plain";
+    final String sep = "\r\n\r\n";
+    final String body = "original body\r\n.\r\n";
     protected Mail mail;
     protected MailRepository mailRepository;
     protected MimeMessage mimeMessage;
@@ -87,7 +87,7 @@ public abstract class AbstractMailRepositoryTest {
         } catch (Exception e) {
             fail("Failed to store mail");
         }
-        Mail m2 = mailRepository.retrieve((String) mailRepository.list().next());
+        Mail m2 = mailRepository.retrieve(mailRepository.list().next());
 
         assertEquals("stored and retrieved messages do not match", mail.getMessage().getContent().toString(), m2.
                 getMessage().getContent().toString());

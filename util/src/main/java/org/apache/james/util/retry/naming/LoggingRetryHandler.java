@@ -39,7 +39,6 @@ abstract public class LoggingRetryHandler extends NamingExceptionRetryHandler {
      * @param exceptionClasses
      * @param proxy
      * @param maxRetries
-     * @param retryInterval
      * @param logger
      */
     public LoggingRetryHandler(Class<?>[] exceptionClasses, ExceptionRetryingProxy proxy,
@@ -49,18 +48,12 @@ abstract public class LoggingRetryHandler extends NamingExceptionRetryHandler {
     }
 
     /**
-     * @see org.apache.james.user.ldap.AbstractRetryHandler1#postFailure(javax.naming.NamingException, int)
      */
     @Override
     public void postFailure(NamingException ex, int retryCount) {
         super.postFailure(ex, retryCount);
         _logger.info(
-                new StringBuilder("Retry failure: ").
-                append(ex.getLocalizedMessage()).
-                append("\n Retrying in ").
-                append(getRetryInterval(retryCount)/1000).
-                append(" seconds").
-                toString()
+                "Retry failure: " + ex.getLocalizedMessage() + "\n Retrying in " + getRetryInterval(retryCount) / 1000 + " seconds"
                 );
     }
 

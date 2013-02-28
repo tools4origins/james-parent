@@ -94,11 +94,10 @@ public class FileMailQueue implements ManageableMailQueue {
                 }
             });
 
-            for (int a=0; a < files.length; a++) {
-                
-                final String name = files[a];
+            for (final String name : files) {
+
                 ObjectInputStream oin = null;
-                
+
                 try {
 
                     final String msgFileName = name.substring(0, name.length() - OBJECT_EXTENSION.length()) + MSG_EXTENSION;
@@ -350,7 +349,6 @@ public class FileMailQueue implements ManageableMailQueue {
         }
 
         /**
-         * @see org.apache.james.core.MimeMessageSource#disposeSource()
          */
         public void dispose() {
             try {
@@ -367,8 +365,8 @@ public class FileMailQueue implements ManageableMailQueue {
      * Helper class which is used to reference the path to the object and msg file
      */
     private final class FileItem {
-        private String objectfile;
-        private String messagefile;
+        private final String objectfile;
+        private final String messagefile;
 
         public FileItem(String objectfile, String messagefile) {
             this.objectfile = objectfile;
@@ -414,7 +412,7 @@ public class FileMailQueue implements ManageableMailQueue {
         long i = 0;
         while(keys.hasNext()) {
             String key = keys.next();
-            if (inmemoryQueue.contains(key) == false) {
+            if (!inmemoryQueue.contains(key)) {
                 inmemoryQueue.add(key);
                 i++;
             }

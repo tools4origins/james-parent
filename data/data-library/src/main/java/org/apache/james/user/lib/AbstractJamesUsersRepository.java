@@ -136,12 +136,12 @@ public abstract class AbstractJamesUsersRepository extends AbstractUsersReposito
                 }
 
                 if (enableForwarding && jUser.getForwarding()) {
-                    String forward = null;
+                    String forward;
                     if (jUser.getForwardingDestination() != null && ((forward = jUser.getForwardingDestination().toString()) != null)) {
                         mappings.add(forward);
                     } else {
-                        StringBuffer errorBuffer = new StringBuffer(128).append("Forwarding was enabled for ").append(username).append(" but no forwarding address was set for this account.");
-                        getLogger().error(errorBuffer.toString());
+                        String errorBuffer = "Forwarding was enabled for " + username + " but no forwarding address was set for this account.";
+                        getLogger().error(errorBuffer);
                     }
                 }
             }
@@ -181,7 +181,7 @@ public abstract class AbstractJamesUsersRepository extends AbstractUsersReposito
      */
     public Map<String, Collection<String>> getAllMappings() throws RecipientRewriteTableException {
         Map<String, Collection<String>> mappings = new HashMap<String, Collection<String>>();
-        if (enableAliases == true || enableForwarding == true) {
+        if (enableAliases || enableForwarding) {
             try {
                 Iterator<String> users = list();
                 while (users.hasNext()) {

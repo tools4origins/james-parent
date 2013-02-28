@@ -27,7 +27,7 @@ import org.apache.mailet.Mail;
  */
 public class MailStateNotEquals implements Predicate {
 
-    private String state;
+    private final String state;
 
     public MailStateNotEquals(String state) {
         this.state = state;
@@ -38,10 +38,7 @@ public class MailStateNotEquals implements Predicate {
      */
     public boolean matches(Exchange ex) {
         Mail m = ex.getIn().getBody(Mail.class);
-        if (state.equals(m.getState())) {
-            return false;
-        }
-        return true;
+        return !state.equals(m.getState());
     }
 
 }

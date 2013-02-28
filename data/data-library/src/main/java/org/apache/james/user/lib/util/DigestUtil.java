@@ -68,12 +68,10 @@ public class DigestUtil {
 
         if (file) {
             digestFile(args[args.length - 1], alg);
-            return;
         } else {
             try {
                 String hash = digestString(args[args.length - 1], alg);
                 System.out.println("Hash is: " + hash);
-                return;
             } catch (NoSuchAlgorithmException nsae) {
                 System.out.println("No such algorithm available");
             }
@@ -99,7 +97,7 @@ public class DigestUtil {
     public static void digestFile(String filename, String algorithm) {
         byte[] b = new byte[65536];
         int count = 0;
-        int read = 0;
+        int read;
         FileInputStream fis = null;
         FileOutputStream fos = null;
         try {
@@ -111,8 +109,8 @@ public class DigestUtil {
                 count += read;
             }
             byte[] digest = md.digest();
-            StringBuffer fileNameBuffer = new StringBuffer(128).append(filename).append(".").append(algorithm);
-            fos = new FileOutputStream(fileNameBuffer.toString());
+            String fileNameBuffer = filename + "." + algorithm;
+            fos = new FileOutputStream(fileNameBuffer);
             OutputStream encodedStream = MimeUtility.encode(fos, "base64");
             encodedStream.write(digest);
             fos.flush();

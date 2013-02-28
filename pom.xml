@@ -28,7 +28,6 @@
         <artifactId>james-project</artifactId>
         <groupId>org.apache.james</groupId>
         <version>1.8.2</version>
-        <relativePath/>
     </parent>
 
     <artifactId>james-server</artifactId>
@@ -717,12 +716,6 @@
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-nop</artifactId>
-                <version>${slf4j.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
                 <scope>test</scope>
@@ -815,7 +808,7 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>jmock</groupId>
+                <groupId>org.jmock</groupId>
                 <artifactId>jmock</artifactId>
                 <version>${jmock.version}</version>
                 <scope>test</scope>
@@ -1199,11 +1192,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -1246,9 +1234,6 @@
                           <goal>generate-depends-file</goal>
                         </goals>
                       </pluginExecutionFilter>
-                      <action>
-                        <ignore></ignore>
-                      </action>
                     </pluginExecution>
                   </pluginExecutions>
                 </lifecycleMappingMetadata>

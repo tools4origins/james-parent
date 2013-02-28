@@ -120,7 +120,7 @@ public class CamelMailetProcessor extends AbstractStateMailetProcessor implement
      */
     private final class MailetContainerRouteBuilder extends RouteBuilder {
 
-        private List<MatcherMailetPair> pairs;
+        private final List<MatcherMailetPair> pairs;
 
         public MailetContainerRouteBuilder(List<MatcherMailetPair> pairs) {
             this.pairs = pairs;
@@ -140,8 +140,7 @@ public class CamelMailetProcessor extends AbstractStateMailetProcessor implement
             // store the logger in properties
                     .setProperty(MatcherSplitter.LOGGER_PROPERTY, constant(getLogger()));
 
-            for (int i = 0; i < pairs.size(); i++) {
-                MatcherMailetPair pair = pairs.get(i);
+            for (MatcherMailetPair pair : pairs) {
                 Matcher matcher = pair.getMatcher();
                 Mailet mailet = pair.getMailet();
 
@@ -156,7 +155,7 @@ public class CamelMailetProcessor extends AbstractStateMailetProcessor implement
                 // Store the matcher to use for splitter in properties
                 processorDef.setProperty(MatcherSplitter.MATCHER_PROPERTY, constant(matcher)).setProperty(MatcherSplitter.ON_MATCH_EXCEPTION_PROPERTY, constant(onMatchException)).setProperty(MatcherSplitter.MAILETCONTAINER_PROPERTY, constant(CamelMailetProcessor.this))
 
-                // do splitting of the mail based on the stored matcher
+                        // do splitting of the mail based on the stored matcher
                         .split().method(MatcherSplitter.class).aggregationStrategy(aggr)
 
                         .choice().when(new MatcherMatch()).process(mailetProccessor).end()

@@ -33,17 +33,14 @@ import java.sql.SQLException;
  * Although this repository can handle subclasses of DefaultUser, like
  * <code>DefaultJamesUser</code>, only properties from the DefaultUser class are
  * persisted.
- * 
+ * <p/>
  * TODO Please note that default configuration uses JamesUsersJdbcRepository
  * instead of this class. So we could also delete this implementation.
- * 
  */
 @Deprecated
 public class DefaultUsersJdbcRepository extends AbstractJdbcUsersRepository {
 
-    /**
-     * @see org.apache.james.user.jdbc.AbstractJdbcUsersRepository#readUserFromResultSet(java.sql.ResultSet)
-     */
+    @Override
     protected User readUserFromResultSet(ResultSet rsUsers) throws SQLException {
         // Get the username, and build a DefaultUser with it.
         String username = rsUsers.getString(1);
@@ -53,10 +50,7 @@ public class DefaultUsersJdbcRepository extends AbstractJdbcUsersRepository {
         return user;
     }
 
-    /**
-     * @see org.apache.james.user.jdbc.AbstractJdbcUsersRepository#setUserForInsertStatement(org.apache.james.user.api.model.User,
-     *      java.sql.PreparedStatement)
-     */
+    @Override
     protected void setUserForInsertStatement(User user, PreparedStatement userInsert) throws SQLException {
         DefaultUser defUser = (DefaultUser) user;
         userInsert.setString(1, defUser.getUserName());
@@ -64,10 +58,7 @@ public class DefaultUsersJdbcRepository extends AbstractJdbcUsersRepository {
         userInsert.setString(3, defUser.getHashAlgorithm());
     }
 
-    /**
-     * @see org.apache.james.user.jdbc.AbstractJdbcUsersRepository#setUserForUpdateStatement(org.apache.james.user.api.model.User,
-     *      java.sql.PreparedStatement)
-     */
+    @Override
     protected void setUserForUpdateStatement(User user, PreparedStatement userUpdate) throws SQLException {
         DefaultUser defUser = (DefaultUser) user;
         userUpdate.setString(1, defUser.getHashedPassword());
@@ -75,12 +66,9 @@ public class DefaultUsersJdbcRepository extends AbstractJdbcUsersRepository {
         userUpdate.setString(3, defUser.getUserName());
     }
 
-    /**
-     * @see org.apache.james.user.api.UsersRepository#addUser(java.lang.String,
-     *      java.lang.String)
-     */
+    @Override
     public void addUser(String username, String password) throws UsersRepositoryException {
-        if (contains(username) == true) {
+        if (contains(username)) {
             throw new UsersRepositoryException("User " + username + " already exist");
         }
         isValidUsername(username);

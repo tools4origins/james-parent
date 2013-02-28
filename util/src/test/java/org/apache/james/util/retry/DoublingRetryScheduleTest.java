@@ -29,11 +29,11 @@ import org.junit.Test;
 public class DoublingRetryScheduleTest {
 
     /**
-     * Test method for {@link org.apache.james.user.ldap.DoublingRetrySchedule#DoublingRetrySchedule(long, long)}.
+     * Test method for .
      */
     @Test
     public final void testDoublingRetrySchedule() {
-	assertTrue(RetrySchedule.class.isAssignableFrom(new DoublingRetrySchedule(0, 0).getClass()));
+	assertTrue(RetrySchedule.class.isAssignableFrom(DoublingRetrySchedule.class));
 	assertEquals(0, new DoublingRetrySchedule(0, 0).getInterval(0));
 	assertEquals(0, new DoublingRetrySchedule(-1, -1).getInterval(0));
 	assertEquals(0, new DoublingRetrySchedule(-1, 0).getInterval(0));
@@ -41,7 +41,7 @@ public class DoublingRetryScheduleTest {
     }
 
     /**
-     * Test method for {@link org.apache.james.user.ldap.DoublingRetrySchedule#getInterval(int)}.
+     * Test method for .
      */
     @Test
     public final void testGetInterval() {
@@ -72,7 +72,7 @@ public class DoublingRetryScheduleTest {
     }
 
     /**
-     * Test method for {@link org.apache.james.user.ldap.DoublingRetrySchedule#toString()}.
+     * Test method for .
      */
     @Test
     public final void testToString() {

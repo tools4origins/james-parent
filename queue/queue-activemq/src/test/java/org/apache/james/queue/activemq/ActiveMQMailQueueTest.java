@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.james.queue.activemq;
 
-import javax.jms.ConnectionFactory;
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.plugin.StatisticsBrokerPlugin;
@@ -27,13 +26,15 @@ import org.apache.james.queue.jms.JMSMailQueueTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.ConnectionFactory;
+
 public class ActiveMQMailQueueTest extends JMSMailQueueTest {
 
     @Override
     protected BrokerService createBroker() throws Exception {
         BrokerService broker = super.createBroker();
         // Enable statistics
-        broker.setPlugins(new BrokerPlugin[] { new StatisticsBrokerPlugin() });
+        broker.setPlugins(new BrokerPlugin[]{new StatisticsBrokerPlugin()});
         broker.setEnableStatistics(true);
 
         return broker;
@@ -44,8 +45,7 @@ public class ActiveMQMailQueueTest extends JMSMailQueueTest {
         Logger log = LoggerFactory.getLogger("MockLog");
         // slf4j can't set programmatically any log level. It's just a facade
         // log.setLevel(SimpleLog.LOG_LEVEL_DEBUG);
-        ActiveMQMailQueue localQueue = new ActiveMQMailQueue(factory, queueName, useBlobMessages(), log);
-        return localQueue;
+        return new ActiveMQMailQueue(factory, queueName, useBlobMessages(), log);
     }
 
     protected boolean useBlobMessages() {

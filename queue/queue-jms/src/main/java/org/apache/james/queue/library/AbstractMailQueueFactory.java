@@ -49,7 +49,7 @@ public abstract class AbstractMailQueueFactory implements MailQueueFactory, LogE
     protected Logger log;
     private boolean useJMX = true;
     private MBeanServer mbeanServer;
-    private List<String> mbeans = new ArrayList<String>();
+    private final List<String> mbeans = new ArrayList<String>();
 
     public void setUseJMX(boolean useJMX) {
         this.useJMX = useJMX;
@@ -62,13 +62,12 @@ public abstract class AbstractMailQueueFactory implements MailQueueFactory, LogE
 
     @PreDestroy
     public void destroy() {
-        for (int i = 0; i < mbeans.size(); i++) {
-            unregisterMBean(mbeans.get(i));
+        for (String mbean : mbeans) {
+            unregisterMBean(mbean);
         }
 
-        Iterator<MailQueue> it = queues.values().iterator();
-        while (it.hasNext()) {
-            LifecycleUtil.dispose(it.next());
+        for (MailQueue mailQueue : queues.values()) {
+            LifecycleUtil.dispose(mailQueue);
         }
 
     }

@@ -35,7 +35,6 @@ public class JMXHandlersLoader implements HandlersPackage {
     }
 
     /**
-     * @see org.apache.james.protocols.api.handler.HandlersPackage#getHandlers()
      */
     public List<String> getHandlers() {
         return handlers;

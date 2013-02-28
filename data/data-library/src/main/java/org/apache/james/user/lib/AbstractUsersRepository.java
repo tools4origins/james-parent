@@ -81,10 +81,9 @@ public abstract class AbstractUsersRepository implements UsersRepository, LogEna
             } else {
                 String domain = username.substring(i + 1);
                 try {
-                    if (domainList.containsDomain(domain) == false) {
+                    if (!domainList.containsDomain(domain)) {
                         throw new UsersRepositoryException("Domain does not exist in DomainList");
                     } else {
-                        return;
                     }
                 } catch (DomainListException e) {
                     throw new UsersRepositoryException("Unable to query DomainList", e);
@@ -104,7 +103,7 @@ public abstract class AbstractUsersRepository implements UsersRepository, LogEna
      */
     public void addUser(String username, String password) throws UsersRepositoryException {
 
-        if (contains(username) == false) {
+        if (!contains(username)) {
             isValidUsername(username);
             doAddUser(username, password);
         } else {
@@ -116,7 +115,7 @@ public abstract class AbstractUsersRepository implements UsersRepository, LogEna
     /**
      * @see org.apache.james.user.api.UsersRepository#supportVirtualHosting()
      */
-    public boolean supportVirtualHosting() throws UsersRepositoryException {
+    public boolean supportVirtualHosting() {
         return virtualHosting;
     }
 

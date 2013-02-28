@@ -156,7 +156,6 @@ public class JCRUsersRepository extends AbstractUsersRepository {
                         final String hashedSaltedPassword = jcrUser.getHashedSaltedPassword();
                         rootNode.getNode(path).setProperty(PASSWD_PROPERTY, hashedSaltedPassword);
                         session.save();
-                        return;
                     } catch (PathNotFoundException e) {
                         // user not found
                         getLogger().debug("User not found");
@@ -265,8 +264,8 @@ public class JCRUsersRepository extends AbstractUsersRepository {
                 try {
                     final Node node = rootNode.getNode(path);
                     final String current = node.getProperty(PASSWD_PROPERTY).getString();
-                    if (current == null || current == "") {
-                        return password == null || password == "";
+                    if (current == null || current.equals("")) {
+                        return password == null || password.equals("");
                     }
                     final String hashPassword = JCRUser.hashPassword(username, password);
                     return current.equals(hashPassword);

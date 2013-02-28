@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.james.protocols.lib;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConfigurationUtils;
@@ -34,15 +30,18 @@ import org.apache.james.protocols.lib.handler.HandlersPackage;
 import org.apache.james.protocols.lib.handler.ProtocolHandlerLoader;
 import org.apache.james.protocols.lib.lifecycle.InitializingLifecycleAwareProtocolHandler;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class ProtocolHandlerChainImpl implements ProtocolHandlerChain {
 
-    private ProtocolHandlerLoader loader;
-    private HierarchicalConfiguration handlerchainConfig;
-    private String jmxName;
-    private String coreHandlersPackage;
-    private String jmxHandlersPackage;
-    private List<Object> handlers = new LinkedList<Object>();
-    
+    private final ProtocolHandlerLoader loader;
+    private final HierarchicalConfiguration handlerchainConfig;
+    private final String jmxName;
+    private final String coreHandlersPackage;
+    private final String jmxHandlersPackage;
+    private final List<Object> handlers = new LinkedList<Object>();
+
     public ProtocolHandlerChainImpl(ProtocolHandlerLoader loader, HierarchicalConfiguration handlerchainConfig, String jmxName, Class<? extends HandlersPackage> coreHandlersPackage, Class<? extends HandlersPackage> jmxHandlersPackage) {
         this.loader = loader;
         this.handlerchainConfig = handlerchainConfig;
@@ -50,7 +49,7 @@ public class ProtocolHandlerChainImpl implements ProtocolHandlerChain {
         this.coreHandlersPackage = coreHandlersPackage.getName();
         this.jmxHandlersPackage = jmxHandlersPackage.getName();
     }
-    
+
     @SuppressWarnings("unchecked")
     public void init() throws Exception {
         List<org.apache.commons.configuration.HierarchicalConfiguration> children = handlerchainConfig.configurationsAt("handler");
@@ -61,12 +60,12 @@ public class ProtocolHandlerChainImpl implements ProtocolHandlerChain {
             handlerchainConfig.addProperty("[@coreHandlersPackage]", coreHandlersPackage);
 
         String coreHandlersPackage = handlerchainConfig.getString("[@coreHandlersPackage]");
-        
+
         if (handlerchainConfig.getString("[@jmxHandlersPackage]") == null)
             handlerchainConfig.addProperty("[@jmxHandlersPackage]", jmxHandlersPackage);
 
         String jmxHandlersPackage = handlerchainConfig.getString("[@jmxHandlersPackage]");
- 
+
         HandlersPackage handlersPackage = (HandlersPackage) loader.load(coreHandlersPackage, addHandler(coreHandlersPackage));
         registerHandlersPackage(handlersPackage, null, children);
 
@@ -74,12 +73,11 @@ public class ProtocolHandlerChainImpl implements ProtocolHandlerChain {
             DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
             builder.addProperty("jmxName", jmxName);
             HandlersPackage jmxPackage = (HandlersPackage) loader.load(jmxHandlersPackage, addHandler(jmxHandlersPackage));
-            
+
             registerHandlersPackage(jmxPackage, builder, children);
         }
 
-        for (int i = 0; i < children.size(); i++) {
-            HierarchicalConfiguration hConf = children.get(i);
+        for (HierarchicalConfiguration hConf : children) {
             String className = hConf.getString("[@class]", null);
             if (className != null) {
                 handlers.add(loader.load(className, hConf));
@@ -90,29 +88,25 @@ public class ProtocolHandlerChainImpl implements ProtocolHandlerChain {
         wireExtensibleHandlers();
 
     }
-    
+
     private void wireExtensibleHandlers() throws WiringException {
         LinkedList<ExtensibleHandler> eHandlers = getHandlers(ExtensibleHandler.class);
-        for (int a = 0; a < eHandlers.size(); a++) {
-            final ExtensibleHandler extensibleHandler = eHandlers.get(a);
+        for (final ExtensibleHandler extensibleHandler : eHandlers) {
             final List<Class<?>> markerInterfaces = extensibleHandler.getMarkerInterfaces();
-            for (int i = 0; i < markerInterfaces.size(); i++) {
-                final Class<?> markerInterface = markerInterfaces.get(i);
-                final List<?> extensions = getHandlers(markerInterface);                   
+            for (final Class<?> markerInterface : markerInterfaces) {
+                final List<?> extensions = getHandlers(markerInterface);
                 // ok now time for try the wiring
                 extensibleHandler.wireExtensions(markerInterface, extensions);
             }
         }
 
     }
-    
-    
-    private void registerHandlersPackage(HandlersPackage handlersPackage, HierarchicalConfiguration handlerConfig, List<HierarchicalConfiguration> children) throws ConfigurationException{
+
+
+    private void registerHandlersPackage(HandlersPackage handlersPackage, HierarchicalConfiguration handlerConfig, List<HierarchicalConfiguration> children) throws ConfigurationException {
         List<String> c = handlersPackage.getHandlers();
 
-        for (Iterator<String> i = c.iterator(); i.hasNext();) {
-            String cName = i.next();
-
+        for (String cName : c) {
             try {
                 CombinedConfiguration conf = new CombinedConfiguration();
                 HierarchicalConfiguration cmdConf = addHandler(cName);
@@ -126,14 +120,12 @@ public class ProtocolHandlerChainImpl implements ProtocolHandlerChain {
             }
         }
     }
+
     /**
      * Return a DefaultConfiguration build on the given command name and
      * classname.
-     * 
-     * @param cmdName
-     *            The command name
-     * @param className
-     *            The class name
+     *
+     * @param className The class name
      * @return DefaultConfiguration
      * @throws ConfigurationException
      */
@@ -147,9 +139,8 @@ public class ProtocolHandlerChainImpl implements ProtocolHandlerChain {
     @Override
     public <T> LinkedList<T> getHandlers(Class<T> type) {
         LinkedList<T> hList = new LinkedList<T>();
-        
-        for (int i = 0; i < handlers.size(); i++) {
-            Object h = handlers.get(i);
+
+        for (Object h : handlers) {
             if (type.isInstance(h)) {
                 hList.add((T) h);
 
@@ -161,9 +152,10 @@ public class ProtocolHandlerChainImpl implements ProtocolHandlerChain {
     /**
      * Destroy all loaded {@link InitializingLifecycleAwareProtocolHandler}
      */
+    @Override
     public void destroy() {
         LinkedList<InitializingLifecycleAwareProtocolHandler> lHandlers = getHandlers(InitializingLifecycleAwareProtocolHandler.class);
-        for (InitializingLifecycleAwareProtocolHandler handler: lHandlers) {
+        for (InitializingLifecycleAwareProtocolHandler handler : lHandlers) {
             handler.destroy();
         }
     }

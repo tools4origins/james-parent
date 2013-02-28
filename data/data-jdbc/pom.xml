@@ -93,11 +93,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.james</groupId>
             <artifactId>james-server-data-library</artifactId>
             <type>test-jar</type>
@@ -118,6 +113,11 @@
             <groupId>org.apache.james</groupId>
             <artifactId>james-server-filesystem-api</artifactId>
             <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

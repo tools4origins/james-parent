@@ -33,7 +33,7 @@ import org.apache.mailet.TemporaryLookupException;
 
 public class MockMailContext implements MailetContext {
 
-    HashMap attributes = new HashMap();
+    final HashMap attributes = new HashMap();
 
     @Override
     public void bounce(Mail mail, String message) throws MessagingException {
@@ -46,7 +46,7 @@ public class MockMailContext implements MailetContext {
     }
 
     @Override
-    public List<String> dnsLookup(String s, RecordType recordType) throws TemporaryLookupException, LookupException {
+    public List<String> dnsLookup(String s, RecordType recordType) throws LookupException {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 

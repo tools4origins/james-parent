@@ -84,7 +84,7 @@ public class MailboxAdapter implements Mailbox {
     private final MessageManager manager;
     private final MailboxSession session;
 
-    private MailboxManager mailboxManager;
+    private final MailboxManager mailboxManager;
 
     public MailboxAdapter(MailboxManager mailboxManager, MessageManager manager, MailboxSession session) {
         this.manager = manager;
@@ -167,8 +167,8 @@ public class MailboxAdapter implements Mailbox {
     public void remove(String... uids) throws IOException {
         List<Long> uidList = new ArrayList<Long>();
 
-        for (int i = 0; i < uids.length; i++) {
-            uidList.add(new Long(uids[i]));
+        for (String uid : uids) {
+            uidList.add(new Long(uid));
         }
 
         List<MessageRange> ranges = MessageRange.toRanges(uidList);

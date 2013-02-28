@@ -50,9 +50,6 @@ import org.slf4j.Logger;
  */
 public class James23Importer implements LogEnabled {
 
-    /**
-     * The logger.
-     */
     private Logger log;
 
     /**
@@ -137,7 +134,7 @@ public class James23Importer implements LogEnabled {
      * @throws MailboxException
      * @throws DomainListException
      */
-    public void importMailsFromJames23(String james23MailRepositoryPath) throws MessagingException, MailRepositoryStoreException, UsersRepositoryException, MailboxException, IOException, DomainListException {
+    public void importMailsFromJames23(String james23MailRepositoryPath) throws MessagingException, MailRepositoryStoreException, UsersRepositoryException, MailboxException, DomainListException {
 
         Flags flags = new Flags();
         boolean isRecent = false;
@@ -177,9 +174,7 @@ public class James23Importer implements LogEnabled {
 
     }
 
-    /**
-     * @see org.apache.james.lifecycle.api.LogEnabled#setLog(org.slf4j.Logger)
-     */
+    @Override
     public void setLog(Logger log) {
         this.log = log;
     }
@@ -194,7 +189,7 @@ public class James23Importer implements LogEnabled {
      * @throws DomainListException
      */
     private String convert23UserTo30(String userName23) throws DomainListException {
-        return new String(userName23 + "@" + domainList.getDefaultDomain());
+        return userName23 + "@" + domainList.getDefaultDomain();
     }
 
 }

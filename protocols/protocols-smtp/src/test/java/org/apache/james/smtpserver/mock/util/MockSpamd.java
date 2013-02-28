@@ -67,11 +67,11 @@ public class MockSpamd implements Runnable {
             in = new BufferedReader(new InputStreamReader(spamd.getInputStream()));
             out = spamd.getOutputStream();
 
-            String line = null;
+            String line;
 
             // Parse the message
             while ((line = in.readLine()) != null) {
-                if (line.indexOf(GTUBE) >= 0) {
+                if (line.contains(GTUBE)) {
                     spam = true;
                 }
             }

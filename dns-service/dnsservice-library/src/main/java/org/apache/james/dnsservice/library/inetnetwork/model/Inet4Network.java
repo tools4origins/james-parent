@@ -33,12 +33,12 @@ public class Inet4Network implements InetNetwork {
     /**
      * The IP address on which a subnet mask is applied.
      */
-    private InetAddress network;
+    private final InetAddress network;
 
     /**
      * The subnet mask to apply on the IP address.
      */
-    private InetAddress netmask;
+    private final InetAddress netmask;
 
     /**
      * You need a IP address and an subnetmask to construct an Inet4Network.<br>
@@ -134,7 +134,7 @@ public class Inet4Network implements InetNetwork {
      */
     private static InetAddress getByAddress(byte[] ip) throws UnknownHostException {
 
-        InetAddress addr = null;
+        InetAddress addr;
 
         addr = Inet4Address.getByAddress(ip);
 

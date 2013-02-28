@@ -33,10 +33,6 @@ import org.junit.Test;
 public class InetNetworkTest {
 
     private static InetAddress address;
-    private static InetAddress subnetmask4;
-    private static Inet4Network network4;
-    private static Integer subnetmask6;
-    private static Inet6Network network6;
 
     /**
      * Preliminary test method to validate the InetAddress behaviour (V4 and V6
@@ -139,6 +135,7 @@ public class InetNetworkTest {
 
         // Test with null parameter.
         address = InetAddress.getByAddress(getBytesFromAddress("127.0.0.1"));
+        Inet4Network network4;
         try {
             network4 = new Inet4Network(address, null);
             assertTrue(false);
@@ -148,7 +145,7 @@ public class InetNetworkTest {
 
         // Test IP V4.
         address = InetAddress.getByAddress(getBytesFromAddress("127.0.0.1"));
-        subnetmask4 = InetAddress.getByAddress(getBytesFromAddress("255.255.255.0"));
+        InetAddress subnetmask4 = InetAddress.getByAddress(getBytesFromAddress("255.255.255.0"));
         network4 = new Inet4Network(address, subnetmask4);
         assertEquals("127.0.0.0/255.255.255.0", network4.toString());
     }
@@ -163,6 +160,7 @@ public class InetNetworkTest {
 
         // Test with null parameter.
         address = InetAddress.getByAddress(getBytesFromAddress("2781:0db8:1234:8612:45ee:0000:f05e:0001"));
+        Inet6Network network6;
         try {
             network6 = new Inet6Network(address, null);
             assertTrue(false);
@@ -172,7 +170,7 @@ public class InetNetworkTest {
 
         // Test IP V6 with subnet mask 32768.
         address = InetAddress.getByAddress(getBytesFromAddress("2781:0db8:1234:8612:45ee:0000:f05e:0001"));
-        subnetmask6 = 32768;
+        Integer subnetmask6 = 32768;
         network6 = new Inet6Network(address, subnetmask6);
         assertEquals("2781:db8:1234:8612:45ee:0:f05e:1/32768", network6.toString());
 
@@ -223,8 +221,6 @@ public class InetNetworkTest {
      * ("0000:0000:0000:0000:0000:0000:0000:0001"<br>
      * or "2001:0db8:85a3:0000:0000:8a2e:0370:7334").
      * 
-     * @param the
-     *            ip address as a string.
      * @return the byte array representation of the ip address.
      */
     private byte[] getBytesFromAddress(String address) {

@@ -35,11 +35,11 @@ import org.slf4j.Logger;
 public class MXHostAddressIterator implements Iterator<HostAddress> {
 
     private Iterator<HostAddress> addresses = null;
-    private Iterator<String> hosts;
-    private DNSService dns;
-    private boolean useSingleIP;
-    private Logger logger;
-    private int defaultPort;
+    private final Iterator<String> hosts;
+    private final DNSService dns;
+    private final boolean useSingleIP;
+    private final Logger logger;
+    private final int defaultPort;
 
     public MXHostAddressIterator(Iterator<String> hosts, DNSService dns, boolean useSingleIP, Logger logger) {
         this(hosts, 25, dns, useSingleIP, logger);
@@ -66,7 +66,7 @@ public class MXHostAddressIterator implements Iterator<HostAddress> {
     private void init() {
         final List<HostAddress> hAddresses = new ArrayList<HostAddress>();
         while (hosts.hasNext()) {
-            String nextHostname = (String) hosts.next();
+            String nextHostname = hosts.next();
             final String hostname;
             final String port;
 
@@ -79,22 +79,22 @@ public class MXHostAddressIterator implements Iterator<HostAddress> {
                 port = defaultPort + "";
             }
 
-            InetAddress[] addrs = null;
+            InetAddress[] addrs;
             try {
                 if (useSingleIP) {
                     addrs = new InetAddress[] { dns.getByName(hostname) };
                 } else {
                     addrs = dns.getAllByName(hostname);
                 }
-                for (int i = 0; i < addrs.length; i++) {
-                    hAddresses.add(new org.apache.mailet.HostAddress(hostname, "smtp://" + addrs[i].getHostAddress() + ":" + port));
+                for (InetAddress addr : addrs) {
+                    hAddresses.add(new HostAddress(hostname, "smtp://" + addr.getHostAddress() + ":" + port));
                 }
             } catch (UnknownHostException uhe) {
                 // this should never happen, since we just got
                 // this host from mxHosts, which should have
                 // already done this check.
-                StringBuffer logBuffer = new StringBuffer(128).append("Couldn't resolve IP address for discovered host ").append(hostname).append(".");
-                logger.error(logBuffer.toString());
+                String logBuffer = "Couldn't resolve IP address for discovered host " + hostname + ".";
+                logger.error(logBuffer);
             }
 
         }

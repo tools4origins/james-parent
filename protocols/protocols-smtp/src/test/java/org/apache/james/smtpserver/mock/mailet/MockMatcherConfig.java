@@ -26,8 +26,8 @@ import org.apache.mailet.MatcherConfig;
  */
 public class MockMatcherConfig implements MatcherConfig {
 
-    private String matcherName;
-    private MailetContext mc;
+    private final String matcherName;
+    private final MailetContext mc;
 
     public MockMatcherConfig(String matcherName, MailetContext mc) {
         super();
@@ -37,7 +37,7 @@ public class MockMatcherConfig implements MatcherConfig {
 
     @Override
     public String getCondition() {
-        if (matcherName.indexOf("=") >= 0) {
+        if (matcherName.contains("=")) {
             return matcherName.substring(getMatcherName().length() + 1);
         } else {
             return null;
@@ -51,7 +51,7 @@ public class MockMatcherConfig implements MatcherConfig {
 
     @Override
     public String getMatcherName() {
-        if (matcherName.indexOf("=") >= 0) {
+        if (matcherName.contains("=")) {
             return matcherName.split("=")[0];
         } else {
             return matcherName;

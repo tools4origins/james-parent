@@ -38,7 +38,7 @@ public class LMTPServer extends AbstractProtocolAsyncServer implements LMTPServe
      * 0, means no limit.
      */
     private long maxMessageSize = 0;
-    private LMTPConfigurationImpl lmtpConfig = new LMTPConfigurationImpl();
+    private final LMTPConfigurationImpl lmtpConfig = new LMTPConfigurationImpl();
     private String lmtpGreeting;
 
 
@@ -98,7 +98,6 @@ public class LMTPServer extends AbstractProtocolAsyncServer implements LMTPServe
         }
 
         /**
-         * @see org.apache.james.protocols.smtp.SMTPConfiguration#getSMTPGreeting()
          */
         public String getSMTPGreeting() {
             return LMTPServer.this.lmtpGreeting;

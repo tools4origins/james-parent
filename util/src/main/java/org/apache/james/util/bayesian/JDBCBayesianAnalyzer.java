@@ -64,12 +64,12 @@ abstract public class JDBCBayesianAnalyzer extends BayesianAnalyzer {
      */
     private final JDBCUtil theJDBCUtil = new JDBCUtil() {
         protected void delegatedLog(String logString) {
-            this.delegatedLog(logString);
+            JDBCBayesianAnalyzer.this.delegatedLog(logString);
         }
     };
 
     /** Contains all of the sql strings for this component. */
-    private SqlResources sqlQueries = new SqlResources();
+    private final SqlResources sqlQueries = new SqlResources();
 
     /** Holds value of property sqlFileName. */
     private String sqlFileName;
@@ -168,7 +168,7 @@ abstract public class JDBCBayesianAnalyzer extends BayesianAnalyzer {
                 int count = rs.getInt(2);
                 // to reduce memory, use the token only if the count is > 1
                 if (count > 1) {
-                    ham.put(token, Integer.valueOf(count));
+                    ham.put(token, count);
                 }
             }
             // Verbose.
@@ -187,7 +187,7 @@ abstract public class JDBCBayesianAnalyzer extends BayesianAnalyzer {
                 int count = rs.getInt(2);
                 // to reduce memory, use the token only if the count is > 1
                 if (count > 1) {
-                    spam.put(token, new Integer(count));
+                    spam.put(token, count);
                 }
             }
 
@@ -380,7 +380,7 @@ abstract public class JDBCBayesianAnalyzer extends BayesianAnalyzer {
         // DatabaseMetaInfo.
         // Try UPPER, lower, and MixedCase, to see if the table is there.
 
-        boolean dbUpdated = false;
+        boolean dbUpdated;
 
         dbUpdated = createTable(conn, "hamTableName", "createHamTable");
 
@@ -412,7 +412,7 @@ abstract public class JDBCBayesianAnalyzer extends BayesianAnalyzer {
             createStatement = conn.prepareStatement(sqlQueries.getSqlString(createSqlStringName, true));
             createStatement.execute();
 
-            StringBuffer logBuffer = null;
+            StringBuffer logBuffer;
             logBuffer = new StringBuffer(64).append("Created table '").append(tableName).append("' using sqlResources string '").append(createSqlStringName).append("'.");
             delegatedLog(logBuffer.toString());
 

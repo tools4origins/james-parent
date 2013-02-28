@@ -121,9 +121,7 @@ public abstract class AbstractFileRepository implements Repository, Configurable
         final String[] names = directory.list(num_filter);
 
         try {
-            for (int i = 0; i < names.length; i++) {
-                String origFilename = names[i];
-
+            for (String origFilename : names) {
                 // This needs to handle (skip over) the possible repository
                 // numbers
                 int pos = origFilename.length() - m_postfix.length();
@@ -181,15 +179,12 @@ public abstract class AbstractFileRepository implements Repository, Configurable
      *             instance
      */
     protected AbstractFileRepository createChildRepository() throws Exception {
-        return (AbstractFileRepository) getClass().newInstance();
+        return getClass().newInstance();
     }
 
-    /**
-     * @see
-     * org.apache.james.repository.api.Repository#getChildRepository(java.lang.String)
-     */
+    @Override
     public Repository getChildRepository(final String childName) {
-        AbstractFileRepository child = null;
+        AbstractFileRepository child;
 
         try {
             child = createChildRepository();
@@ -307,8 +302,8 @@ public abstract class AbstractFileRepository implements Repository, Configurable
         final String[] names = storeDir.list(m_filter);
         final List<String> list = new ArrayList<String>();
 
-        for (int i = 0; i < names.length; i++) {
-            String decoded = decode(names[i]);
+        for (String name : names) {
+            String decoded = decode(name);
             list.add(decoded);
         }
 
@@ -337,7 +332,7 @@ public abstract class AbstractFileRepository implements Repository, Configurable
             buffer[j++] = HEX_DIGITS[k & BYTE_MASK];
         }
 
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         result.append(m_baseDirectory.getAbsolutePath());
         result.append(File.separator);
         result.append(buffer);

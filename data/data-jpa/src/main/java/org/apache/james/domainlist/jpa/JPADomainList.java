@@ -18,8 +18,9 @@
  ****************************************************************/
 package org.apache.james.domainlist.jpa;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.james.domainlist.api.DomainListException;
+import org.apache.james.domainlist.jpa.model.JPADomain;
+import org.apache.james.domainlist.lib.AbstractDomainList;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -28,10 +29,8 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.PersistenceUnit;
-
-import org.apache.james.domainlist.api.DomainListException;
-import org.apache.james.domainlist.jpa.model.JPADomain;
-import org.apache.james.domainlist.lib.AbstractDomainList;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JPA implementation of the DomainList.<br>
@@ -47,10 +46,10 @@ public class JPADomainList extends AbstractDomainList {
 
     /**
      * Set the entity manager to use.
-     * 
+     *
      * @param entityManagerFactory
      */
-    @PersistenceUnit(unitName="James")
+    @PersistenceUnit(unitName = "James")
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }
@@ -60,11 +59,8 @@ public class JPADomainList extends AbstractDomainList {
         createEntityManager().close();
     }
 
-    /**
-     * @see
-     * org.apache.james.domainlist.lib.AbstractDomainList#getDomainListInternal()
-     */
     @SuppressWarnings("unchecked")
+    @Override
     protected List<String> getDomainListInternal() throws DomainListException {
         List<String> domains = new ArrayList<String>();
         EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -89,9 +85,7 @@ public class JPADomainList extends AbstractDomainList {
         }
     }
 
-    /**
-     * @see org.apache.james.domainlist.api.DomainList#containsDomain(java.lang.String)
-     */
+    @Override
     public boolean containsDomain(String domain) throws DomainListException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         final EntityTransaction transaction = entityManager.getTransaction();
@@ -99,7 +93,7 @@ public class JPADomainList extends AbstractDomainList {
             transaction.begin();
             JPADomain jpaDomain = (JPADomain) entityManager.createNamedQuery("findDomainByName").setParameter("name", domain).getSingleResult();
             transaction.commit();
-            return (jpaDomain != null) ? true : false;
+            return (jpaDomain != null);
         } catch (NoResultException e) {
             getLogger().debug("No domain found", e);
             transaction.commit();
@@ -115,10 +109,7 @@ public class JPADomainList extends AbstractDomainList {
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.domainlist.api.DomainList#addDomain(java.lang.String)
-     */
+    @Override
     public void addDomain(String domain) throws DomainListException {
         String lowerCasedDomain = domain.toLowerCase();
         if (containsDomain(lowerCasedDomain)) {
@@ -142,10 +133,7 @@ public class JPADomainList extends AbstractDomainList {
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.domainlist.api.DomainList#removeDomain(java.lang.String)
-     */
+    @Override
     public void removeDomain(String domain) throws DomainListException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         final EntityTransaction transaction = entityManager.getTransaction();
@@ -167,7 +155,7 @@ public class JPADomainList extends AbstractDomainList {
 
     /**
      * Return a new {@link EntityManager} instance
-     * 
+     *
      * @return manager
      */
     private EntityManager createEntityManager() {

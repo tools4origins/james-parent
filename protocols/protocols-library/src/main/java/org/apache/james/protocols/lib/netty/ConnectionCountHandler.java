@@ -30,8 +30,8 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
  */
 public class ConnectionCountHandler extends SimpleChannelUpstreamHandler {
 
-    public AtomicInteger currentConnectionCount = new AtomicInteger();
-    public AtomicLong connectionsTillStartup = new AtomicLong();
+    public final AtomicInteger currentConnectionCount = new AtomicInteger();
+    public final AtomicLong connectionsTillStartup = new AtomicLong();
 
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {

@@ -53,11 +53,6 @@ public class FetchScheduler implements FetchSchedulerMBean, LogEnabled, Configur
     private HierarchicalConfiguration conf;
 
     /**
-     * The scheduler service that is used to trigger fetch tasks.
-     */
-    private ScheduledExecutorService scheduler;
-
-    /**
      * Whether this service is enabled.
      */
     private volatile boolean enabled = false;
@@ -70,7 +65,6 @@ public class FetchScheduler implements FetchSchedulerMBean, LogEnabled, Configur
 
     private Logger logger;
 
-    private MailQueue queue;
     private MailQueueFactory queueFactory;
 
     private DomainList domainList;
@@ -119,8 +113,11 @@ public class FetchScheduler implements FetchSchedulerMBean, LogEnabled, Configur
             String jmxName = conf.getString("jmxName", "fetchmail");
             String jmxPath = "org.apache.james:type=component,name=" + jmxName + ",sub-type=threadpool";
 
-            scheduler = new JMXEnabledScheduledThreadPoolExecutor(numThreads, jmxPath, "scheduler");
-            queue = queueFactory.getQueue(MailQueueFactory.SPOOL);
+            /*
+      The scheduler service that is used to trigger fetch tasks.
+     */
+            ScheduledExecutorService scheduler = new JMXEnabledScheduledThreadPoolExecutor(numThreads, jmxPath, "scheduler");
+            MailQueue queue = queueFactory.getQueue(MailQueueFactory.SPOOL);
 
             List<HierarchicalConfiguration> fetchConfs = conf.configurationsAt("fetch");
             for (HierarchicalConfiguration fetchConf : fetchConfs) {

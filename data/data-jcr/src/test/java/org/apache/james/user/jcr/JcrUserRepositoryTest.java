@@ -62,8 +62,8 @@ public class JcrUserRepositoryTest extends AbstractUsersRepositoryTest {
     private void delete(File file) {
         if (file.isDirectory()) {
             File[] contents = file.listFiles();
-            for (int i = 0; i < contents.length; i++) {
-                delete(contents[i]);
+            for (File content : contents) {
+                delete(content);
             }
         }
         file.delete();

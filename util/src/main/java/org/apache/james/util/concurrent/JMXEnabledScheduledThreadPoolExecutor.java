@@ -34,7 +34,7 @@ import javax.management.ObjectName;
  */
 public class JMXEnabledScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor implements JMXEnabledScheduledThreadPoolExecutorMBean {
 
-    private String jmxPath;
+    private final String jmxPath;
     private final List<Runnable> inProgress = Collections.synchronizedList(new ArrayList<Runnable>());
     private final ThreadLocal<Long> startTime = new ThreadLocal<Long>();
     private long totalTime;
@@ -63,7 +63,7 @@ public class JMXEnabledScheduledThreadPoolExecutor extends ScheduledThreadPoolEx
     }
 
     protected void afterExecute(Runnable r, Throwable t) {
-        long time = System.currentTimeMillis() - startTime.get().longValue();
+        long time = System.currentTimeMillis() - startTime.get();
         synchronized (this) {
             totalTime += time;
             ++totalTasks;

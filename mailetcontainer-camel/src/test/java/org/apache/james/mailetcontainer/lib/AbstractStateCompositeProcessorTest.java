@@ -91,7 +91,7 @@ public abstract class AbstractStateCompositeProcessorTest {
     }
 
     protected abstract AbstractStateCompositeProcessor createProcessor(HierarchicalConfiguration config) throws
-        ConfigurationException, Exception;
+            Exception;
 
     @Test
     public void testGhostProcessor() throws Exception {
@@ -146,11 +146,11 @@ public abstract class AbstractStateCompositeProcessorTest {
     StringBuilder sb = new StringBuilder();
     sb.append("<?xml version=\"1.0\"?>");
     sb.append("<processors>");
-    for (int i = 0; i < states.size(); i++) {
-        sb.append("<processor state=\"");
-        sb.append(states.get(i));
-        sb.append("\"/>");
-    }
+        for (String state : states) {
+            sb.append("<processor state=\"");
+            sb.append(state);
+            sb.append("\"/>");
+        }
     sb.append("</processors>");
 
     DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();

@@ -46,15 +46,15 @@ import org.apache.mailet.Matcher;
  */
 public class JMXStateMailetProcessorListener implements MailetProcessorListener, Disposable {
 
-    private AbstractStateMailetProcessor processor;
-    private MBeanServer mbeanserver;
-    private List<ObjectName> mbeans = new ArrayList<ObjectName>();
-    private Map<Mailet, MailetManagement> mailetMap = new HashMap<Mailet, MailetManagement>();
-    private Map<Matcher, MatcherManagement> matcherMap = new HashMap<Matcher, MatcherManagement>();
+    private final AbstractStateMailetProcessor processor;
+    private final MBeanServer mbeanserver;
+    private final List<ObjectName> mbeans = new ArrayList<ObjectName>();
+    private final Map<Mailet, MailetManagement> mailetMap = new HashMap<Mailet, MailetManagement>();
+    private final Map<Matcher, MatcherManagement> matcherMap = new HashMap<Matcher, MatcherManagement>();
 
-    private String name;
+    private final String name;
 
-    public JMXStateMailetProcessorListener(String name, AbstractStateMailetProcessor processor) throws MalformedObjectNameException, JMException {
+    public JMXStateMailetProcessorListener(String name, AbstractStateMailetProcessor processor) throws JMException {
         this.processor = processor;
         this.name = name;
 
@@ -99,7 +99,7 @@ public class JMXStateMailetProcessorListener implements MailetProcessorListener,
      * @throws JMException
      * @throws MalformedObjectNameException
      */
-    private void registerMBeans() throws MalformedObjectNameException, JMException {
+    private void registerMBeans() throws JMException {
         String baseObjectName = "org.apache.james:type=component,component=mailetcontainer,name=processor,processor=" + name;
 
         registerMailets(baseObjectName, processor.getMailets().iterator());
@@ -114,7 +114,7 @@ public class JMXStateMailetProcessorListener implements MailetProcessorListener,
      * @throws JMException
      * @throws MalformedObjectNameException
      */
-    private void registerMailets(String parentMBeanName, Iterator<Mailet> mailets) throws MalformedObjectNameException, JMException {
+    private void registerMailets(String parentMBeanName, Iterator<Mailet> mailets) throws JMException {
         int i = 0;
         while (mailets.hasNext()) {
             Mailet mailet = mailets.next();
@@ -137,7 +137,7 @@ public class JMXStateMailetProcessorListener implements MailetProcessorListener,
      * @throws MalformedObjectNameException
      */
     @SuppressWarnings("unchecked")
-    private void registerMatchers(String parentMBeanName, Iterator<Matcher> matchers, int nestingLevel) throws MalformedObjectNameException, JMException {
+    private void registerMatchers(String parentMBeanName, Iterator<Matcher> matchers, int nestingLevel) throws JMException {
         int i = 0;
 
         while (matchers.hasNext()) {
@@ -157,7 +157,7 @@ public class JMXStateMailetProcessorListener implements MailetProcessorListener,
         }
     }
 
-    private void registerMBean(String mBeanName, Object object) throws MalformedObjectNameException, JMException {
+    private void registerMBean(String mBeanName, Object object) throws JMException {
         ObjectName objectName = new ObjectName(mBeanName);
 
         mbeanserver.registerMBean(object, objectName);
@@ -179,13 +179,11 @@ public class JMXStateMailetProcessorListener implements MailetProcessorListener,
      */
     private void unregisterMBeans() {
         List<ObjectName> unregistered = new ArrayList<ObjectName>();
-        for (int i = 0; i < mbeans.size(); i++) {
-            ObjectName name = mbeans.get(i);
-
+        for (ObjectName name : mbeans) {
             try {
                 mbeanserver.unregisterMBean(name);
                 unregistered.add(name);
-            } catch (javax.management.JMException e) {
+            } catch (JMException e) {
                 // logger.error("Unable to unregister mbean " + name, e);
             }
         }

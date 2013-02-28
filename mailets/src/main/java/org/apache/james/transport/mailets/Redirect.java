@@ -306,7 +306,7 @@ public class Redirect extends AbstractRedirect {
     /**
      * @return the <code>inline</code> init parameter
      */
-    protected int getInLineType() throws MessagingException {
+    protected int getInLineType() {
         return getTypeCode(getInitParameter("inline", "body"));
     }
 
@@ -329,13 +329,13 @@ public class Redirect extends AbstractRedirect {
 
         try {
             InternetAddress[] iaarray = InternetAddress.parse(addressList, false);
-            for (int i = 0; i < iaarray.length; i++) {
-                String addressString = iaarray[i].getAddress();
-                MailAddress specialAddress = getSpecialAddress(addressString, new String[] { "postmaster", "sender", "from", "replyTo", "reversePath", "unaltered", "recipients", "to", "null" });
+            for (InternetAddress anIaarray : iaarray) {
+                String addressString = anIaarray.getAddress();
+                MailAddress specialAddress = getSpecialAddress(addressString, new String[]{"postmaster", "sender", "from", "replyTo", "reversePath", "unaltered", "recipients", "to", "null"});
                 if (specialAddress != null) {
                     newRecipients.add(specialAddress);
                 } else {
-                    newRecipients.add(new MailAddress(iaarray[i]));
+                    newRecipients.add(new MailAddress(anIaarray));
                 }
             }
         } catch (Exception e) {
@@ -357,7 +357,7 @@ public class Redirect extends AbstractRedirect {
      *         <code>null</code> if also the latter is missing
      */
     protected InternetAddress[] getTo() throws MessagingException {
-        InternetAddress[] iaarray = null;
+        InternetAddress[] iaarray;
         String addressList = getInitParameter("to", getInitParameter("recipients"));
 
         // if nothing was specified, return null meaning no change

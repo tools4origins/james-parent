@@ -42,7 +42,7 @@ import org.apache.james.protocols.lib.lifecycle.InitializingLifecycleAwareProtoc
  */
 public abstract class AbstractConnectHandlerResultJMXMonitor<R extends Response, S extends ProtocolSession> implements ProtocolHandlerResultHandler<R,S>, ExtensibleHandler, InitializingLifecycleAwareProtocolHandler {
 
-    private Map<String, ConnectHandlerStats> cStats = new HashMap<String, ConnectHandlerStats>();
+    private final Map<String, ConnectHandlerStats> cStats = new HashMap<String, ConnectHandlerStats>();
     private String jmxName;
 
     @Override
@@ -52,9 +52,8 @@ public abstract class AbstractConnectHandlerResultJMXMonitor<R extends Response,
 
     @Override
     public void destroy() {
-        Iterator<ConnectHandlerStats> it =cStats.values().iterator();
-        while(it.hasNext()) {
-            it.next().dispose();
+        for (ConnectHandlerStats connectHandlerStats : cStats.values()) {
+            connectHandlerStats.dispose();
         }
     }
 
@@ -92,9 +91,9 @@ public abstract class AbstractConnectHandlerResultJMXMonitor<R extends Response,
     public void wireExtensions(Class<?> interfaceName, List<?> extension) throws WiringException {
         if (interfaceName.equals(ConnectHandler.class)) {
             // add stats for all hooks
-            for (int i = 0; i < extension.size(); i++) {
-                ConnectHandler c = (ConnectHandler) extension.get(i);
-                if (equals(c) == false) {
+            for (Object anExtension : extension) {
+                ConnectHandler c = (ConnectHandler) anExtension;
+                if (!equals(c)) {
                     String cName = c.getClass().getName();
                     try {
                         cStats.put(cName, new ConnectHandlerStats(jmxName, cName));

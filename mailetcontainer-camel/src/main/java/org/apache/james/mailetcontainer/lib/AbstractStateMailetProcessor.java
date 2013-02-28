@@ -64,13 +64,13 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
 
     private MailetContext mailetContext;
     private MatcherLoader matcherLoader;
-    private List<MailetProcessorListener> listeners = Collections.synchronizedList(new ArrayList<MailetProcessorListener>());
+    private final List<MailetProcessorListener> listeners = Collections.synchronizedList(new ArrayList<MailetProcessorListener>());
     private JMXStateMailetProcessorListener jmxListener;
     private boolean enableJmx = true;
     private Logger logger;
     private HierarchicalConfiguration config;
     private MailetLoader mailetLoader;
-    private List<MatcherMailetPair> pairs = new ArrayList<MatcherMailetPair>();
+    private final List<MatcherMailetPair> pairs = new ArrayList<MatcherMailetPair>();
     private String state;
 
     public void setMatcherLoader(MatcherLoader matcherLoader) {
@@ -136,8 +136,7 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
             jmxListener.dispose();
         }
 
-        for (int i = 0; i < pairs.size(); i++) {
-            MatcherMailetPair pair = pairs.get(i);
+        for (MatcherMailetPair pair : pairs) {
             Mailet mailet = pair.getMailet();
             Matcher matcher = pair.getMatcher();
             if (logger.isDebugEnabled()) {
@@ -178,8 +177,8 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
      */
     public List<Mailet> getMailets() {
         List<Mailet> mailets = new ArrayList<Mailet>();
-        for (int i = 0; i < pairs.size(); i++) {
-            mailets.add(pairs.get(i).getMailet());
+        for (MatcherMailetPair pair : pairs) {
+            mailets.add(pair.getMailet());
         }
         return Collections.unmodifiableList(mailets);
     }
@@ -191,8 +190,8 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
      */
     public List<Matcher> getMatchers() {
         List<Matcher> matchers = new ArrayList<Matcher>();
-        for (int i = 0; i < pairs.size(); i++) {
-            matchers.add(pairs.get(i).getMatcher());
+        for (MatcherMailetPair pair : pairs) {
+            matchers.add(pair.getMatcher());
         }
         return Collections.unmodifiableList(matchers);
     }
@@ -232,7 +231,7 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
      * @return matcherConfig
      */
     private MatcherConfig createMatcherConfig(String matchName) {
-        String condition = (String) null;
+        String condition = null;
         int i = matchName.indexOf('=');
         if (i != -1) {
             condition = matchName.substring(i + 1);
@@ -252,7 +251,6 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
      * 
      * CompositeMatcher were added by JAMES-948
      * 
-     * @param processorName
      * @param compMap
      * @param compMatcherConfs
      * @return compositeMatchers
@@ -264,8 +262,7 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
     private List<Matcher> loadCompositeMatchers(String state, Map<String, Matcher> compMap, List<HierarchicalConfiguration> compMatcherConfs) throws ConfigurationException, MessagingException {
         List<Matcher> matchers = new ArrayList<Matcher>();
 
-        for (int j = 0; j < compMatcherConfs.size(); j++) {
-            HierarchicalConfiguration c = compMatcherConfs.get(j);
+        for (HierarchicalConfiguration c : compMatcherConfs) {
             String compName = c.getString("[@name]", null);
             String matcherName = c.getString("[@match]", null);
             String invertedMatcherName = c.getString("[@notmatch]", null);
@@ -280,8 +277,8 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
                     CompositeMatcher compMatcher = (CompositeMatcher) matcher;
 
                     List<Matcher> childMatcher = loadCompositeMatchers(state, compMap, c.configurationsAt("matcher"));
-                    for (int i = 0; i < childMatcher.size(); i++) {
-                        compMatcher.add(childMatcher.get(i));
+                    for (Matcher aChildMatcher : childMatcher) {
+                        compMatcher.add(aChildMatcher);
                     }
                 }
             } else if (invertedMatcherName != null) {
@@ -290,8 +287,8 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
                     CompositeMatcher compMatcher = (CompositeMatcher) m;
 
                     List<Matcher> childMatcher = loadCompositeMatchers(state, compMap, c.configurationsAt("matcher"));
-                    for (int i = 0; i < childMatcher.size(); i++) {
-                        compMatcher.add(childMatcher.get(i));
+                    for (Matcher aChildMatcher : childMatcher) {
+                        compMatcher.add(aChildMatcher);
                     }
                 }
                 matcher = new MatcherInverter(m);
@@ -322,16 +319,14 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
         // Loop through the mailet configuration, load
         // all of the matcher and mailets, and add
         // them to the processor.
-        for (int j = 0; j < mailetConfs.size(); j++) {
-            HierarchicalConfiguration c = mailetConfs.get(j);
-
+        for (HierarchicalConfiguration c : mailetConfs) {
             // We need to set this because of correctly parsing comma
             String mailetClassName = c.getString("[@class]");
             String matcherName = c.getString("[@match]", null);
             String invertedMatcherName = c.getString("[@notmatch]", null);
 
-            Mailet mailet = null;
-            Matcher matcher = null;
+            Mailet mailet;
+            Matcher matcher;
 
             try {
 
@@ -364,13 +359,13 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
 
                 // The matcher itself should log that it's been inited.
                 if (logger.isInfoEnabled()) {
-                    StringBuffer infoBuffer = new StringBuffer(64).append("Matcher ").append(matcherName).append(" instantiated.");
+                    String infoBuffer = "Matcher " + matcherName + " instantiated.";
                     logger.info(infoBuffer.toString());
                 }
             } catch (MessagingException ex) {
                 // **** Do better job printing out exception
                 if (logger.isErrorEnabled()) {
-                    StringBuffer errorBuffer = new StringBuffer(256).append("Unable to init matcher ").append(matcherName).append(": ").append(ex.toString());
+                    String errorBuffer = "Unable to init matcher " + matcherName + ": " + ex.toString();
                     logger.error(errorBuffer.toString(), ex);
                     if (ex.getNextException() != null) {
                         logger.error("Caused by nested exception: ", ex.getNextException());
@@ -381,13 +376,13 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
             try {
                 mailet = mailetLoader.getMailet(createMailetConfig(mailetClassName, c));
                 if (logger.isInfoEnabled()) {
-                    StringBuffer infoBuffer = new StringBuffer(64).append("Mailet ").append(mailetClassName).append(" instantiated.");
+                    String infoBuffer = "Mailet " + mailetClassName + " instantiated.";
                     logger.info(infoBuffer.toString());
                 }
             } catch (MessagingException ex) {
                 // **** Do better job printing out exception
                 if (logger.isErrorEnabled()) {
-                    StringBuffer errorBuffer = new StringBuffer(256).append("Unable to init mailet ").append(mailetClassName).append(": ").append(ex.toString());
+                    String errorBuffer = "Unable to init mailet " + mailetClassName + ": " + ex.toString();
                     logger.error(errorBuffer.toString(), ex);
                     if (ex.getNextException() != null) {
                         logger.error("Caused by nested exception: ", ex.getNextException());
@@ -433,7 +428,7 @@ public abstract class AbstractStateMailetProcessor implements MailProcessor, Con
                 // error processor. That is currently the
                 // normal situation for James, and the message
                 // will show up in the error store.
-                StringBuffer warnBuffer = new StringBuffer(256).append("Message ").append(mail.getName()).append(" reached the end of this processor, and is automatically deleted.  This may indicate a configuration error.");
+                String warnBuffer = "Message " + mail.getName() + " reached the end of this processor, and is automatically deleted.  This may indicate a configuration error.";
                 logger.warn(warnBuffer.toString());
             }
 

@@ -100,8 +100,7 @@ public class XMLRecipientRewriteTable extends AbstractRecipientRewriteTable {
     protected void mapRecipients(Map<MailAddress, String> recipientsMap) throws MessagingException {
         Collection<MailAddress> recipients = recipientsMap.keySet();
 
-        for (Iterator<MailAddress> i = recipients.iterator(); i.hasNext();) {
-            MailAddress source = i.next();
+        for (MailAddress source : recipients) {
             String user = source.getLocalPart().toLowerCase();
             String domain = source.getDomain().toLowerCase();
 

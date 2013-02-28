@@ -33,12 +33,12 @@ public class Inet6Network implements InetNetwork {
     /**
      * The IP address on which a subnet mask is applied.
      */
-    private InetAddress network;
+    private final InetAddress network;
 
     /**
      * The subnet mask to apply on the IP address.
      */
-    private Integer netmask;
+    private final Integer netmask;
 
     /**
      * You need a IP address (InetAddress) and an subnetmask (Integer) to

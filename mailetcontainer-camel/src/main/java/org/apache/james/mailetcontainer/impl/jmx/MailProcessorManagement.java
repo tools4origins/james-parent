@@ -33,11 +33,11 @@ import org.apache.james.mailetcontainer.api.jmx.MailProcessorManagementMBean;
  */
 public class MailProcessorManagement extends StandardMBean implements MailProcessorManagementMBean {
     private String processorName;
-    private AtomicLong errorCount = new AtomicLong(0);
-    private AtomicLong successCount = new AtomicLong(0);
-    private AtomicLong fastestProcessing = new AtomicLong(-1);
-    private AtomicLong slowestProcessing = new AtomicLong(-1);
-    private AtomicLong lastProcessing = new AtomicLong(-1);
+    private final AtomicLong errorCount = new AtomicLong(0);
+    private final AtomicLong successCount = new AtomicLong(0);
+    private final AtomicLong fastestProcessing = new AtomicLong(-1);
+    private final AtomicLong slowestProcessing = new AtomicLong(-1);
+    private final AtomicLong lastProcessing = new AtomicLong(-1);
 
     public MailProcessorManagement(String processorName) throws NotCompliantMBeanException {
         super(MailProcessorManagementMBean.class);

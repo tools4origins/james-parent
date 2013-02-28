@@ -98,7 +98,7 @@ public class RemoteDeliverySocketFactory extends SocketFactory {
      * is the one which is used by JavaMail 1.3. This is not used by JavaMail
      * 1.4.
      */
-    public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+    public Socket createSocket(String host, int port) throws IOException {
         return new Socket(host, port, bindAddress, 0);
     }
 
@@ -107,7 +107,7 @@ public class RemoteDeliverySocketFactory extends SocketFactory {
      * to be safe, it is not used by JavaMail 1.3. This is not used by JavaMail
      * 1.4.
      */
-    public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort) throws IOException, UnknownHostException {
+    public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort) throws IOException {
         return new Socket(host, port, clientHost == null ? bindAddress : clientHost, clientPort);
     }
 

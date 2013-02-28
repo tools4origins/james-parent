@@ -40,12 +40,12 @@ public abstract class AbstractJamesResourceLoader extends DefaultResourceLoader 
      * @see org.springframework.core.io.ResourceLoader#getResource(java.lang.String)
      */
     public Resource getResource(String fileURL) {
-        Resource r = null;
+        Resource r;
         if (fileURL.startsWith(FileSystem.CLASSPATH_PROTOCOL)) {
             String resourceName = fileURL.substring(FileSystem.CLASSPATH_PROTOCOL.length());
             r = new ClassPathResource(resourceName);
         } else if (fileURL.startsWith(FileSystem.FILE_PROTOCOL)) {
-            File file = null;
+            File file;
             if (fileURL.startsWith(FileSystem.FILE_PROTOCOL_AND_CONF)) {
                 file = new File(getConfDirectory() + "/" + fileURL.substring(FileSystem.FILE_PROTOCOL_AND_CONF.length()));
             } else if (fileURL.startsWith(FileSystem.FILE_PROTOCOL_AND_VAR)) {

@@ -60,7 +60,6 @@ public class UsersFileRepository extends AbstractJamesUsersRepository {
     protected static boolean DEEP_DEBUG = false;
 
     private FilePersistentObjectRepository objectRepository;
-    private static String urlSeparator = "/";
 
     /**
      * The destination URL used to define the repository.
@@ -81,6 +80,7 @@ public class UsersFileRepository extends AbstractJamesUsersRepository {
         super.doConfigure(configuration);
         destination = configuration.getString("destination.[@URL]");
 
+        String urlSeparator = "/";
         if (!destination.endsWith(urlSeparator)) {
             destination += urlSeparator;
         }
@@ -101,8 +101,8 @@ public class UsersFileRepository extends AbstractJamesUsersRepository {
             objectRepository.configure(objectConfiguration);
             objectRepository.init();
             if (getLogger().isDebugEnabled()) {
-                StringBuffer logBuffer = new StringBuffer(192).append(this.getClass().getName()).append(" created in ").append(destination);
-                getLogger().debug(logBuffer.toString());
+                String logBuffer = this.getClass().getName() + " created in " + destination;
+                getLogger().debug(logBuffer);
             }
         } catch (Exception e) {
             if (getLogger().isErrorEnabled()) {
@@ -163,7 +163,7 @@ public class UsersFileRepository extends AbstractJamesUsersRepository {
      * @return The real name
      * @throws UsersRepositoryException
      */
-    private String getRealName(String name, boolean ignoreCase) throws UsersRepositoryException {
+    private String getRealName(String name, boolean ignoreCase) {
         if (ignoreCase) {
             Iterator<String> it = list();
             while (it.hasNext()) {
@@ -223,10 +223,10 @@ public class UsersFileRepository extends AbstractJamesUsersRepository {
      * This is not longer in the api (deprecated)
      * @see org.apache.james.user.api.UsersRepository#containsCaseInsensitive(java.lang.String)
      */
-    private boolean containsCaseInsensitive(String name) throws UsersRepositoryException {
+    private boolean containsCaseInsensitive(String name) {
         Iterator<String> it = list();
         while (it.hasNext()) {
-            if (name.equalsIgnoreCase((String) it.next())) {
+            if (name.equalsIgnoreCase(it.next())) {
                 return true;
             }
         }

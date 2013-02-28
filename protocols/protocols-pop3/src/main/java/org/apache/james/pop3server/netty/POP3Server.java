@@ -36,7 +36,7 @@ public class POP3Server extends AbstractProtocolAsyncServer implements POP3Serve
     /**
      * The configuration data to be passed to the handler
      */
-    private ProtocolConfiguration theConfigData = new POP3Configuration();
+    private final ProtocolConfiguration theConfigData = new POP3Configuration();
     private BasicChannelUpstreamHandler coreHandler;
     
     @Override
@@ -57,7 +57,6 @@ public class POP3Server extends AbstractProtocolAsyncServer implements POP3Serve
     private class POP3Configuration implements ProtocolConfiguration {
 
         /**
-         * @see org.apache.james.pop3server.POP3HandlerConfiguration#getHelloName()
          */
         public String getHelloName() {
             return POP3Server.this.getHelloName();

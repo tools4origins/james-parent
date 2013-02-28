@@ -45,13 +45,13 @@ import java.util.regex.Pattern;
  */
 public class SqlResources {
     /** A map of statement types to SQL statements */
-    private Map<String, String> m_sql = new HashMap<String, String>();
+    private final Map<String, String> m_sql = new HashMap<String, String>();
 
     /** A map of engine specific options */
-    private Map<String, String> m_dbOptions = new HashMap<String, String>();
+    private final Map<String, String> m_dbOptions = new HashMap<String, String>();
 
     /** A set of all used String values */
-    static private Map<String, String> stringTable = java.util.Collections.synchronizedMap(new HashMap<String, String>());
+    static private final Map<String, String> stringTable = java.util.Collections.synchronizedMap(new HashMap<String, String>());
 
     /**
      * <p>
@@ -164,8 +164,8 @@ public class SqlResources {
 
         }
         if (!found) {
-            StringBuilder exceptionBuffer = new StringBuilder(64).append("Error loading sql definition file. ").append("The element named \'").append(sqlDefsSection).append("\' does not exist.");
-            throw new RuntimeException(exceptionBuffer.toString());
+            String exceptionBuffer = "Error loading sql definition file. " + "The element named \'" + sqlDefsSection + "\' does not exist.";
+            throw new RuntimeException(exceptionBuffer);
         }
 
         // Get parameters defined within the file as defaults,
@@ -348,7 +348,7 @@ public class SqlResources {
      * @return the requested resource
      */
     public String getSqlString(String name) {
-        return (String) m_sql.get(name);
+        return m_sql.get(name);
     }
 
     /**
@@ -368,8 +368,8 @@ public class SqlResources {
         String sql = getSqlString(name);
 
         if (sql == null && required) {
-            StringBuilder exceptionBuffer = new StringBuilder(64).append("Required SQL resource: '").append(name).append("' was not found.");
-            throw new RuntimeException(exceptionBuffer.toString());
+            String exceptionBuffer = "Required SQL resource: '" + name + "' was not found.";
+            throw new RuntimeException(exceptionBuffer);
         }
         return sql;
     }
@@ -382,7 +382,7 @@ public class SqlResources {
      * @return the requested dbOption value
      */
     public String getDbOption(String name) {
-        return (String) m_dbOptions.get(name);
+        return m_dbOptions.get(name);
     }
 
 }

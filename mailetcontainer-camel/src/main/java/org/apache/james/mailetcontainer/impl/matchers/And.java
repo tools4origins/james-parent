@@ -43,7 +43,7 @@ public class And extends GenericCompositeMatcher {
      */
     public Collection match(Mail mail) throws MessagingException {
         Collection finalResult = null;
-        Matcher matcher = null;
+        Matcher matcher;
         boolean first = true;
         for (Iterator matcherIter = iterator(); matcherIter.hasNext();) {
             matcher = (Matcher) (matcherIter.next());
@@ -78,9 +78,9 @@ public class And extends GenericCompositeMatcher {
                     // Ensure that the finalResult only contains recipients
                     // in the result collection
                     Collection newResult = new ArrayList();
-                    MailAddress recipient = null;
-                    for (Iterator i = finalResult.iterator(); i.hasNext();) {
-                        recipient = (MailAddress) i.next();
+                    MailAddress recipient;
+                    for (Object aFinalResult : finalResult) {
+                        recipient = (MailAddress) aFinalResult;
                         // log("recipient="+recipient.toString());
                         if (result.contains(recipient)) {
                             newResult.add(recipient);

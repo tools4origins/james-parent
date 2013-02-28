@@ -66,7 +66,7 @@ public abstract class AbstractRecipientRewriteTableMailet extends GenericMailet 
 
         Collection<MailAddress> newRecipients = new LinkedList<MailAddress>();
         for (Iterator<MailAddress> i = recipients.iterator(); i.hasNext();) {
-            MailAddress recipient = (MailAddress) i.next();
+            MailAddress recipient = i.next();
             try {
                 Collection<MailAddress> usernames = processMail(mail.getSender(), recipient, message);
 
@@ -128,9 +128,9 @@ public abstract class AbstractRecipientRewriteTableMailet extends GenericMailet 
         Collection<MailAddress> remoteRecipients = new ArrayList<MailAddress>();
         Collection<MailAddress> localRecipients = new ArrayList<MailAddress>();
         while (i.hasNext()) {
-            String rcpt = (String) i.next();
+            String rcpt = i.next();
 
-            if (rcpt.indexOf("@") < 0) {
+            if (!rcpt.contains("@")) {
                 // the mapping contains no domain name, use the default domain
                 try {
                     rcpt = rcpt + "@" + domainList.getDefaultDomain();
@@ -150,7 +150,7 @@ public abstract class AbstractRecipientRewriteTableMailet extends GenericMailet 
         if (remoteRecipients.size() > 0) {
             try {
                 getMailetContext().sendMail(sender, remoteRecipients, message);
-                StringBuffer logBuffer = new StringBuffer(128).append("Mail for ").append(recipient).append(" forwarded to ");
+                StringBuilder logBuffer = new StringBuilder(128).append("Mail for ").append(recipient).append(" forwarded to ");
                 for (Iterator<MailAddress> j = remoteRecipients.iterator(); j.hasNext();) {
                     logBuffer.append(j.next());
                     if (j.hasNext())
@@ -158,7 +158,7 @@ public abstract class AbstractRecipientRewriteTableMailet extends GenericMailet 
                 }
                 getMailetContext().log(logBuffer.toString());
             } catch (MessagingException me) {
-                StringBuffer logBuffer = new StringBuffer(128).append("Error forwarding mail to ");
+                StringBuilder logBuffer = new StringBuilder(128).append("Error forwarding mail to ");
                 for (Iterator<MailAddress> j = remoteRecipients.iterator(); j.hasNext();) {
                     logBuffer.append(j.next());
                     if (j.hasNext())

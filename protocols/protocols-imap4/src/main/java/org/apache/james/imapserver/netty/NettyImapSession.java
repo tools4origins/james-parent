@@ -41,14 +41,14 @@ public class NettyImapSession implements ImapSession, NettyConstants {
 
     private ImapSessionState state = ImapSessionState.NON_AUTHENTICATED;
     private SelectedMailbox selectedMailbox;
-    private Map<String, Object> attributesByKey = new HashMap<String, Object>();
-    private SSLContext sslContext;
-    private String[] enabledCipherSuites;
-    private boolean compress;
-    private ProtocolSessionLogger log;
-    private Channel channel;
+    private final Map<String, Object> attributesByKey = new HashMap<String, Object>();
+    private final SSLContext sslContext;
+    private final String[] enabledCipherSuites;
+    private final boolean compress;
+    private final ProtocolSessionLogger log;
+    private final Channel channel;
     private int handlerCount;
-    private boolean plainAuthDisallowed;
+    private final boolean plainAuthDisallowed;
 
     public NettyImapSession(Channel channel, Logger log, SSLContext sslContext, String[] enabledCipherSuites, boolean compress, boolean plainAuthDisallowed) {
         this.channel = channel;
@@ -148,7 +148,7 @@ public class NettyImapSession implements ImapSession, NettyConstants {
      * @see org.apache.james.imap.api.process.ImapSession#startTLS()
      */
     public boolean startTLS() {
-        if (supportStartTLS() == false)
+        if (!supportStartTLS())
             return false;
         channel.setReadable(false);
 
@@ -183,7 +183,7 @@ public class NettyImapSession implements ImapSession, NettyConstants {
      * @see org.apache.james.imap.api.process.ImapSession#startCompression()
      */
     public boolean startCompression() {
-        if (isCompressionSupported() == false)
+        if (!isCompressionSupported())
             return false;
 
         channel.setReadable(false);

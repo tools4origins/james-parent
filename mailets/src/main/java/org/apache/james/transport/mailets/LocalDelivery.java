@@ -90,7 +90,7 @@ public class LocalDelivery extends GenericMailet {
      */
     public void service(Mail mail) throws MessagingException {
         recipientRewriteTable.service(mail);
-        if (mail.getState() != Mail.GHOST) {
+        if (!mail.getState().equals(Mail.GHOST)) {
             sieveMailet.service(mail);
         }
     }

@@ -50,11 +50,8 @@ public class RecipientRewriteTableTest {
 
             @Override
             public boolean isLocalServer(String serverName) {
-                if (serverName.equals("localhost")) {
-                    return true;
-                }
+                return serverName.equals("localhost");
 
-                return false;
             }
         };
 
@@ -88,9 +85,9 @@ public class RecipientRewriteTableTest {
 
         assertEquals(3, mail.getRecipients().size());
         Iterator<MailAddress> it = mail.getRecipients().iterator();
-        assertEquals("whatever@localhost", ((MailAddress) it.next()).toString());
-        assertEquals("blah@localhost", ((MailAddress) it.next()).toString());
-        assertEquals("apache@localhost", ((MailAddress) it.next()).toString());
+        assertEquals("whatever@localhost", it.next().toString());
+        assertEquals("blah@localhost", it.next().toString());
+        assertEquals("apache@localhost", it.next().toString());
 
     }
 
@@ -101,8 +98,8 @@ public class RecipientRewriteTableTest {
     private Mail createMail(String[] recipients) throws MessagingException {
         Mail mail = new FakeMail();
         ArrayList<MailAddress> a = new ArrayList<MailAddress>(recipients.length);
-        for (int i = 0; i < recipients.length; i++) {
-            a.add(new MailAddress(recipients[i]));
+        for (String recipient : recipients) {
+            a.add(new MailAddress(recipient));
         }
         mail.setRecipients(a);
         mail.setMessage(new FakeMimeMessage());
@@ -135,7 +132,7 @@ public class RecipientRewriteTableTest {
         }
 
         assertEquals(mail.getRecipients().size(), 1);
-        MailAddress localRec = (MailAddress) mail.getRecipients().iterator().next();
+        MailAddress localRec = mail.getRecipients().iterator().next();
         assertEquals(localRec.toInternetAddress().toString(), "a@localhost");
     }
 

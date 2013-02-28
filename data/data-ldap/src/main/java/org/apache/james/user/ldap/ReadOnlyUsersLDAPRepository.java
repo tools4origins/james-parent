@@ -365,38 +365,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
     @PostConstruct
     public void init() throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug(new StringBuilder(128).
-                    append(this.getClass().getName()).
-                    append(".init()").
-                    append('\n').
-                    append("LDAP host: ").
-                    append(ldapHost).
-                    append('\n').
-                    append("User baseDN: ").
-                    append(userBase).
-                    append('\n').
-                    append("userIdAttribute: ").
-                    append(userIdAttribute).
-                    append('\n').
-                    append("Group restriction: ").
-                    append(restriction).
-                    append('\n').
-                    append("UseConnectionPool: ").
-                    append(useConnectionPool).
-                    append('\n').
-                    append("connectionTimeout: ").
-                    append(connectionTimeout).
-                    append('\n').
-                    append("readTimeout: ").
-                    append(readTimeout).
-                    append('\n').
-                    append("retrySchedule: ").
-                    append(schedule).
-                    append('\n').
-                    append("maxRetries: ").
-                    append(maxRetries).
-                    append('\n').
-                    toString());
+            log.debug(this.getClass().getName() + ".init()" + '\n' + "LDAP host: " + ldapHost + '\n' + "User baseDN: " + userBase + '\n' + "userIdAttribute: " + userIdAttribute + '\n' + "Group restriction: " + restriction + '\n' + "UseConnectionPool: " + useConnectionPool + '\n' + "connectionTimeout: " + connectionTimeout + '\n' + "readTimeout: " + readTimeout + '\n' + "retrySchedule: " + schedule + '\n' + "maxRetries: " + maxRetries + '\n');
         }
         // Setup the initial LDAP context
         updateLdapContext();
@@ -536,10 +505,8 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
             throws NamingException {
         List<ReadOnlyLDAPUser> results = new ArrayList<ReadOnlyLDAPUser>();
 
-        Iterator<String> userDNIterator = userDNs.iterator();
-
-        while (userDNIterator.hasNext()) {
-            ReadOnlyLDAPUser user = buildUser(userDNIterator.next());
+        for (String userDN : userDNs) {
+            ReadOnlyLDAPUser user = buildUser(userDN);
             results.add(user);
         }
 
@@ -611,10 +578,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
      * @see UsersRepository#contains(java.lang.String)
      */
     public boolean contains(String name) throws UsersRepositoryException {
-        if (getUserByName(name) != null) {
-            return true;
-        }
-        return false;
+        return getUserByName(name) != null;
     }
 
     /*
@@ -624,10 +588,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
      * @see UsersRepository#containsCaseInsensitive(java.lang.String)
      */
     public boolean containsCaseInsensitive(String name) throws UsersRepositoryException {
-        if (getUserByNameCaseInsensitive(name) != null) {
-            return true;
-        }
-        return false;
+        return getUserByNameCaseInsensitive(name) != null;
     }
 
     /**
@@ -679,9 +640,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
      */
     public User getUserByNameCaseInsensitive(String name) throws UsersRepositoryException {
         try {
-            Iterator<ReadOnlyLDAPUser> userIt = buildUserCollection(getValidUsers()).iterator();
-            while (userIt.hasNext()) {
-                ReadOnlyLDAPUser u = userIt.next();
+            for (ReadOnlyLDAPUser u : buildUserCollection(getValidUsers())) {
                 if (u.getUserName().equalsIgnoreCase(name)) {
                     return u;
                 }
@@ -702,10 +661,8 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
         List<String> result = new ArrayList<String>();
         try {
 
-            Iterator<ReadOnlyLDAPUser> userIt = buildUserCollection(getValidUsers()).iterator();
-
-            while (userIt.hasNext()) {
-                result.add(userIt.next().getUserName());
+            for (ReadOnlyLDAPUser readOnlyLDAPUser : buildUserCollection(getValidUsers())) {
+                result.add(readOnlyLDAPUser.getUserName());
             }
         } catch (NamingException namingException) {
             throw new UsersRepositoryException(
@@ -753,10 +710,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
      */
     public boolean test(String name, String password) throws UsersRepositoryException {
         User u = getUserByName(name);
-        if (u != null) {
-            return u.verifyPassword(password);
-        }
-        return false;
+        return u != null && u.verifyPassword(password);
     }
 
     /**
@@ -769,7 +723,6 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
     }
 
     /**
-     * @see UsersRepository#updateUser(org.apache.james.api.user.User)
      */
     public void updateUser(User user) throws UsersRepositoryException {
         log.error("This user-repository is read-only. Modifications are not permitted.");
@@ -787,7 +740,7 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
     /**
      * VirtualHosting not supported
      */
-    public boolean supportVirtualHosting() throws UsersRepositoryException {
+    public boolean supportVirtualHosting() {
         return false;
     }
 

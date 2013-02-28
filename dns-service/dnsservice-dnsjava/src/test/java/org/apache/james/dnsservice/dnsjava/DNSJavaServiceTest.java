@@ -80,7 +80,7 @@ public class DNSJavaServiceTest {
         // dnsServer.setLookupper(new ZoneLookupper(z));
         Collection<String> res = dnsServer.findMXRecords("test-zone.com.");
         try {
-            res.add(new String());
+            res.add("");
             fail("MX Collection should not be modifiable");
         } catch (UnsupportedOperationException e) {
         }

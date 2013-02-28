@@ -42,7 +42,7 @@ public class MailboxCopierManagement implements MailboxCopierManagementMBean, Ap
     /**
      * The Logger.
      */
-    private static Logger log = LoggerFactory.getLogger(MailboxCopierManagement.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(MailboxCopierManagement.class.getName());
 
     private MailboxCopier copier;
     private ApplicationContext context;

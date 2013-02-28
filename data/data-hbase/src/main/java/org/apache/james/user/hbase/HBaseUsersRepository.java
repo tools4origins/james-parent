@@ -51,7 +51,7 @@ public class HBaseUsersRepository extends AbstractUsersRepository {
     /**
      * The Logger.
      */
-    private static Logger log = LoggerFactory.getLogger(HBaseUsersRepository.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(HBaseUsersRepository.class.getName());
     /**
      * Hashing algorithm for the password.
      */
@@ -195,7 +195,7 @@ public class HBaseUsersRepository extends AbstractUsersRepository {
             scan.addFamily(HUsersRepository.COLUMN_FAMILY_NAME);
             scan.setCaching(table.getScannerCaching() * 2);
             resultScanner = table.getScanner(scan);
-            Result result = null;
+            Result result;
             while ((result = resultScanner.next()) != null) {
                 list.add(Bytes.toString(result.getRow()));
             }

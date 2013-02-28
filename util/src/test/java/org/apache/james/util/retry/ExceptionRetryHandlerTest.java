@@ -52,24 +52,21 @@ public class ExceptionRetryHandlerTest {
     private class TestRetryingProxy implements ExceptionRetryingProxy {
 
 	/**
-	 * @see org.apache.james.user.ldap.api.ExceptionRetryingProxy#getDelegate()
-	 */
+     */
 	@Override
-	public Context getDelegate() throws Exception {
+	public Context getDelegate() {
 	    return null;
 	}
 
 	/**
-	 * @see org.apache.james.user.ldap.api.ExceptionRetryingProxy#newDelegate()
-	 */
+     */
 	@Override
 	public Context newDelegate() throws Exception {
 	    return null;
 	}
 
 	/**
-	 * @see org.apache.james.user.ldap.api.ExceptionRetryingProxy#resetDelegate()
-	 */
+     */
 	@Override
 	public void resetDelegate() throws Exception {
 	}
@@ -78,8 +75,7 @@ public class ExceptionRetryHandlerTest {
     private class TestRetrySchedule implements RetrySchedule {
 
 	/**
-	 * @see org.apache.james.user.ldap.api.RetrySchedule#getInterval(int)
-	 */
+     */
 	@Override
 	public long getInterval(int index) {
 	    return index;
@@ -87,7 +83,7 @@ public class ExceptionRetryHandlerTest {
     }
 
     /**
-     * Test method for {@link org.apache.james.user.ldap.ExceptionRetryHandler#ExceptionRetryHandler(java.lang.Class<?>[], org.apache.james.user.ldap.api.ExceptionRetryingProxy, org.apache.james.user.ldap.api.RetrySchedule, int)}.
+     * Test method for .
      */
     @Test
     public final void testExceptionRetryHandler() {
@@ -102,7 +98,7 @@ public class ExceptionRetryHandlerTest {
     }
 
     /**
-     * Test method for {@link org.apache.james.user.ldap.ExceptionRetryHandler#perform()}.
+     * Test method for .
      * @throws Exception 
      */
     @Test
@@ -133,7 +129,7 @@ public class ExceptionRetryHandlerTest {
     }
 
     /**
-     * Test method for {@link org.apache.james.user.ldap.ExceptionRetryHandler#postFailure(java.lang.Exception, int)}.
+     * Test method for .
      */
     @Test
     public final void testPostFailure() {
@@ -161,7 +157,7 @@ public class ExceptionRetryHandlerTest {
     }
 
     /**
-     * Test method for {@link org.apache.james.user.ldap.ExceptionRetryHandler#operation()}.
+     * Test method for .
      * @throws Exception 
      */
     @Test
@@ -178,7 +174,7 @@ public class ExceptionRetryHandlerTest {
     }
 
     /**
-     * Test method for {@link org.apache.james.user.ldap.ExceptionRetryHandler#getRetryInterval(int)}.
+     * Test method for .
      */
     @Test
     public final void testGetRetryInterval() {

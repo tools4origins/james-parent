@@ -53,7 +53,6 @@ import org.apache.james.util.sql.SqlResources;
 public class JDBCRecipientRewriteTable extends AbstractRecipientRewriteTable {
 
     private DataSource dataSource = null;
-    private String dataSourceName = null;
 
     private String tableName = "RecipientRewriteTable";
 
@@ -82,7 +81,7 @@ public class JDBCRecipientRewriteTable extends AbstractRecipientRewriteTable {
     @PostConstruct
     public void init() throws Exception {
 
-        StringBuffer logBuffer = null;
+        StringBuffer logBuffer;
         if (getLogger().isDebugEnabled()) {
             getLogger().debug(this.getClass().getName() + ".initialize()");
         }
@@ -94,7 +93,7 @@ public class JDBCRecipientRewriteTable extends AbstractRecipientRewriteTable {
         try {
             // Initialise the sql strings.
 
-            InputStream sqlFile = null;
+            InputStream sqlFile;
 
             try {
                 sqlFile = fileSystem.getResource(sqlFileName);
@@ -178,21 +177,21 @@ public class JDBCRecipientRewriteTable extends AbstractRecipientRewriteTable {
 
         // Build SqlParameters and get datasource name from URL parameters
         if (urlParams.size() == 0) {
-            StringBuffer exceptionBuffer = new StringBuffer(256).append("Malformed destinationURL - Must be of the format '").append("db://<data-source>'.  Was passed ").append(conf.getString("[@destinationURL]"));
-            throw new ConfigurationException(exceptionBuffer.toString());
+            String exceptionBuffer = "Malformed destinationURL - Must be of the format '" + "db://<data-source>'.  Was passed " + conf.getString("[@destinationURL]");
+            throw new ConfigurationException(exceptionBuffer);
         }
 
         if (urlParams.size() >= 1) {
-            dataSourceName = (String) urlParams.get(0);
+            String dataSourceName = urlParams.get(0);
         }
 
         if (urlParams.size() >= 2) {
-            tableName = (String) urlParams.get(1);
+            tableName = urlParams.get(1);
         }
 
         if (getLogger().isDebugEnabled()) {
-            StringBuffer logBuffer = new StringBuffer(128).append("Parsed URL: table = '").append(tableName).append("'");
-            getLogger().debug(logBuffer.toString());
+            String logBuffer = "Parsed URL: table = '" + tableName + "'";
+            getLogger().debug(logBuffer);
         }
 
         sqlFileName = conf.getString("sqlFile");

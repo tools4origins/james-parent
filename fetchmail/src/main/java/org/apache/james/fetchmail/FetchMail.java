@@ -113,11 +113,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
          * @see java.lang.Object#equals(Object)
          */
         public boolean equals(Object obj) {
-            if (null == obj)
-                return false;
-            return obj.getClass() == getClass()
-                    && (getUserName().equals(((DynamicAccountKey) obj).getUserName())
-                    && getSequenceNumber() == ((DynamicAccountKey) obj).getSequenceNumber());
+            return null != obj && obj.getClass() == getClass() && (getUserName().equals(((DynamicAccountKey) obj).getUserName()) && getSequenceNumber() == ((DynamicAccountKey) obj).getSequenceNumber());
         }
 
         /**
@@ -188,7 +184,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
         /**
          * Constructor for ParsedDynamicAccountParameters.
          */
-        public ParsedDynamicAccountParameters(int sequenceNumber, Configuration configuration) throws ConfigurationException {
+        public ParsedDynamicAccountParameters(int sequenceNumber, Configuration configuration) {
             this();
             setSequenceNumber(sequenceNumber);
             setUserPrefix(configuration.getString("[@userprefix]", ""));
@@ -854,7 +850,7 @@ public class FetchMail implements Runnable, LogEnabled, Configurable {
      * @throws ConfigurationException
      */
     @SuppressWarnings("unchecked")
-    protected void setSessionParameters(HierarchicalConfiguration configuration) throws ConfigurationException {
+    protected void setSessionParameters(HierarchicalConfiguration configuration) {
 
         if (configuration.getKeys("javaMailProperties.property").hasNext()) {
             Properties properties = getSession().getProperties();

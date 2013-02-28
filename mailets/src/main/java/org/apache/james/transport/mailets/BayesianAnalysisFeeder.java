@@ -140,14 +140,13 @@ public class BayesianAnalysisFeeder extends GenericMailet {
     /**
      * The JDBCBayesianAnalyzer class that does all the work.
      */
-    private JDBCBayesianAnalyzer analyzer = new JDBCBayesianAnalyzer() {
+    private final JDBCBayesianAnalyzer analyzer = new JDBCBayesianAnalyzer() {
         protected void delegatedLog(String logString) {
             log("BayesianAnalysisFeeder: " + logString);
         }
     };
 
     private DataSource datasource;
-    private String repositoryPath;
 
     private String feedType;
 
@@ -205,7 +204,7 @@ public class BayesianAnalysisFeeder extends GenericMailet {
      *             if a problem arises
      */
     public void init() throws MessagingException {
-        repositoryPath = getInitParameter("repositoryPath");
+        String repositoryPath = getInitParameter("repositoryPath");
 
         if (repositoryPath == null) {
             throw new MessagingException("repositoryPath is null");

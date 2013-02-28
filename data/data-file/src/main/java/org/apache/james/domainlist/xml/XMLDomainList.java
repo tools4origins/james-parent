@@ -70,7 +70,7 @@ public class XMLDomainList extends AbstractDomainList implements Configurable {
             throw new DomainListException("Read-Only DomainList implementation");
 
         String newDomain = domain.toLowerCase(Locale.US);
-        if (containsDomain(newDomain) == false) {
+        if (!containsDomain(newDomain)) {
             domainNames.add(newDomain);
         }
     }

@@ -57,7 +57,7 @@ public class ReadOnlyLDAPGroupRestriction {
      * roles specified here will not be allowed to authenticate against James.
      * If the list is empty, group/role restriction will be disabled.
      */
-    private List<String> groupDNs;
+    private final List<String> groupDNs;
 
     /**
      * Initialises an instance from the contents of a

@@ -123,9 +123,8 @@ public class FromRepository extends GenericMailet {
         }
 
         if (delete) {
-            Iterator delList = processed.iterator();
-            while (delList.hasNext()) {
-                repository.remove((String) delList.next());
+            for (Object aProcessed : processed) {
+                repository.remove((String) aProcessed);
             }
         }
     }

@@ -55,11 +55,8 @@ public abstract class AbstractSQLWhitelistMatcher extends GenericMatcher {
 
     protected DataSource datasource;
 
-    /** Holds value of property sqlFile. */
-    private File sqlFile;
-
     /** Holds value of property sqlParameters. */
-    private Map<String, String> sqlParameters = new HashMap<String, String>();
+    private final Map<String, String> sqlParameters = new HashMap<String, String>();
 
     @Inject
     public void setDataSource(DataSource datasource) {
@@ -92,7 +89,7 @@ public abstract class AbstractSQLWhitelistMatcher extends GenericMatcher {
     /**
      * Contains all of the sql strings for this component.
      */
-    protected SqlResources sqlQueries = new SqlResources();
+    protected final SqlResources sqlQueries = new SqlResources();
 
     private FileSystem fs;
 
@@ -144,8 +141,7 @@ public abstract class AbstractSQLWhitelistMatcher extends GenericMatcher {
 
         Collection<MailAddress> inWhiteList = new java.util.HashSet<MailAddress>();
 
-        for (Iterator<MailAddress> i = recipients.iterator(); i.hasNext();) {
-            MailAddress recipientMailAddress = i.next();
+        for (MailAddress recipientMailAddress : recipients) {
             String recipientUser = recipientMailAddress.getLocalPart().toLowerCase(Locale.US);
             String recipientHost = recipientMailAddress.getDomain().toLowerCase(Locale.US);
 
@@ -207,8 +203,9 @@ public abstract class AbstractSQLWhitelistMatcher extends GenericMatcher {
                 conn.setAutoCommit(false);
             }
 
-            this.sqlFile = fs.getFile("classpath:sqlResources.xml");
-            sqlQueries.init(this.sqlFile, getSQLSectionName(), conn, getSqlParameters());
+            /* Holds value of property sqlFile. */
+            File sqlFile = fs.getFile("classpath:sqlResources.xml");
+            sqlQueries.init(sqlFile, getSQLSectionName(), conn, getSqlParameters());
             checkTables(conn);
         } finally {
             theJDBCUtil.closeJDBCConnection(conn);
@@ -225,7 +222,7 @@ public abstract class AbstractSQLWhitelistMatcher extends GenericMatcher {
         // DatabaseMetaInfo.
         // Try UPPER, lower, and MixedCase, to see if the table is there.
 
-        boolean dbUpdated = false;
+        boolean dbUpdated;
 
         dbUpdated = createTable(conn, getTableName(), getTableCreateQueryName());
 
@@ -253,7 +250,7 @@ public abstract class AbstractSQLWhitelistMatcher extends GenericMatcher {
             createStatement = conn.prepareStatement(sqlQueries.getSqlString(createSqlStringName, true));
             createStatement.execute();
 
-            StringBuffer logBuffer = null;
+            StringBuffer logBuffer;
             logBuffer = new StringBuffer(64).append("Created table '").append(tableName).append("' using sqlResources string '").append(createSqlStringName).append("'.");
             log(logBuffer.toString());
 

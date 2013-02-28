@@ -92,11 +92,11 @@ public class UsersRepositoryAliasingForwarding extends AbstractRecipientRewriteT
             try {
                 mappings = ((RecipientRewriteTable) usersRepository).getMappings(recipient.getLocalPart(), recipient.getDomain());
             } catch (ErrorMappingException e) {
-                StringBuilder errorBuffer = new StringBuilder(128).append("A problem as occoured trying to alias and forward user ").append(recipient).append(": ").append(e.getMessage());
-                throw new MessagingException(errorBuffer.toString());
+                String errorBuffer = "A problem as occoured trying to alias and forward user " + recipient + ": " + e.getMessage();
+                throw new MessagingException(errorBuffer);
             } catch (RecipientRewriteTableException e) {
-                StringBuilder errorBuffer = new StringBuilder(128).append("A problem as occoured trying to alias and forward user ").append(recipient).append(": ").append(e.getMessage());
-                throw new MessagingException(errorBuffer.toString());
+                String errorBuffer = "A problem as occoured trying to alias and forward user " + recipient + ": " + e.getMessage();
+                throw new MessagingException(errorBuffer);
             }
 
             if (mappings != null) {

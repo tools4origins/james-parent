@@ -133,7 +133,7 @@ public class WhiteListManager extends GenericMailet {
     private String deleteByPK;
 
     /** The date format object used to generate RFC 822 compliant date headers. */
-    private RFC822DateFormat rfc822DateFormat = new RFC822DateFormat();
+    private final RFC822DateFormat rfc822DateFormat = new RFC822DateFormat();
 
     private DataSource datasource;
 
@@ -155,15 +155,10 @@ public class WhiteListManager extends GenericMailet {
     /**
      * Contains all of the sql strings for this component.
      */
-    private SqlResources sqlQueries = new SqlResources();
-
-    /**
-     * Holds value of property sqlFile.
-     */
-    private File sqlFile;
+    private final SqlResources sqlQueries = new SqlResources();
 
     /** Holds value of property sqlParameters. */
-    private Map<String, String> sqlParameters = new HashMap<String, String>();
+    private final Map<String, String> sqlParameters = new HashMap<String, String>();
 
     @Inject
     public void setDataSource(DataSource datasource) {
@@ -317,10 +312,10 @@ public class WhiteListManager extends GenericMailet {
 
         try {
 
-            for (Iterator<MailAddress> i = recipients.iterator(); i.hasNext();) {
+            for (MailAddress recipient : recipients) {
                 ResultSet selectRS = null;
                 try {
-                    MailAddress recipientMailAddress = (MailAddress) i.next();
+                    MailAddress recipientMailAddress = recipient;
                     String recipientUser = recipientMailAddress.getLocalPart().toLowerCase(Locale.US);
                     String recipientHost = recipientMailAddress.getDomain().toLowerCase(Locale.US);
 
@@ -672,7 +667,7 @@ public class WhiteListManager extends GenericMailet {
         }
     }
 
-    private void sendReplyFromPostmaster(Mail mail, String stringContent) throws MessagingException {
+    private void sendReplyFromPostmaster(Mail mail, String stringContent) {
         try {
             MailAddress notifier = getMailetContext().getPostmaster();
 
@@ -762,8 +757,11 @@ public class WhiteListManager extends GenericMailet {
                 conn.setAutoCommit(false);
             }
 
-            this.sqlFile = new File((String) mailetContext.getAttribute("confDir"), "sqlResources.xml").getCanonicalFile();
-            sqlQueries.init(this.sqlFile, "WhiteList", conn, getSqlParameters());
+            /*
+      Holds value of property sqlFile.
+     */
+            File sqlFile = new File((String) mailetContext.getAttribute("confDir"), "sqlResources.xml").getCanonicalFile();
+            sqlQueries.init(sqlFile, "WhiteList", conn, getSqlParameters());
 
             checkTables(conn);
         } finally {
@@ -777,7 +775,7 @@ public class WhiteListManager extends GenericMailet {
         // DatabaseMetaInfo.
         // Try UPPER, lower, and MixedCase, to see if the table is there.
 
-        boolean dbUpdated = false;
+        boolean dbUpdated;
 
         dbUpdated = createTable(conn, "whiteListTableName", "createWhiteListTable");
 
@@ -805,7 +803,7 @@ public class WhiteListManager extends GenericMailet {
             createStatement = conn.prepareStatement(sqlQueries.getSqlString(createSqlStringName, true));
             createStatement.execute();
 
-            StringBuffer logBuffer = null;
+            StringBuffer logBuffer;
             logBuffer = new StringBuffer(64).append("Created table '").append(tableName).append("' using sqlResources string '").append(createSqlStringName).append("'.");
             log(logBuffer.toString());
 

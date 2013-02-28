@@ -50,15 +50,14 @@ public class URIRBLHandlerTest {
     private static final String BAD_DOMAIN2 = "bad2.domain.de";
     private static final String GOOD_DOMAIN = "good.apache.org";
     private static final String URISERVER = "multi.surbl.org.";
-    private SMTPSession mockedSMTPSession;
     private Mail mockedMail;
 
     private SMTPSession setupMockedSMTPSession(final Mail mail) {
         mockedMail = mail;
-        mockedSMTPSession = new BaseFakeSMTPSession() {
+        SMTPSession mockedSMTPSession = new BaseFakeSMTPSession() {
 
-            private String ipAddress = "192.168.0.1";
-            private String host = "localhost";
+            private final String ipAddress = "192.168.0.1";
+            private final String host = "localhost";
             private boolean relayingAllowed;
 
             public String getRemoteHost() {
@@ -68,8 +67,9 @@ public class URIRBLHandlerTest {
             public String getRemoteIPAddress() {
                 return ipAddress;
             }
-            private HashMap<String, Object> sstate = new HashMap<String, Object>();
-            private HashMap<String, Object> connectionState = new HashMap<String, Object>();
+
+            private final HashMap<String, Object> sstate = new HashMap<String, Object>();
+            private final HashMap<String, Object> connectionState = new HashMap<String, Object>();
 
             @Override
             public Object setAttachment(String key, Object value, State state) {

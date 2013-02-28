@@ -232,7 +232,6 @@ public class SMTPServer extends AbstractProtocolAsyncServer implements SMTPServe
         }
 
         /**
-         * @see org.apache.james.protocols.smtp.SMTPConfiguration#getSMTPGreeting()
          */
         public String getSMTPGreeting() {
             return SMTPServer.this.smtpGreeting;

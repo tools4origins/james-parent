@@ -176,7 +176,7 @@ public class JPAUsersRepository extends AbstractUsersRepository {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         try {
-            return ((Long) entityManager.createNamedQuery("containsUser").setParameter("name", name.toLowerCase()).getSingleResult()).longValue() > 0;
+            return (Long) entityManager.createNamedQuery("containsUser").setParameter("name", name.toLowerCase()).getSingleResult() > 0;
         } catch (PersistenceException e) {
             getLogger().debug("Failed to find user", e);
             throw new UsersRepositoryException("Failed to find user" + name, e);
@@ -201,11 +201,7 @@ public class JPAUsersRepository extends AbstractUsersRepository {
     public boolean test(String name, String password) throws UsersRepositoryException {
         final User user = getUserByName(name);
         final boolean result;
-        if (user == null) {
-            result = false;
-        } else {
-            result = user.verifyPassword(password);
-        }
+        result = user != null && user.verifyPassword(password);
         return result;
     }
 

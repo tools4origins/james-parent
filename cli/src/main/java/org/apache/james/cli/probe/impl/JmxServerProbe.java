@@ -61,7 +61,7 @@ public class JmxServerProbe implements ServerProbe {
      * @param port TCP port of the remote JMX agent
      * @throws IOException on connection failures
      */
-    public JmxServerProbe(String host, int port) throws IOException, InterruptedException {
+    public JmxServerProbe(String host, int port) throws IOException {
         this.host = host;
         this.port = port;
         connect();
@@ -73,7 +73,7 @@ public class JmxServerProbe implements ServerProbe {
      * @param host hostname or IP address of the JMX agent
      * @throws IOException on connection failures
      */
-    public JmxServerProbe(String host) throws IOException, InterruptedException {
+    public JmxServerProbe(String host) throws IOException {
         this.host = host;
         this.port = defaultPort;
         connect();

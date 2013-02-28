@@ -411,7 +411,7 @@ public class JCRMailRepository extends AbstractMailRepository implements MailRep
      * @throws RepositoryException
      *             if a repository error occurs
      */
-    private void setSender(Node node, MailAddress sender) throws MessagingException, RepositoryException {
+    private void setSender(Node node, MailAddress sender) throws RepositoryException {
         node.setProperty("james:sender", sender.toString());
     }
 
@@ -432,8 +432,8 @@ public class JCRMailRepository extends AbstractMailRepository implements MailRep
         try {
             Value[] values = node.getProperty("james:recipients").getValues();
             Collection<MailAddress> recipients = new ArrayList<MailAddress>(values.length);
-            for (int i = 0; i < values.length; i++) {
-                recipients.add(new MailAddress(values[i].getString()));
+            for (Value value : values) {
+                recipients.add(new MailAddress(value.getString()));
             }
             return recipients;
         } catch (PathNotFoundException e) {
@@ -454,7 +454,7 @@ public class JCRMailRepository extends AbstractMailRepository implements MailRep
      * @throws RepositoryException
      *             if a repository error occurs
      */
-    private void setRecipients(Node node, Collection<MailAddress> recipients) throws MessagingException, RepositoryException {
+    private void setRecipients(Node node, Collection<MailAddress> recipients) throws RepositoryException {
         String[] values = new String[recipients.size()];
         Iterator<MailAddress> iterator = recipients.iterator();
         for (int i = 0; iterator.hasNext(); i++) {
@@ -508,7 +508,7 @@ public class JCRMailRepository extends AbstractMailRepository implements MailRep
      * @throws IOException
      *             if an IO error occurs
      */
-    private void setMessage(Node node, final MimeMessage message) throws MessagingException, RepositoryException, IOException {
+    private void setMessage(Node node, final MimeMessage message) throws RepositoryException, IOException {
         try {
             node = node.getNode("jcr:content");
         } catch (PathNotFoundException e) {
@@ -581,7 +581,7 @@ public class JCRMailRepository extends AbstractMailRepository implements MailRep
     private void setAttributes(Node node, Mail mail) throws RepositoryException, IOException {
         Iterator<String> iterator = mail.getAttributeNames();
         while (iterator.hasNext()) {
-            String name = (String) iterator.next();
+            String name = iterator.next();
             Object value = mail.getAttribute(name);
             name = "jamesattr:" + Text.escapeIllegalJcrChars(name);
             if (value instanceof String || value == null) {

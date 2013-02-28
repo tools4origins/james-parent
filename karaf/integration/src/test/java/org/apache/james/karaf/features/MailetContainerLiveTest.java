@@ -7,11 +7,10 @@ import org.junit.Test;
 
 public class MailetContainerLiveTest extends KarafLiveTestSupport {
 
-    private String mailetContainerFeature = "james-server-mailet-container-camel";
-
     @Test
     public void testInstallMailetContainerFeature() throws Exception {
         addJamesFeaturesRepository();
+        String mailetContainerFeature = "james-server-mailet-container-camel";
         features.installFeature(mailetContainerFeature);
         assertInstalled(mailetContainerFeature);
         assertBundlesAreActive();

@@ -41,7 +41,7 @@ public class NetMatcher {
     /**
      * The DNS Service used to build InetNetworks.
      */
-    private DNSService dnsServer;
+    private final DNSService dnsServer;
 
     /**
      * The Set of InetNetwork to match against.
@@ -83,7 +83,7 @@ public class NetMatcher {
      */
     public boolean matchInetNetwork(final String hostIP) {
 
-        InetAddress ip = null;
+        InetAddress ip;
 
         try {
             ip = dnsServer.getByName(hostIP);
@@ -140,7 +140,7 @@ public class NetMatcher {
      *            a Collection which holds all networks
      */
     private void initInetNetworks(final Collection<String> nets) {
-        initInetNetworks(nets.toArray(new String[] {}));
+        initInetNetworks(nets.toArray(new String[nets.size()]));
     }
 
     /**

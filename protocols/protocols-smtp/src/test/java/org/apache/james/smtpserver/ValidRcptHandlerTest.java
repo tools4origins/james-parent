@@ -76,8 +76,8 @@ public class ValidRcptHandlerTest {
             public boolean isRelayingAllowed() {
                 return relayingAllowed;
             }
-            private HashMap<String, Object> sstate = new HashMap<String, Object>();
-            private HashMap<String, Object> connectionState = new HashMap<String, Object>();
+            private final HashMap<String, Object> sstate = new HashMap<String, Object>();
+            private final HashMap<String, Object> connectionState = new HashMap<String, Object>();
 
             @Override
             public Object setAttachment(String key, Object value, State state) {

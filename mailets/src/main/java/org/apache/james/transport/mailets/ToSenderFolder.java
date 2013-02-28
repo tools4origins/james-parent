@@ -72,7 +72,7 @@ public class ToSenderFolder extends GenericMailet {
      */
     @Override
     public void service(Mail mail) throws MessagingException {
-        if (mail.getState() != Mail.GHOST) {
+        if (!mail.getState().equals(Mail.GHOST)) {
             doService(mail);
             if (consume) {
                 mail.setState(Mail.GHOST);
@@ -83,7 +83,7 @@ public class ToSenderFolder extends GenericMailet {
     private void doService(Mail mail) throws MessagingException {
 
         final MailAddress sender = mail.getSender();
-        String username = null;
+        String username;
         try {
             if (usersRepository.supportVirtualHosting()) {
                 username = sender.toString();

@@ -42,7 +42,7 @@ public class MaildirStoreUtil {
      * @throws UsersRepositoryException
      */
     public static MaildirStore create(FileSystem fs, UsersRepository usersRepos, String rootURL, MailboxPathLocker locker) throws FileNotFoundException, UsersRepositoryException {
-        StringBuffer root = new StringBuffer();
+        StringBuilder root = new StringBuilder();
         root.append(fs.getFile(rootURL).getAbsolutePath());
         if (usersRepos.supportVirtualHosting()) {
             root.append("/").append(MaildirStore.PATH_DOMAIN).append("/").append(MaildirStore.PATH_USER).append("/");

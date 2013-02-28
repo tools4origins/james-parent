@@ -92,21 +92,21 @@ public class Forward extends AbstractRedirect {
     /**
      * @return UNALTERED
      */
-    protected int getInLineType() throws MessagingException {
+    protected int getInLineType() {
         return UNALTERED;
     }
 
     /**
      * @return NONE
      */
-    protected int getAttachmentType() throws MessagingException {
+    protected int getAttachmentType() {
         return NONE;
     }
 
     /**
      * @return ""
      */
-    protected String getMessage() throws MessagingException {
+    protected String getMessage() {
         return "";
     }
 
@@ -124,13 +124,13 @@ public class Forward extends AbstractRedirect {
 
         try {
             InternetAddress[] iaarray = InternetAddress.parse(addressList, false);
-            for (int i = 0; i < iaarray.length; i++) {
-                String addressString = iaarray[i].getAddress();
-                MailAddress specialAddress = getSpecialAddress(addressString, new String[] { "postmaster", "sender", "from", "replyTo", "reversePath", "unaltered", "recipients", "to", "null" });
+            for (InternetAddress anIaarray : iaarray) {
+                String addressString = anIaarray.getAddress();
+                MailAddress specialAddress = getSpecialAddress(addressString, new String[]{"postmaster", "sender", "from", "replyTo", "reversePath", "unaltered", "recipients", "to", "null"});
                 if (specialAddress != null) {
                     newRecipients.add(specialAddress);
                 } else {
-                    newRecipients.add(new MailAddress(iaarray[i]));
+                    newRecipients.add(new MailAddress(anIaarray));
                 }
             }
         } catch (Exception e) {
@@ -174,14 +174,14 @@ public class Forward extends AbstractRedirect {
     /**
      * @return null
      */
-    protected String getSubject() throws MessagingException {
+    protected String getSubject() {
         return null;
     }
 
     /**
      * @return ""
      */
-    protected String getSubjectPrefix() throws MessagingException {
+    protected String getSubjectPrefix() {
         return null;
     }
 
@@ -195,7 +195,7 @@ public class Forward extends AbstractRedirect {
     /**
      * @return false
      */
-    protected boolean isReply() throws MessagingException {
+    protected boolean isReply() {
         return false;
     }
 

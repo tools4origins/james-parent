@@ -156,8 +156,8 @@ public class JDBCRecipientRewriteTable extends AbstractRecipientRewriteTable {
             // DatabaseMetaInfo.
             // Try UPPER, lower, and MixedCase, to see if the table is there.
             if (!(theJDBCUtil.tableExists(dbMetaData, tableName))) {
-                StringBuffer exceptionBuffer = new StringBuffer(128).append("Could not find table '").append(tableName).append("' in datasource '").append(datasourceName).append("'");
-                throw new MailetException(exceptionBuffer.toString());
+                String exceptionBuffer = "Could not find table '" + tableName + "' in datasource '" + datasourceName + "'";
+                throw new MailetException(exceptionBuffer);
             }
 
             // Build the query
@@ -188,10 +188,10 @@ public class JDBCRecipientRewriteTable extends AbstractRecipientRewriteTable {
             conn = datasource.getConnection();
             mappingStmt = conn.prepareStatement(query);
 
-            for (Iterator<MailAddress> i = recipients.iterator(); i.hasNext();) {
+            for (MailAddress recipient : recipients) {
                 ResultSet mappingRS = null;
                 try {
-                    MailAddress source = i.next();
+                    MailAddress source = recipient;
                     mappingStmt.setString(1, source.getLocalPart());
                     mappingStmt.setString(2, source.getDomain());
                     mappingStmt.setString(3, source.getDomain());

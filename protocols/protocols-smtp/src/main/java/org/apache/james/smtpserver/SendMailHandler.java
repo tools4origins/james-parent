@@ -55,8 +55,7 @@ public class SendMailHandler implements JamesMessageHook {
 
     /**
      * Adds header to the message
-     * 
-     * @see org.apache.james.smtpserver#onMessage(SMTPSession)
+     *
      */
     public HookResult onMessage(SMTPSession session, Mail mail) {
        
@@ -70,7 +69,7 @@ public class SendMailHandler implements JamesMessageHook {
                 recipientString = theRecipients.toString();
             }
             if (session.getLogger().isInfoEnabled()) {
-                StringBuilder infoBuffer = new StringBuilder(256).append("Successfully spooled mail ").append(mail.getName()).append(" from ").append(mail.getSender()).append(" on ").append(session.getRemoteAddress().getAddress().toString()).append(" for ").append(recipientString);
+                String infoBuffer = "Successfully spooled mail " + mail.getName() + " from " + mail.getSender() + " on " + session.getRemoteAddress().getAddress().toString() + " for " + recipientString;
                 session.getLogger().info(infoBuffer.toString());
             }
         } catch (MessagingException me) {

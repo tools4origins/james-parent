@@ -38,9 +38,9 @@ import org.slf4j.Logger;
  */
 public class CamelProcessor implements Processor {
 
-    private Mailet mailet;
-    private Logger logger;
-    private CamelMailetProcessor processor;
+    private final Mailet mailet;
+    private final Logger logger;
+    private final CamelMailetProcessor processor;
 
     /**
      * Mailet to call on process
@@ -88,8 +88,7 @@ public class CamelProcessor implements Processor {
         } finally {
             List<MailetProcessorListener> listeners = processor.getListeners();
             long complete = System.currentTimeMillis() - start;
-            for (int i = 0; i < listeners.size(); i++) {
-                MailetProcessorListener listener = listeners.get(i);
+            for (MailetProcessorListener listener : listeners) {
                 listener.afterMailet(mailet, mail.getName(), mail.getState(), complete, ex);
             }
         }

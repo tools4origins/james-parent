@@ -70,7 +70,6 @@ abstract public class ExceptionRetryHandler implements RetryHandler {
         }
 
         /**
-         * @see org.apache.james.user.ldap.api.RetryHandler#perform()
          */
         public Object perform() throws Exception {
             boolean success = false;
@@ -119,7 +118,6 @@ abstract public class ExceptionRetryHandler implements RetryHandler {
         }
         
         /**
-         * @see org.apache.james.user.ldap.api.RetryHandler#postFailure(javax.naming.NamingException, int)
          */
         public void postFailure(Exception ex, int retryCount)
         {
@@ -127,7 +125,6 @@ abstract public class ExceptionRetryHandler implements RetryHandler {
         }        
 
         /**
-         * @see org.apache.james.user.ldap.api.RetryHandler#operation()
          */
         abstract public Object operation() throws Exception;
         

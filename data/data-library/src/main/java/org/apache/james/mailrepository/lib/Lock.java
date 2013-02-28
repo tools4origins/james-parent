@@ -28,7 +28,7 @@ public class Lock {
     /**
      * An internal hash table of keys to locks
      */
-    private Hashtable locks = new Hashtable();
+    private final Hashtable locks = new Hashtable();
 
     /**
      * Check to see if the object is locked
@@ -51,11 +51,8 @@ public class Lock {
     public boolean canI(final Object key) {
         Object o = locks.get(key);
 
-        if (null == o || o == this.getCallerId()) {
-            return true;
-        }
+        return null == o || o == this.getCallerId();
 
-        return false;
     }
 
     /**
@@ -74,11 +71,7 @@ public class Lock {
             if (null == theLock) {
                 locks.put(key, getCallerId());
                 return true;
-            } else if (getCallerId() == theLock) {
-                return true;
-            } else {
-                return false;
-            }
+            } else return getCallerId() == theLock;
         }
     }
 

@@ -43,15 +43,15 @@ public class MockMimeMessage extends MimeMessage {
     private String[] m_contentLanguage;
     private String m_fileName;
     private DataHandler m_dataHandler;
-    private HashMap m_contentHeaders = new HashMap();
-    private Flags m_setFlags = new Flags();
+    private final HashMap m_contentHeaders = new HashMap();
+    private final Flags m_setFlags = new Flags();
     private boolean m_doMatch;
 
-    public MockMimeMessage() throws MessagingException {
+    public MockMimeMessage() {
         super((Session) null);
     }
 
-    public MockMimeMessage(int messageNumber) throws MessagingException {
+    public MockMimeMessage(int messageNumber) {
         super((Session) null);
         m_iMessageNumber = messageNumber;
     }
@@ -96,11 +96,11 @@ public class MockMimeMessage extends MimeMessage {
     public Address[] getRecipients(Message.RecipientType recipientType) throws MessagingException {
         List recipientsList = getRecipientsList(recipientType);
         List recipientAddresses = new ArrayList();
-        for (Iterator iterator = recipientsList.iterator(); iterator.hasNext();) {
-            String recipient = (String) iterator.next();
+        for (Object aRecipientsList : recipientsList) {
+            String recipient = (String) aRecipientsList;
             recipientAddresses.add(new InternetAddress(recipient));
         }
-        return (Address[]) (recipientAddresses.toArray(new Address[]{}));
+        return (Address[]) (recipientAddresses.toArray(new Address[recipientAddresses.size()]));
     }
 
     private List getRecipientsList(Message.RecipientType recipientType) {
@@ -405,8 +405,7 @@ public class MockMimeMessage extends MimeMessage {
     @Override
     public Enumeration getMatchingHeaders(String[] names) throws MessagingException {
         ArrayList matchingHeaders = new ArrayList();
-        for (int i = 0; i < names.length; i++) {
-            String name = names[i];
+        for (String name : names) {
             String value = getHeader(name, null);
             if (value == null) {
                 continue;
@@ -422,9 +421,8 @@ public class MockMimeMessage extends MimeMessage {
 
         ArrayList nonMatchingHeaders = new ArrayList();
 
-        Iterator iterator = m_contentHeaders.keySet().iterator();
-        while (iterator.hasNext()) {
-            String name = (String) iterator.next();
+        for (Object o : m_contentHeaders.keySet()) {
+            String name = (String) o;
             if (existingHeaders.contains(name)) {
                 continue;
             }
@@ -454,9 +452,8 @@ public class MockMimeMessage extends MimeMessage {
 
     private ArrayList getHeadersAsStrings(HashMap contentHeaders) {
         ArrayList headerLines = new ArrayList();
-        Iterator iterator = contentHeaders.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = (String) iterator.next();
+        for (Object o : contentHeaders.keySet()) {
+            String key = (String) o;
             String value = (String) contentHeaders.get(key);
             headerLines.add(key + ":" + value);
         }
@@ -466,8 +463,7 @@ public class MockMimeMessage extends MimeMessage {
     @Override
     public Enumeration getMatchingHeaderLines(String[] names) throws MessagingException {
         ArrayList matchingHeaders = new ArrayList();
-        for (int i = 0; i < names.length; i++) {
-            String name = names[i];
+        for (String name : names) {
             String value = getHeader(name, null);
             if (value == null) {
                 continue;
@@ -483,9 +479,8 @@ public class MockMimeMessage extends MimeMessage {
 
         ArrayList nonMatchingHeaders = new ArrayList();
 
-        Iterator iterator = m_contentHeaders.keySet().iterator();
-        while (iterator.hasNext()) {
-            String name = (String) iterator.next();
+        for (Object o : m_contentHeaders.keySet()) {
+            String name = (String) o;
             if (existingHeaders != null && existingHeaders.contains(name)) {
                 continue;
             }

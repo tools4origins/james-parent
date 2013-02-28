@@ -111,7 +111,7 @@ public class UsersFileRepositoryTest extends AbstractUsersRepositoryTest {
         if (this.usersRepository != null) {
             Iterator<String> i = this.usersRepository.list();
             while (i.hasNext()) {
-                this.usersRepository.removeUser((String) i.next());
+                this.usersRepository.removeUser(i.next());
             }
             LifecycleUtil.dispose(this.usersRepository);
         }

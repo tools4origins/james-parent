@@ -26,7 +26,7 @@ import org.apache.james.smtpserver.fastfail.*;
 @SuppressWarnings("serial")
 public class SMTPTestConfiguration extends DefaultConfigurationBuilder {
 
-    private int m_smtpListenerPort;
+    private final int m_smtpListenerPort;
     private int m_maxMessageSizeKB = 0;
     private String m_authorizedAddresses = "127.0.0.0/8";
     private String m_authorizingMode = "false";
@@ -85,11 +85,11 @@ public class SMTPTestConfiguration extends DefaultConfigurationBuilder {
     }
 
     public void setConnectionLimit(int iConnectionLimit) {
-        m_connectionLimit = new Integer(iConnectionLimit);
+        m_connectionLimit = iConnectionLimit;
     }
 
     public void setConnectionBacklog(int iConnectionBacklog) {
-        m_connectionBacklog = new Integer(iConnectionBacklog);
+        m_connectionBacklog = iConnectionBacklog;
     }
 
     public void setHeloResolv() {
@@ -132,15 +132,15 @@ public class SMTPTestConfiguration extends DefaultConfigurationBuilder {
         m_startTLS = true;
     }
 
-    public void init() throws ConfigurationException {
+    public void init() {
 
         addProperty("[@enabled]", true);
 
         addProperty("bind", "127.0.0.1:" + m_smtpListenerPort);
         if (m_connectionLimit != null)
-            addProperty("connectionLimit", "" + m_connectionLimit.intValue());
+            addProperty("connectionLimit", "" + m_connectionLimit);
         if (m_connectionBacklog != null)
-            addProperty("connectionBacklog", "" + m_connectionBacklog.intValue());
+            addProperty("connectionBacklog", "" + m_connectionBacklog);
 
         addProperty("helloName", "myMailServer");
         addProperty("connectiontimeout", 360000);

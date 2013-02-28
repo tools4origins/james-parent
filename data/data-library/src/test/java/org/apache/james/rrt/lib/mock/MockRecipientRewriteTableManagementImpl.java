@@ -28,7 +28,7 @@ import org.apache.james.rrt.lib.RecipientRewriteTableUtil;
 
 public class MockRecipientRewriteTableManagementImpl implements RecipientRewriteTable {
 
-    HashMap store = new HashMap();
+    final HashMap store = new HashMap();
 
     @Override
     public void addAddressMapping(String user, String domain, String address) throws RecipientRewriteTableException {

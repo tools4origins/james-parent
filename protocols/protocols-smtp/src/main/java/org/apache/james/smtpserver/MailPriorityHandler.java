@@ -43,7 +43,7 @@ import org.apache.mailet.MailAddress;
  */
 public class MailPriorityHandler implements JamesMessageHook, InitializingLifecycleAwareProtocolHandler {
 
-    private Map<String, Integer> prioMap = new HashMap<String, Integer>();
+    private final Map<String, Integer> prioMap = new HashMap<String, Integer>();
 
     /**
      * @see
@@ -58,7 +58,7 @@ public class MailPriorityHandler implements JamesMessageHook, InitializingLifecy
 
         while (rcpts.hasNext()) {
             String domain = rcpts.next().getDomain();
-            Integer prio = null;
+            Integer prio;
             if (domain != null) {
                 prio = prioMap.get(domain);
                 if (prio != null) {
@@ -83,8 +83,7 @@ public class MailPriorityHandler implements JamesMessageHook, InitializingLifecy
     @Override
     public void init(Configuration config) throws ConfigurationException {
         List<HierarchicalConfiguration> entries = ((HierarchicalConfiguration)config).configurationsAt("priorityEntries.priorityEntry");
-        for (int i = 0; i < entries.size(); i++) {
-            HierarchicalConfiguration prioConf = entries.get(i);
+        for (HierarchicalConfiguration prioConf : entries) {
             String domain = prioConf.getString("domain");
             int prio = prioConf.getInt("priority", MailPrioritySupport.NORMAL_PRIORITY);
             if (prio > MailPrioritySupport.HIGH_PRIORITY || prio < MailPrioritySupport.LOW_PRIORITY) {

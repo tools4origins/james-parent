@@ -127,11 +127,8 @@ public abstract class AbstractRecipientRewriteTable implements RecipientRewriteT
                 throw new ErrorMappingException(targetString.substring(RecipientRewriteTable.ERROR_PREFIX.length()));
 
             } else {
-                Iterator<String> map = RecipientRewriteTableUtil.mappingToCollection(targetString).iterator();
 
-                while (map.hasNext()) {
-                    String target = map.next();
-
+                for (String target : RecipientRewriteTableUtil.mappingToCollection(targetString)) {
                     if (target.startsWith(RecipientRewriteTable.REGEX_PREFIX)) {
                         try {
                             target = RecipientRewriteTableUtil.regexMap(new MailAddress(user, domain), target);
@@ -148,13 +145,13 @@ public abstract class AbstractRecipientRewriteTable implements RecipientRewriteT
                     if (target == null)
                         continue;
 
-                    StringBuffer buf = new StringBuffer().append("Valid virtual user mapping ").append(user).append("@").append(domain).append(" to ").append(target);
-                    getLogger().debug(buf.toString());
+                    String buf = "Valid virtual user mapping " + user + "@" + domain + " to " + target;
+                    getLogger().debug(buf);
 
                     if (recursive) {
 
-                        String userName = null;
-                        String domainName = null;
+                        String userName;
+                        String domainName;
                         String args[] = target.split("@");
 
                         if (args != null && args.length > 1) {
@@ -445,7 +442,7 @@ public abstract class AbstractRecipientRewriteTable implements RecipientRewriteT
 
         // check if we need to sort
         // TODO: Maybe we should just return the aliasdomain mapping
-        if (mappings != null && mappings.indexOf(RecipientRewriteTable.ALIASDOMAIN_PREFIX) > -1) {
+        if (mappings != null && mappings.contains(RecipientRewriteTable.ALIASDOMAIN_PREFIX)) {
             Collection<String> mapCol = RecipientRewriteTableUtil.mappingToCollection(mappings);
             Iterator<String> mapIt = mapCol.iterator();
 
@@ -453,7 +450,7 @@ public abstract class AbstractRecipientRewriteTable implements RecipientRewriteT
 
             while (mapIt.hasNext()) {
                 int i = 0;
-                String mapping = mapIt.next().toString();
+                String mapping = mapIt.next();
 
                 if (mapping.startsWith(RecipientRewriteTable.ALIASDOMAIN_PREFIX)) {
                     col.add(i, mapping);
@@ -485,7 +482,7 @@ public abstract class AbstractRecipientRewriteTable implements RecipientRewriteT
      */
     protected String getFixedUser(String user) {
         if (user != null) {
-            if (user.equals(WILDCARD) || user.indexOf("@") < 0) {
+            if (user.equals(WILDCARD) || !user.contains("@")) {
                 return user;
             } else {
                 throw new IllegalArgumentException("Invalid user: " + user);
@@ -505,7 +502,7 @@ public abstract class AbstractRecipientRewriteTable implements RecipientRewriteT
      */
     protected String getFixedDomain(String domain) {
         if (domain != null) {
-            if (domain.equals(WILDCARD) || domain.indexOf("@") < 0) {
+            if (domain.equals(WILDCARD) || !domain.contains("@")) {
                 return domain;
             } else {
                 throw new IllegalArgumentException("Invalid domain: " + domain);

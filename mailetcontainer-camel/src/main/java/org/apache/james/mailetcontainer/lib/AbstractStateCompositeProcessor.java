@@ -45,7 +45,7 @@ import org.slf4j.Logger;
  */
 public abstract class AbstractStateCompositeProcessor implements MailProcessor, Configurable, LogEnabled {
 
-    private List<CompositeProcessorListener> listeners = Collections.synchronizedList(new ArrayList<CompositeProcessorListener>());
+    private final List<CompositeProcessorListener> listeners = Collections.synchronizedList(new ArrayList<CompositeProcessorListener>());
     private final Map<String, MailProcessor> processors = new HashMap<String, MailProcessor>();
     protected Logger logger;
     protected HierarchicalConfiguration config;
@@ -111,9 +111,7 @@ public abstract class AbstractStateCompositeProcessor implements MailProcessor, 
                 throw e;
             } finally {
                 long end = System.currentTimeMillis() - start;
-                for (int i = 0; i < listeners.size(); i++) {
-                    CompositeProcessorListener listener = listeners.get(i);
-
+                for (CompositeProcessorListener listener : listeners) {
                     listener.afterProcessor(processor, mail.getName(), end, ex);
                 }
             }
@@ -145,9 +143,7 @@ public abstract class AbstractStateCompositeProcessor implements MailProcessor, 
     private void checkProcessors() throws ConfigurationException {
         boolean errorProcessorFound = false;
         boolean rootProcessorFound = false;
-        Iterator<String> names = processors.keySet().iterator();
-        while (names.hasNext()) {
-            String name = names.next();
+        for (String name : processors.keySet()) {
             if (name.equals(Mail.DEFAULT)) {
                 rootProcessorFound = true;
             } else if (name.equals(Mail.ERROR)) {
@@ -158,9 +154,9 @@ public abstract class AbstractStateCompositeProcessor implements MailProcessor, 
                 return;
             }
         }
-        if (errorProcessorFound == false) {
+        if (!errorProcessorFound) {
             throw new ConfigurationException("You need to configure a Processor with name " + Mail.ERROR);
-        } else if (rootProcessorFound == false) {
+        } else if (!rootProcessorFound) {
             throw new ConfigurationException("You need to configure a Processor with name " + Mail.DEFAULT);
         }
     }
@@ -169,13 +165,12 @@ public abstract class AbstractStateCompositeProcessor implements MailProcessor, 
     @PostConstruct
     public void init() throws Exception {
         List<HierarchicalConfiguration> processorConfs = config.configurationsAt("processor");
-        for (int i = 0; i < processorConfs.size(); i++) {
-            final HierarchicalConfiguration processorConf = processorConfs.get(i);
+        for (final HierarchicalConfiguration processorConf : processorConfs) {
             String processorName = processorConf.getString("[@state]");
 
             // if the "child" processor has no jmx config we just use the one of
             // the composite
-            if (processorConf.containsKey("[@enableJmx]") == false) {
+            if (!processorConf.containsKey("[@enableJmx]")) {
                 processorConf.addProperty("[@enableJmx]", enableJmx);
             }
             processors.put(processorName, createMailProcessor(processorName, processorConf));
@@ -193,8 +188,8 @@ public abstract class AbstractStateCompositeProcessor implements MailProcessor, 
     @PreDestroy
     public void dispose() {
         String names[] = getProcessorStates();
-        for (int i = 0; i < names.length; i++) {
-            MailProcessor processor = getProcessor(names[i]);
+        for (String name : names) {
+            MailProcessor processor = getProcessor(name);
             if (processor instanceof AbstractStateMailetProcessor) {
                 ((AbstractStateMailetProcessor) processor).destroy();
             }

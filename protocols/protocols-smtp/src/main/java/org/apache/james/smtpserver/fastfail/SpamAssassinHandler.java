@@ -118,13 +118,9 @@ public class SpamAssassinHandler implements JamesMessageHook, InitializingLifecy
             SpamAssassinInvoker sa = new SpamAssassinInvoker(spamdHost, spamdPort);
             sa.scanMail(message);
 
-            Iterator<String> headers = sa.getHeadersAsAttribute().keySet().iterator();
-
             // Add the headers
-            while (headers.hasNext()) {
-                String key = headers.next();
-
-                mail.setAttribute(key, (String) sa.getHeadersAsAttribute().get(key));
+            for (String key : sa.getHeadersAsAttribute().keySet()) {
+                mail.setAttribute(key, sa.getHeadersAsAttribute().get(key));
             }
 
             // Check if rejectionHits was configured
@@ -135,9 +131,8 @@ public class SpamAssassinHandler implements JamesMessageHook, InitializingLifecy
                     // if the hits are bigger the rejectionHits reject the
                     // message
                     if (spamdRejectionHits <= hits) {
-                        StringBuffer buffer = new StringBuffer(256).append("Rejected message from ").append(session.getAttachment(SMTPSession.SENDER, State.Transaction).toString()).append(" from host ").append(session.getRemoteAddress().getHostName()).append(" (").append(session.getRemoteAddress().getAddress().getHostAddress())
-                                .append(") This message reach the spam hits treshold. Required rejection hits: ").append(spamdRejectionHits).append(" hits: ").append(hits);
-                        session.getLogger().info(buffer.toString());
+                        String buffer = "Rejected message from " + session.getAttachment(SMTPSession.SENDER, State.Transaction).toString() + " from host " + session.getRemoteAddress().getHostName() + " (" + session.getRemoteAddress().getAddress().getHostAddress() + ") This message reach the spam hits treshold. Required rejection hits: " + spamdRejectionHits + " hits: " + hits;
+                        session.getLogger().info(buffer);
 
                         // Message reject .. abort it!
                         return new HookResult(HookReturnCode.DENY, DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.SECURITY_OTHER) + " This message reach the spam hits treshold. Please contact the Postmaster if the email is not SPAM. Message rejected");

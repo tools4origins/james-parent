@@ -36,7 +36,6 @@ public abstract class AbstractDomainListTest {
 
     // Domains we will play with.
     private final String DOMAIN_1 = "domain1.tld";
-    private final String DOMAIN_1_UPPER_CASE = "Domain1.tld";
     private final String DOMAIN_2 = "domain2.tld";
     private final String DOMAIN_3 = "domain3.tld";
     private final String DOMAIN_4 = "domain4.tld";
@@ -98,6 +97,7 @@ public abstract class AbstractDomainListTest {
         domainList.addDomain(DOMAIN_1);
         assertEquals(1, domainList.getDomains().length);
         try {
+            String DOMAIN_1_UPPER_CASE = "Domain1.tld";
             domainList.addDomain(DOMAIN_1_UPPER_CASE);
             fail("We should not be able to insert same domains, even with different cases");
         } catch (DomainListException domainListException) {
@@ -139,7 +139,7 @@ public abstract class AbstractDomainListTest {
      * @return
      */
     protected DNSService getDNSServer(final String hostName) {
-        DNSService dns = new MockDNSService() {
+        return new MockDNSService() {
 
             @Override
             public String getHostName(InetAddress inet) {
@@ -156,7 +156,6 @@ public abstract class AbstractDomainListTest {
                 return InetAddress.getLocalHost();
             }
         };
-        return dns;
     }
 
     /**

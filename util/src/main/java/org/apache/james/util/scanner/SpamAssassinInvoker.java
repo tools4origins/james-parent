@@ -43,15 +43,15 @@ public class SpamAssassinInvoker {
     /** The mail attribute under which the flag get stored */
     public final static String FLAG_MAIL_ATTRIBUTE_NAME = "org.apache.james.spamassassin.flag";
 
-    private String spamdHost;
+    private final String spamdHost;
 
-    private int spamdPort;
+    private final int spamdPort;
 
     private String hits = "?";
 
     private String required = "?";
 
-    private Map<String, String> headers = new HashMap<String, String>();
+    private final Map<String, String> headers = new HashMap<String, String>();
 
     /**
      * Init the spamassassin invoker
@@ -91,14 +91,14 @@ public class SpamAssassinInvoker {
             message.writeTo(out);
             out.flush();
             socket.shutdownOutput();
-            String s = null;
+            String s;
             while ((s = in.readLine()) != null) {
                 if (s.startsWith("Spam:")) {
                     StringTokenizer t = new StringTokenizer(s, " ");
                     boolean spam;
                     try {
                         t.nextToken();
-                        spam = Boolean.valueOf(t.nextToken()).booleanValue();
+                        spam = Boolean.valueOf(t.nextToken());
                     } catch (Exception e) {
                         // On exception return flase
                         return false;
@@ -111,14 +111,14 @@ public class SpamAssassinInvoker {
                     if (spam) {
                         // message was spam
                         headers.put(FLAG_MAIL_ATTRIBUTE_NAME, "YES");
-                        headers.put(STATUS_MAIL_ATTRIBUTE_NAME, new StringBuffer("Yes, hits=").append(hits).append(" required=").append(required).toString());
+                        headers.put(STATUS_MAIL_ATTRIBUTE_NAME, "Yes, hits=" + hits + " required=" + required);
 
                         // spam detected
                         return true;
                     } else {
                         // add headers
                         headers.put(FLAG_MAIL_ATTRIBUTE_NAME, "NO");
-                        headers.put(STATUS_MAIL_ATTRIBUTE_NAME, new StringBuffer("No, hits=").append(hits).append(" required=").append(required).toString());
+                        headers.put(STATUS_MAIL_ATTRIBUTE_NAME, "No, hits=" + hits + " required=" + required);
 
                         return false;
                     }

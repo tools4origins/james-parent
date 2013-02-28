@@ -70,7 +70,7 @@ public abstract class AbstractDomainList implements DomainList, LogEnabled, Conf
     }
 
     @Override
-    public String getDefaultDomain() throws DomainListException {
+    public String getDefaultDomain() {
         return defaultDomain;
     }
 
@@ -79,7 +79,7 @@ public abstract class AbstractDomainList implements DomainList, LogEnabled, Conf
         List<String> domains = getDomainListInternal();
         if (domains != null) {
 
-            String hostName = null;
+            String hostName;
             try {
                 hostName = getDNSServer().getHostName(getDNSServer().getLocalHost());
             } catch (UnknownHostException ue) {
@@ -88,17 +88,17 @@ public abstract class AbstractDomainList implements DomainList, LogEnabled, Conf
 
             getLogger().info("Local host is: " + hostName);
 
-            if (autoDetect == true && (!hostName.equals("localhost"))) {
+            if (autoDetect && (!hostName.equals("localhost"))) {
                 domains.add(hostName.toLowerCase(Locale.US));
             }
 
-            if (autoDetectIP == true) {
+            if (autoDetectIP) {
                 domains.addAll(getDomainsIP(domains, dns, getLogger()));
             }
 
             if (getLogger().isInfoEnabled()) {
-                for (Iterator<String> i = domains.iterator(); i.hasNext();) {
-                    getLogger().debug("Handling mail for: " + i.next());
+                for (String domain : domains) {
+                    getLogger().debug("Handling mail for: " + domain);
                 }
             }
             if (domains.isEmpty()) {
@@ -121,12 +121,12 @@ public abstract class AbstractDomainList implements DomainList, LogEnabled, Conf
     private static List<String> getDomainsIP(List<String> domains, DNSService dns, Logger log) {
         List<String> domainIP = new ArrayList<String>();
         if (domains.size() > 0) {
-            for (int i = 0; i < domains.size(); i++) {
-                List<String> domList = getDomainIP(domains.get(i).toString(), dns, log);
+            for (String domain : domains) {
+                List<String> domList = getDomainIP(domain, dns, log);
 
-                for (int i2 = 0; i2 < domList.size(); i2++) {
-                    if (domainIP.contains(domList.get(i2)) == false) {
-                        domainIP.add(domList.get(i2));
+                for (String aDomList : domList) {
+                    if (!domainIP.contains(aDomList)) {
+                        domainIP.add(aDomList);
                     }
                 }
             }
@@ -141,9 +141,9 @@ public abstract class AbstractDomainList implements DomainList, LogEnabled, Conf
         List<String> domainIP = new ArrayList<String>();
         try {
             InetAddress[] addrs = dns.getAllByName(domain);
-            for (int j = 0; j < addrs.length; j++) {
-                String ip = addrs[j].getHostAddress();
-                if (domainIP.contains(ip) == false) {
+            for (InetAddress addr : addrs) {
+                String ip = addr.getHostAddress();
+                if (!domainIP.contains(ip)) {
                     domainIP.add(ip);
                 }
             }

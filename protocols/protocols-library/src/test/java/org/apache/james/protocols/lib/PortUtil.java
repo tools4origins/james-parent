@@ -78,7 +78,6 @@ public class PortUtil {
                 break;
             } catch (IOException e) {
                 e.printStackTrace();
-                continue; // try next port
             }
         }
         PORT_LAST_USED = nextPortCandidate;

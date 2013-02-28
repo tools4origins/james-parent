@@ -56,7 +56,7 @@ public abstract class AbstractBundleTracker implements BeanFactoryAware, BundleL
     private String configuredClass;
     private volatile OsgiServiceFactoryBean osgiFactoryBean;
     private BeanFactory factory;
-    private Logger logger = LoggerFactory.getLogger(AbstractBundleTracker.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractBundleTracker.class);
     
     @Override
     public void setBeanFactory(BeanFactory factory) throws BeansException {

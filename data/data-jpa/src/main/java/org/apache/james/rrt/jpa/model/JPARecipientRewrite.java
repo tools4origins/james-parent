@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.james.rrt.jpa.model;
 
+import com.google.common.base.Objects;
+
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -56,27 +58,19 @@ public class JPARecipientRewrite {
 
         @Override
         public int hashCode() {
-            final int PRIME = 31;
-            int result = 1;
-            result = PRIME * result + (int) (user.hashCode() ^ (user.hashCode() >>> 32));
-            result = PRIME * result + (int) (domain.hashCode() ^ (domain.hashCode() >>> 32));
-            return result;
+            return Objects.hashCode(user, domain);
         }
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null || getClass() != obj.getClass()) {
                 return false;
-            if (getClass() != obj.getClass())
-                return false;
+            }
             final RecipientRewriteTableId other = (RecipientRewriteTableId) obj;
-            if (!user.equals(other.user))
-                return false;
-            if (!domain.equals(other.domain))
-                return false;
-            return true;
+            return Objects.equal(this.user, other.user) && Objects.equal(this.domain, other.domain);
         }
     }
 

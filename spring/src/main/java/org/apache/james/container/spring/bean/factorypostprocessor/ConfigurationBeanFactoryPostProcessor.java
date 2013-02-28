@@ -59,12 +59,8 @@ public class ConfigurationBeanFactoryPostProcessor implements BeanFactoryPostPro
 
         ConfigurationProvider confProvider = beanFactory.getBean(ConfigurationProvider.class);
 
-        Iterator<String> beanNames = beans.keySet().iterator();
-
         // loop over the beans
-        while (beanNames.hasNext()) {
-
-            String name = beanNames.next();
+        for (String name : beans.keySet()) {
 
             try {
 
@@ -83,10 +79,10 @@ public class ConfigurationBeanFactoryPostProcessor implements BeanFactoryPostPro
 
                 // check if we need to register some aliases for this bean
                 if (aliasArray != null) {
-                    for (int i = 0; i < aliasArray.length; i++) {
-                        String alias = aliasArray[i].trim();
+                    for (String anAliasArray : aliasArray) {
+                        String alias = anAliasArray.trim();
                         if (alias.length() > 0) {
-                            registry.registerAlias(name, aliasArray[i]);
+                            registry.registerAlias(name, anAliasArray);
                         }
                     }
                 }

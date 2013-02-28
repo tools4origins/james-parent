@@ -27,8 +27,8 @@ import java.io.FilenameFilter;
  * backwards compatibility of the numbered repositories that Avalon does.
  */
 public class NumberedRepositoryFileFilter implements FilenameFilter {
-    private String postfix;
-    private String prefix;
+    private final String postfix;
+    private final String prefix;
 
     /**
      * Default Constructor

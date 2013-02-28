@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HBaseUsersRepositoryTest extends AbstractUsersRepositoryTest {
 
-    private static HBaseClusterSingleton cluster = HBaseClusterSingleton.build();
+    private static final HBaseClusterSingleton cluster = HBaseClusterSingleton.build();
 
     @BeforeClass
     public static void setMeUp() throws IOException {
@@ -57,21 +57,12 @@ public class HBaseUsersRepositoryTest extends AbstractUsersRepositoryTest {
     }
 
     /**
-     * @see org.apache.james.user.lib.AbstractUsersRepositoryTest#tearDown()
-     */
-    @After
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    /**
      * Delete all users in the repository. Used between each tests.
      *
      * @throws UsersRepositoryException
      * @throws Exception
      */
-    private void deleteAll() throws UsersRepositoryException, Exception {
+    private void deleteAll() throws Exception {
         Iterator<String> it = getUsersRepository().list();
         while (it.hasNext()) {
             getUsersRepository().removeUser(it.next());

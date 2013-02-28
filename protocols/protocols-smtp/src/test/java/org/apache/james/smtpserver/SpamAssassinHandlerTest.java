@@ -38,18 +38,17 @@ import org.junit.Test;
 
 public class SpamAssassinHandlerTest {
 
-    private SMTPSession mockedSMTPSession;
     private Mail mockedMail;
     public final static String SPAMD_HOST = "localhost";
 
     private SMTPSession setupMockedSMTPSession(final Mail mail) {
         mockedMail = mail;
-        mockedSMTPSession = new BaseFakeSMTPSession() {
+        SMTPSession mockedSMTPSession = new BaseFakeSMTPSession() {
 
-            private HashMap<String, Object> sstate = new HashMap<String, Object>();
-            private HashMap<String, Object> connectionState = new HashMap<String, Object>();
-            private String ipAddress = "192.168.0.1";
-            private String host = "localhost";
+            private final HashMap<String, Object> sstate = new HashMap<String, Object>();
+            private final HashMap<String, Object> connectionState = new HashMap<String, Object>();
+            private final String ipAddress = "192.168.0.1";
+            private final String host = "localhost";
             private boolean relayingAllowed;
 
             public String getRemoteHost() {

@@ -97,8 +97,6 @@ public abstract class AbstractJdbcUsersRepository extends AbstractJamesUsersRepo
 
     private String m_sqlFileName;
 
-    private String m_datasourceName;
-
     private DataSource m_datasource;
 
     // Fetches all Users from the db.
@@ -186,11 +184,7 @@ public abstract class AbstractJdbcUsersRepository extends AbstractJamesUsersRepo
      */
     public boolean test(String name, String password) throws UsersRepositoryException {
         User user = getUserByName(name, ignoreCase);
-        if (user == null) {
-            return false;
-        } else {
-            return user.verifyPassword(password);
-        }
+        return user != null && user.verifyPassword(password);
     }
 
     /**
@@ -250,7 +244,7 @@ public abstract class AbstractJdbcUsersRepository extends AbstractJamesUsersRepo
      */
     @PostConstruct
     public void init() throws Exception {
-        StringBuffer logBuffer = null;
+        StringBuffer logBuffer;
         if (getLogger().isDebugEnabled()) {
             logBuffer = new StringBuffer(128).append(this.getClass().getName()).append(".initialize()");
             getLogger().debug(logBuffer.toString());
@@ -267,7 +261,7 @@ public abstract class AbstractJdbcUsersRepository extends AbstractJamesUsersRepo
         try {
             DatabaseMetaData dbMetaData = conn.getMetaData();
 
-            InputStream sqlFile = null;
+            InputStream sqlFile;
 
             try {
                 sqlFile = fileSystem.getResource(m_sqlFileName);
@@ -366,7 +360,7 @@ public abstract class AbstractJdbcUsersRepository extends AbstractJamesUsersRepo
      */
     @SuppressWarnings("unchecked")
     protected void doConfigure(HierarchicalConfiguration configuration) throws ConfigurationException {
-        StringBuffer logBuffer = null;
+        StringBuffer logBuffer;
         if (getLogger().isDebugEnabled()) {
             logBuffer = new StringBuffer(64).append(this.getClass().getName()).append(".configure()");
             getLogger().debug(logBuffer.toString());
@@ -401,7 +395,7 @@ public abstract class AbstractJdbcUsersRepository extends AbstractJamesUsersRepo
         case 2:
             m_sqlParameters.put("table", urlParams.get(1));
         case 1:
-            m_datasourceName = (String) urlParams.get(0);
+            urlParams.get(0);
             break;
         default:
             throw new ConfigurationException("Malformed destinationURL - " + "Must be of the format \"db://<data-source>[/<table>[/<key>]]\".");
@@ -435,8 +429,8 @@ public abstract class AbstractJdbcUsersRepository extends AbstractJamesUsersRepo
     protected List<String> listUserNames() throws UsersRepositoryException {
         Collection<User> users = getAllUsers();
         List<String> userNames = new ArrayList<String>(users.size());
-        for (Iterator<User> it = users.iterator(); it.hasNext();) {
-            userNames.add(it.next().getUserName());
+        for (User user : users) {
+            userNames.add(user.getUserName());
         }
         users.clear();
         return userNames;

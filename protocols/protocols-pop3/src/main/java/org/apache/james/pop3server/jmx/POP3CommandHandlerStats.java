@@ -31,8 +31,8 @@ import org.apache.james.protocols.pop3.POP3Response;
 
 public class POP3CommandHandlerStats extends AbstractCommandHandlerStats implements POP3CommandHandlerStatsMBean {
 
-    private AtomicLong error = new AtomicLong(0);
-    private AtomicLong ok = new AtomicLong(0);
+    private final AtomicLong error = new AtomicLong(0);
+    private final AtomicLong ok = new AtomicLong(0);
 
     public POP3CommandHandlerStats(String jmxPath, String handlerName, String[] commands) throws NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException {
         super(POP3CommandHandlerStatsMBean.class, jmxPath, handlerName, commands);

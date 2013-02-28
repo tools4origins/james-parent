@@ -82,8 +82,7 @@ public class InstrumentationMailet implements Mailet {
         context.log("Sender host: " + mail.getSender().getDomain());
         context.log("Sender user: " + mail.getSender().getLocalPart());
         Collection<MailAddress> recipients = mail.getRecipients();
-        for (Iterator<MailAddress> it = recipients.iterator(); it.hasNext();) {
-            MailAddress address = it.next();
+        for (MailAddress address : recipients) {
             context.log("Recipient: " + address.getLocalPart() + "@" + address.getDomain());
         }
 
@@ -113,12 +112,12 @@ public class InstrumentationMailet implements Mailet {
 
         Flags flags = message.getFlags();
         Flag[] systemFlags = flags.getSystemFlags();
-        for (int i = 0; i < systemFlags.length; i++) {
-            context.log("System Flag:" + systemFlags[i]);
+        for (Flag systemFlag : systemFlags) {
+            context.log("System Flag:" + systemFlag);
         }
         String[] userFlags = flags.getUserFlags();
-        for (int i = 0; i < userFlags.length; i++) {
-            context.log("User flag: " + userFlags[i]);
+        for (String userFlag : userFlags) {
+            context.log("User flag: " + userFlag);
         }
 
         String mimeType = message.getContentType();
@@ -139,12 +138,12 @@ public class InstrumentationMailet implements Mailet {
 
     private void printAddresses(Address[] addresses, String prefix) {
         MailetContext context = config.getMailetContext();
-        for (int i = 0; i < addresses.length; i++) {
-            if (addresses[i] instanceof InternetAddress) {
-                InternetAddress address = (InternetAddress) addresses[i];
+        for (Address address1 : addresses) {
+            if (address1 instanceof InternetAddress) {
+                InternetAddress address = (InternetAddress) address1;
                 context.log(prefix + address.getPersonal() + "@" + address.getAddress());
-            } else if (addresses[i] instanceof NewsAddress) {
-                NewsAddress address = (NewsAddress) addresses[i];
+            } else if (address1 instanceof NewsAddress) {
+                NewsAddress address = (NewsAddress) address1;
                 context.log(prefix + address.getNewsgroup() + "@" + address.getHost());
             }
         }

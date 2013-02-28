@@ -110,8 +110,7 @@ public abstract class AbstractUsersRepositoryTest {
         keys.add("username1");
         keys.add("username2");
         keys.add("username3");
-        for (Iterator<String> i = keys.iterator(); i.hasNext();) {
-            String username = i.next();
+        for (String username : keys) {
             usersRepository.addUser(username, username);
         }
         assertEquals("Wrong number of users found", keys.size(), usersRepository.countUsers());
@@ -119,7 +118,7 @@ public abstract class AbstractUsersRepositoryTest {
         // check list return all and only the expected users
         ArrayList<String> check = new ArrayList<String>(keys);
         for (Iterator<String> i = usersRepository.list(); i.hasNext();) {
-            String username = (String) i.next();
+            String username = i.next();
             if (getPasswordsEnabled()) {
                 assertTrue(usersRepository.test(username, username));
                 User u = usersRepository.getUserByName(username);

@@ -19,73 +19,74 @@
 
 package org.apache.james.util.bayesian;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.ArrayList;
-
-import java.io.IOException;
-import java.io.Reader;
 
 /**
  * <p>
  * Determines probability that text contains Spam.
  * </p>
- * 
+ * <p/>
  * <p>
  * Based upon Paul Grahams' <a href="http://www.paulgraham.com/spam.html">A Plan
  * for Spam</a>. Extended to Paul Grahams' <a
  * href="http://paulgraham.com/better.html">Better Bayesian Filtering</a>.
  * </p>
- * 
+ * <p/>
  * <p>
  * Sample method usage:
  * </p>
- * 
+ * <p/>
  * <p>
  * Use: void addHam(Reader) and void addSpam(Reader)
- * 
+ * <p/>
  * methods to build up the Maps of ham & spam tokens/occurrences. Both addHam
  * and addSpam assume they're reading one message at a time, if you feed more
  * than one message per call, be sure to adjust the appropriate message counter:
  * hamMessageCount or spamMessageCount.
- * 
+ * <p/>
  * Then...
  * </p>
- * 
+ * <p/>
  * <p>
  * Use: void buildCorpus()
- * 
+ * <p/>
  * to build the final token/probabilities Map.
- * 
+ * <p/>
  * Use your own methods for persistent storage of either the individual ham/spam
  * corpus & message counts, and/or the final corpus.
- * 
+ * <p/>
  * Then you can...
  * </p>
- * 
+ * <p/>
  * <p>
  * Use: double computeSpamProbability(Reader)
- * 
+ * <p/>
  * to determine the probability that a particular text contains spam. A returned
  * result of 0.9 or above is an indicator that the text was spam.
  * </p>
- * 
+ * <p/>
  * <p>
  * If you use persistent storage, use: void setCorpus(Map)
- * 
+ * <p/>
  * before calling computeSpamProbability.
  * </p>
- * 
+ *
  * @since 2.3.0
  */
 
 public class BayesianAnalyzer {
+
+    private final Object lock = new Object();
 
     /**
      * Number of "interesting" tokens to use to compute overall spamminess
@@ -105,28 +106,38 @@ public class BayesianAnalyzer {
      */
     private final static double DEFAULT_TOKEN_PROBABILITY = 0.4;
 
-    /** Map of ham tokens and their occurrences. */
+    /**
+     * Map of ham tokens and their occurrences.
+     */
     private Map<String, Integer> hamTokenCounts = new HashMap<String, Integer>();
 
-    /** Map of spam tokens and their occurrences. */
+    /**
+     * Map of spam tokens and their occurrences.
+     */
     private Map<String, Integer> spamTokenCounts = new HashMap<String, Integer>();
 
-    /** Number of ham messages analyzed. */
+    /**
+     * Number of ham messages analyzed.
+     */
     private int hamMessageCount = 0;
 
-    /** Number of spam messages analyzed. */
+    /**
+     * Number of spam messages analyzed.
+     */
     private int spamMessageCount = 0;
 
-    /** Final token/probability corpus. */
+    /**
+     * Final token/probability corpus.
+     */
     private Map<String, Double> corpus = new HashMap<String, Double>();
 
     /**
      * Inner class for managing Token Probability Strengths during the
      * computeSpamProbability phase.
-     * 
+     * <p/>
      * By probability <i>strength</i> we mean the absolute distance of a
      * probability from the middle value 0.5.
-     * 
+     * <p/>
      * It implements Comparable so that it's sorting is automatic.
      */
     private class TokenProbabilityStrength implements Comparable<TokenProbabilityStrength> {
@@ -142,17 +153,16 @@ public class BayesianAnalyzer {
 
         /**
          * Force the natural sort order for this object to be high-to-low.
-         * 
+         *
          * @param anotherTokenProbabilityStrength
-         *            A TokenProbabilityStrength instance to compare this
-         *            instance with.
-         * 
+         *         A TokenProbabilityStrength instance to compare this
+         *         instance with.
          * @return The result of the comparison (before, equal, after).
          */
         public final int compareTo(TokenProbabilityStrength anotherTokenProbabilityStrength) {
-            int result = (int) ((((TokenProbabilityStrength) anotherTokenProbabilityStrength).strength - strength) * 1000000);
+            int result = (int) ((anotherTokenProbabilityStrength.strength - strength) * 1000000);
             if (result == 0) {
-                return this.token.compareTo(((TokenProbabilityStrength) anotherTokenProbabilityStrength).token);
+                return this.token.compareTo(anotherTokenProbabilityStrength.token);
             } else {
                 return result;
             }
@@ -160,11 +170,11 @@ public class BayesianAnalyzer {
 
         /**
          * Simple toString () implementation mostly for debugging purposes.
-         * 
+         *
          * @return String representation of this object.
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer(30);
+            StringBuilder sb = new StringBuilder(30);
 
             sb.append(token).append("=").append(strength);
 
@@ -180,9 +190,8 @@ public class BayesianAnalyzer {
 
     /**
      * Public setter for the hamTokenCounts Map.
-     * 
-     * @param hamTokenCounts
-     *            The new ham Token counts Map.
+     *
+     * @param hamTokenCounts The new ham Token counts Map.
      */
     public void setHamTokenCounts(Map<String, Integer> hamTokenCounts) {
         this.hamTokenCounts = hamTokenCounts;
@@ -197,9 +206,8 @@ public class BayesianAnalyzer {
 
     /**
      * Public setter for the spamTokenCounts Map.
-     * 
-     * @param spamTokenCounts
-     *            The new spam Token counts Map.
+     *
+     * @param spamTokenCounts The new spam Token counts Map.
      */
     public void setSpamTokenCounts(Map<String, Integer> spamTokenCounts) {
         this.spamTokenCounts = spamTokenCounts;
@@ -214,9 +222,8 @@ public class BayesianAnalyzer {
 
     /**
      * Public setter for spamMessageCount.
-     * 
-     * @param spamMessageCount
-     *            The new spam message count.
+     *
+     * @param spamMessageCount The new spam message count.
      */
     public void setSpamMessageCount(int spamMessageCount) {
         this.spamMessageCount = spamMessageCount;
@@ -231,9 +238,8 @@ public class BayesianAnalyzer {
 
     /**
      * Public setter for hamMessageCount.
-     * 
-     * @param hamMessageCount
-     *            The new ham message count.
+     *
+     * @param hamMessageCount The new ham message count.
      */
     public void setHamMessageCount(int hamMessageCount) {
         this.hamMessageCount = hamMessageCount;
@@ -268,9 +274,8 @@ public class BayesianAnalyzer {
 
     /**
      * Public setter for corpus.
-     * 
-     * @param corpus
-     *            The new corpus.
+     *
+     * @param corpus The new corpus.
      */
     public void setCorpus(Map<String, Double> corpus) {
         this.corpus = corpus;
@@ -295,21 +300,17 @@ public class BayesianAnalyzer {
 
         // Iterate through all the tokens and compute their new
         // individual probabilities.
-        Iterator<String> i = set.iterator();
-        while (i.hasNext()) {
-            String token = i.next();
-            tempCorpus.put(token, new Double(computeProbability(token)));
+        for (String token : set) {
+            tempCorpus.put(token, computeProbability(token));
         }
         setCorpus(tempCorpus);
     }
 
     /**
      * Adds a message to the ham list.
-     * 
-     * @param stream
-     *            A reader stream on the ham message to analyze
-     * @throws IOException
-     *             If any error occurs
+     *
+     * @param stream A reader stream on the ham message to analyze
+     * @throws IOException If any error occurs
      */
     public void addHam(Reader stream) throws java.io.IOException {
         addTokenOccurrences(stream, hamTokenCounts);
@@ -318,11 +319,9 @@ public class BayesianAnalyzer {
 
     /**
      * Adds a message to the spam list.
-     * 
-     * @param stream
-     *            A reader stream on the spam message to analyze
-     * @throws IOException
-     *             If any error occurs
+     *
+     * @param stream A reader stream on the spam message to analyze
+     * @throws IOException If any error occurs
      */
     public void addSpam(Reader stream) throws java.io.IOException {
         addTokenOccurrences(stream, spamTokenCounts);
@@ -331,12 +330,10 @@ public class BayesianAnalyzer {
 
     /**
      * Computes the probability that the stream contains SPAM.
-     * 
-     * @param stream
-     *            The text to be analyzed for Spamminess.
+     *
+     * @param stream The text to be analyzed for Spamminess.
      * @return A 0.0 - 1.0 probability
-     * @throws IOException
-     *             If any error occurs
+     * @throws IOException If any error occurs
      */
     public double computeSpamProbability(Reader stream) throws java.io.IOException {
         // Build a set of the tokens in the Stream.
@@ -358,7 +355,7 @@ public class BayesianAnalyzer {
     /**
      * Parses a stream into tokens, and updates the target Map with the
      * token/counts.
-     * 
+     *
      * @param stream
      * @param target
      */
@@ -384,12 +381,12 @@ public class BayesianAnalyzer {
 
                 token = header + token;
 
-                Integer value = null;
+                Integer value;
 
                 if (target.containsKey(token)) {
-                    value = Integer.valueOf(((Integer) target.get(token)).intValue() + 1);
+                    value = target.get(token) + 1;
                 } else {
-                    value = Integer.valueOf(1);
+                    value = 1;
                 }
 
                 target.put(token, value);
@@ -404,7 +401,7 @@ public class BayesianAnalyzer {
     /**
      * Parses a stream into tokens, and returns a Set of the unique tokens
      * encountered.
-     * 
+     *
      * @param stream
      * @return Set
      */
@@ -444,7 +441,7 @@ public class BayesianAnalyzer {
     }
 
     private String nextToken(Reader reader) throws java.io.IOException {
-        StringBuffer token = new StringBuffer();
+        StringBuilder token = new StringBuilder();
         int i;
         char ch, ch2;
         boolean previousWasDigit = false;
@@ -466,8 +463,8 @@ public class BayesianAnalyzer {
             }
 
             if (Character.isLetter(ch) || ch == '-' || ch == '$' || ch == '\u20AC' // the
-                                                                                   // EURO
-                                                                                   // symbol
+                    // EURO
+                    // symbol
                     || ch == '!' || ch == '\'') {
                 tokenCharFound = true;
                 previousWasDigit = false;
@@ -516,7 +513,7 @@ public class BayesianAnalyzer {
 
     /**
      * Compute the probability that "token" is SPAM.
-     * 
+     *
      * @param token
      * @return The probability that the token occurs within spam.
      */
@@ -539,14 +536,14 @@ public class BayesianAnalyzer {
         }
 
         if (foundInHam) {
-            hamFactor = 2 * ((Integer) hamTokenCounts.get(token)).doubleValue();
+            hamFactor = 2 * hamTokenCounts.get(token).doubleValue();
             if (!foundInSpam) {
                 minThreshold = (hamFactor > 20) ? 0.0001 : 0.0002;
             }
         }
 
         if (foundInSpam) {
-            spamFactor = ((Integer) spamTokenCounts.get(token)).doubleValue();
+            spamFactor = spamTokenCounts.get(token).doubleValue();
             if (!foundInHam) {
                 maxThreshold = (spamFactor > 10) ? 0.9999 : 0.9998;
             }
@@ -567,7 +564,7 @@ public class BayesianAnalyzer {
      * Returns a SortedSet of TokenProbabilityStrength built from the Corpus and
      * the tokens passed in the "tokens" Set. The ordering is from the highest
      * strength to the lowest strength.
-     * 
+     *
      * @param tokens
      * @param workCorpus
      * @return SortedSet of TokenProbabilityStrength objects.
@@ -576,30 +573,29 @@ public class BayesianAnalyzer {
         // Convert to a SortedSet of token probability strengths.
         SortedSet<TokenProbabilityStrength> tokenProbabilityStrengths = new TreeSet<TokenProbabilityStrength>();
 
-        Iterator<String> i = tokens.iterator();
-        while (i.hasNext()) {
+        for (String token : tokens) {
             TokenProbabilityStrength tps = new TokenProbabilityStrength();
 
-            tps.token = (String) i.next();
+            tps.token = token;
 
             if (workCorpus.containsKey(tps.token)) {
-                tps.strength = Math.abs(0.5 - ((Double) workCorpus.get(tps.token)).doubleValue());
+                tps.strength = Math.abs(0.5 - workCorpus.get(tps.token));
             } else {
                 // This token has never been seen before,
                 // we'll give it initially the default probability.
-                Double corpusProbability = new Double(DEFAULT_TOKEN_PROBABILITY);
+                Double corpusProbability = DEFAULT_TOKEN_PROBABILITY;
                 tps.strength = Math.abs(0.5 - DEFAULT_TOKEN_PROBABILITY);
                 boolean isTokenDegeneratedFound = false;
 
                 Collection<String> degeneratedTokens = buildDegenerated(tps.token);
                 Iterator<String> iDegenerated = degeneratedTokens.iterator();
-                String tokenDegenerated = null;
+                String tokenDegenerated;
                 double strengthDegenerated;
                 while (iDegenerated.hasNext()) {
-                    tokenDegenerated = (String) iDegenerated.next();
+                    tokenDegenerated = iDegenerated.next();
                     if (workCorpus.containsKey(tokenDegenerated)) {
-                        Double probabilityTemp = (Double) workCorpus.get(tokenDegenerated);
-                        strengthDegenerated = Math.abs(0.5 - probabilityTemp.doubleValue());
+                        Double probabilityTemp = workCorpus.get(tokenDegenerated);
+                        strengthDegenerated = Math.abs(0.5 - probabilityTemp);
                         if (strengthDegenerated > tps.strength) {
                             isTokenDegeneratedFound = true;
                             tps.strength = strengthDegenerated;
@@ -610,7 +606,7 @@ public class BayesianAnalyzer {
                 // to reduce memory usage, put in the corpus only if the
                 // probability is different from (stronger than) the default
                 if (isTokenDegeneratedFound) {
-                    synchronized (workCorpus) {
+                    synchronized (lock) {
                         workCorpus.put(tps.token, corpusProbability);
                     }
                 }
@@ -675,7 +671,7 @@ public class BayesianAnalyzer {
     /**
      * Compute the spamminess probability of the interesting tokens in the
      * tokenProbabilities SortedSet.
-     * 
+     *
      * @param tokenProbabilityStrengths
      * @param workCorpus
      * @return Computed spamminess.
@@ -693,12 +689,12 @@ public class BayesianAnalyzer {
             // System.out.println(tps);
 
             double theDoubleValue = DEFAULT_TOKEN_PROBABILITY; // initialize it
-                                                               // to the default
-            Double theDoubleObject = (Double) workCorpus.get(tps.token);
+            // to the default
+            Double theDoubleObject = workCorpus.get(tps.token);
             // if either the original token or a degeneration was found use the
             // double value, otherwise use the default
             if (theDoubleObject != null) {
-                theDoubleValue = theDoubleObject.doubleValue();
+                theDoubleValue = theDoubleObject;
             }
             p *= theDoubleValue;
             np *= (1.0 - theDoubleValue);

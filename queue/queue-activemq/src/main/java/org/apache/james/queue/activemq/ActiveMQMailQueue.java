@@ -86,14 +86,11 @@ import org.springframework.jms.connection.SessionProxy;
  */
 public class ActiveMQMailQueue extends JMSMailQueue implements ActiveMQSupport {
 
-    private boolean useBlob;
+    private final boolean useBlob;
 
     /**
      * Construct a {@link ActiveMQMailQueue} which only use {@link BlobMessage}
      * 
-     * @throws NotCompliantMBeanException
-     * 
-     * @see #ActiveMQMailQueue(ConnectionFactory, String, boolean, Logger)
      */
     public ActiveMQMailQueue(final ConnectionFactory connectionFactory, final String queuename, final Logger logger) {
         this(connectionFactory, queuename, true, logger);
@@ -106,7 +103,6 @@ public class ActiveMQMailQueue extends JMSMailQueue implements ActiveMQSupport {
      * @param queuename
      * @param useBlob
      * @param logger
-     * @throws NotCompliantMBeanException
      */
     public ActiveMQMailQueue(final ConnectionFactory connectionFactory, final String queuename, boolean useBlob, final Logger logger) {
         super(connectionFactory, queuename, logger);
@@ -153,9 +149,6 @@ public class ActiveMQMailQueue extends JMSMailQueue implements ActiveMQSupport {
 
             // check if we should use a blob message here
             if (useBlob) {
-                MimeMessage mm = mail.getMessage();
-                MimeMessage wrapper = mm;
-
                 ActiveMQSession amqSession = getAMQSession(session);
                 
                 /*
@@ -188,7 +181,7 @@ public class ActiveMQMailQueue extends JMSMailQueue implements ActiveMQSupport {
                 if (blobMessage == null) {
                     // just use the MimeMessageInputStream which can read every
                     // MimeMessage implementation
-                    blobMessage = amqSession.createBlobMessage(new MimeMessageInputStream(wrapper));
+                    blobMessage = amqSession.createBlobMessage(new MimeMessageInputStream(mail.getMessage()));
                 }
                  
                     
@@ -232,7 +225,7 @@ public class ActiveMQMailQueue extends JMSMailQueue implements ActiveMQSupport {
      * @return amqSession
      * @throws JMSException
      */
-    protected ActiveMQSession getAMQSession(Session session) throws JMSException {
+    protected ActiveMQSession getAMQSession(Session session) {
         ActiveMQSession amqSession;
 
         if (session instanceof SessionProxy) {
@@ -256,8 +249,7 @@ public class ActiveMQMailQueue extends JMSMailQueue implements ActiveMQSupport {
         List<Message> mList = super.removeWithSelector(selector);
 
         // Handle the blob messages
-        for (int i = 0; i < mList.size(); i++) {
-            Message m = mList.get(i);
+        for (Message m : mList) {
             if (m instanceof ActiveMQBlobMessage) {
                 try {
                     // Should get remove once this issue is closed:
@@ -299,7 +291,7 @@ public class ActiveMQMailQueue extends JMSMailQueue implements ActiveMQSupport {
         MessageConsumer consumer = null;
         MessageProducer producer = null;
         TemporaryQueue replyTo = null;
-        long size = -1;
+        long size;
 
         try {
             connection = connectionFactory.createConnection();

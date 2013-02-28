@@ -40,7 +40,7 @@ public class Xor extends GenericCompositeMatcher {
      */
     public Collection match(Mail mail) throws MessagingException {
         Collection finalResult = null;
-        Matcher matcher = null;
+        Matcher matcher;
         boolean first = true;
         for (Iterator matcherIter = iterator(); matcherIter.hasNext();) {
             matcher = (Matcher) (matcherIter.next());
@@ -69,9 +69,9 @@ public class Xor extends GenericCompositeMatcher {
                     // the two results are different collections, so we XOR them
                     // Ensure that the finalResult does not contain recipients
                     // in the result collection
-                    MailAddress recipient = null;
-                    for (Iterator i = result.iterator(); i.hasNext();) {
-                        recipient = (MailAddress) (i.next());
+                    MailAddress recipient;
+                    for (Object aResult : result) {
+                        recipient = (MailAddress) (aResult);
                         if (!finalResult.contains(recipient)) {
                             finalResult.add(recipient);
                         } else {

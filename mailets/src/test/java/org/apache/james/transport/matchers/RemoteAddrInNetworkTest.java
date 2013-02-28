@@ -26,8 +26,6 @@ import org.junit.Test;
 
 public class RemoteAddrInNetworkTest extends AbstractRemoteAddrInNetworkTest {
 
-    private final String ALLOWED_NETWORK = "192.168.200.0/24";
-
     // test if the recipients get returned as matched
     @Test
     public void testRemoteAddrInNetworkMatched() throws MessagingException {
@@ -65,6 +63,7 @@ public class RemoteAddrInNetworkTest extends AbstractRemoteAddrInNetworkTest {
 
     @Override
     protected String getAllowedNetworks() {
+        String ALLOWED_NETWORK = "192.168.200.0/24";
         return ALLOWED_NETWORK;
     }
 }

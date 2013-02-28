@@ -36,7 +36,7 @@ public class POP3BeforeSMTPHelper {
     /**
      * The map in which the ipAddresses and timestamp stored
      */
-    public static Map<String, Long> ipMap = Collections.synchronizedMap(new HashMap<String, Long>());
+    public static final Map<String, Long> ipMap = Collections.synchronizedMap(new HashMap<String, Long>());
 
     /**
      * Default expire time in ms (1 hour)
@@ -85,7 +85,7 @@ public class POP3BeforeSMTPHelper {
             long currTime = System.currentTimeMillis();
 
             while (storedIP.hasNext()) {
-                String key = storedIP.next().toString();
+                String key = storedIP.next();
                 long storedTime = ipMap.get(key);
 
                 // remove the ip from the map when it is expired

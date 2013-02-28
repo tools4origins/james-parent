@@ -32,7 +32,7 @@ import org.apache.james.core.MimeMessageSource;
 public class MimeMessageBlobMessageSource extends MimeMessageSource implements ActiveMQSupport {
 
     private String sourceId;
-    private BlobMessage message;
+    private final BlobMessage message;
 
     public MimeMessageBlobMessageSource(BlobMessage message) throws JMSException {
         this.message = message;

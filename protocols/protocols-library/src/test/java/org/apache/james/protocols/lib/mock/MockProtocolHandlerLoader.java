@@ -44,7 +44,7 @@ public class MockProtocolHandlerLoader implements ProtocolHandlerLoader{
         servicesByName.put(role, service);
     }
 
-    private List<Object> loaderRegistry = new ArrayList<Object>();
+    private final List<Object> loaderRegistry = new ArrayList<Object>();
 
     protected ProtocolHandler create(String className) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         return (ProtocolHandler) Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
@@ -55,9 +55,9 @@ public class MockProtocolHandlerLoader implements ProtocolHandlerLoader{
      * is annotated with @PreDestroy
      */
     public synchronized void dispose() {
-        for (int i = 0; i < loaderRegistry.size(); i++) {
+        for (Object aLoaderRegistry : loaderRegistry) {
             try {
-                preDestroy(loaderRegistry.get(i));
+                preDestroy(aLoaderRegistry);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {

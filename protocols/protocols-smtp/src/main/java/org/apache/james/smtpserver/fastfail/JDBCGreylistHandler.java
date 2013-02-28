@@ -84,13 +84,13 @@ public class JDBCGreylistHandler extends AbstractGreylistHandler implements Init
     /**
      * Contains all of the sql strings for this component.
      */
-    private SqlResources sqlQueries = new SqlResources();
+    private final SqlResources sqlQueries = new SqlResources();
 
     /** The sqlFileUrl */
     private String sqlFileUrl;
 
     /** Holds value of property sqlParameters. */
-    private Map<String, String> sqlParameters = new HashMap<String, String>();
+    private final Map<String, String> sqlParameters = new HashMap<String, String>();
 
     private DNSService dnsService;
 
@@ -321,7 +321,7 @@ public class JDBCGreylistHandler extends AbstractGreylistHandler implements Init
     private void initSqlQueries(Connection conn, String sqlFileUrl) throws Exception {
         try {
 
-            File sqlFile = null;
+            File sqlFile;
 
             try {
                 sqlFile = fileSystem.getFile(sqlFileUrl);
@@ -347,8 +347,6 @@ public class JDBCGreylistHandler extends AbstractGreylistHandler implements Init
     /**
      * Create the table if not exists.
      * 
-     * @param conn
-     *            The connection
      * @param tableNameSqlStringName
      *            The tableSqlname
      * @param createSqlStringName
@@ -374,7 +372,7 @@ public class JDBCGreylistHandler extends AbstractGreylistHandler implements Init
                 createStatement = conn.prepareStatement(sqlQueries.getSqlString(createSqlStringName, true));
                 createStatement.execute();
 
-                StringBuilder logBuffer = null;
+                StringBuilder logBuffer;
                 logBuffer = new StringBuilder(64).append("Created table '").append(tableName).append("' using sqlResources string '").append(createSqlStringName).append("'.");
                 serviceLog.info(logBuffer.toString());
 
@@ -388,8 +386,6 @@ public class JDBCGreylistHandler extends AbstractGreylistHandler implements Init
     }
 
     /**
-     * @see org.apache.james.protocols.smtp.core.fastfail.AbstractGreylistHandler#doRcpt(org.apache.james.protocols.smtp.SMTPSession,
-     *      org.apache.mailet.MailAddress, org.apache.mailet.MailAddress)
      */
     public HookResult doRcpt(SMTPSession session, MailAddress sender, MailAddress rcpt) {
         if ((wNetworks == null) || (!wNetworks.matchInetNetwork(session.getRemoteAddress().getAddress().getHostAddress()))) {
@@ -430,8 +426,8 @@ public class JDBCGreylistHandler extends AbstractGreylistHandler implements Init
         if (nets != null) {
             String[] whitelistArray = nets.split(",");
             List<String> wList = new ArrayList<String>(whitelistArray.length);
-            for (int i = 0; i < whitelistArray.length; i++) {
-                wList.add(whitelistArray[i].trim());
+            for (String aWhitelistArray : whitelistArray) {
+                wList.add(aWhitelistArray.trim());
             }
             setWhiteListedNetworks(new NetMatcher(wList, dnsService));
             serviceLog.info("Whitelisted addresses: " + getWhiteListedNetworks().toString());

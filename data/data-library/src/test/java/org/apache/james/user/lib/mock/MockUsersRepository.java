@@ -51,17 +51,17 @@ public class MockUsersRepository extends AbstractJamesUsersRepository {
         if (ignoreCase) {
             return getUserByNameCaseInsensitive(name);
         } else {
-            return (User) m_users.get(name);
+            return m_users.get(name);
         }
     }
 
-    public User getUserByNameCaseInsensitive(String name) throws UsersRepositoryException {
-        return (User) m_users.get(name.toLowerCase(Locale.US));
+    public User getUserByNameCaseInsensitive(String name) {
+        return m_users.get(name.toLowerCase(Locale.US));
     }
 
-    public String getRealName(String name) throws UsersRepositoryException {
+    public String getRealName(String name) {
         if (ignoreCase) {
-            return m_users.get(name.toLowerCase(Locale.US)) != null ? ((User) m_users.get(name.toLowerCase(Locale.US))).
+            return m_users.get(name.toLowerCase(Locale.US)) != null ? m_users.get(name.toLowerCase(Locale.US)).
                     getUserName() : null;
         } else {
             return m_users.get(name) != null ? name : null;
@@ -70,7 +70,7 @@ public class MockUsersRepository extends AbstractJamesUsersRepository {
 
     @Override
     public void removeUser(String name) throws UsersRepositoryException {
-        if (m_users.containsKey(name) == false) {
+        if (!m_users.containsKey(name)) {
             throw new UsersRepositoryException("No such user");
         } else {
             m_users.remove(name);
@@ -93,10 +93,7 @@ public class MockUsersRepository extends AbstractJamesUsersRepository {
     @Override
     public boolean test(String name, String password) throws UsersRepositoryException {
         User user = getUserByName(name);
-        if (user == null) {
-            return false;
-        }
-        return user.verifyPassword(password);
+        return user != null && user.verifyPassword(password);
     }
 
     @Override

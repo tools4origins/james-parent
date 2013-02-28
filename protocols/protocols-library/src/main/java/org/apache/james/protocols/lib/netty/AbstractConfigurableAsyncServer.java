@@ -108,7 +108,7 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
 
     private String[] enabledCipherSuites;
 
-    private ConnectionCountHandler countHandler = new ConnectionCountHandler();
+    private final ConnectionCountHandler countHandler = new ConnectionCountHandler();
 
     private ExecutionHandler executionHandler = null;
 
@@ -168,13 +168,13 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
 
         String listen[] = config.getString("bind", "0.0.0.0:" + getDefaultPort()).split(",");
         List<InetSocketAddress> bindAddresses = new ArrayList<InetSocketAddress>();
-        for (int i = 0; i < listen.length; i++) {
-            String bind[] = listen[i].split(":");
+        for (String aListen : listen) {
+            String bind[] = aListen.split(":");
 
             InetSocketAddress address;
             String ip = bind[0].trim();
             int port = Integer.parseInt(bind[1].trim());
-            if (ip.equals("0.0.0.0") == false) {
+            if (!ip.equals("0.0.0.0")) {
                 try {
                     ip = InetAddress.getByName(ip).getHostName();
                 } catch (final UnknownHostException unhe) {
@@ -183,12 +183,12 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
             }
             address = new InetSocketAddress(ip, port);
 
-            StringBuilder infoBuffer = new StringBuilder(64).append(getServiceType()).append(" bound to: ").append(ip).append(":").append(port);
-            logger.info(infoBuffer.toString());
+            String infoBuffer = getServiceType() + " bound to: " + ip + ":" + port;
+            logger.info(infoBuffer);
 
             bindAddresses.add(address);
         }
-        setListenAddresses(bindAddresses.toArray(new InetSocketAddress[0]));
+        setListenAddresses(bindAddresses.toArray(new InetSocketAddress[bindAddresses.size()]));
 
         jmxName = config.getString("jmxName", getDefaultJMXName());
         int ioWorker = config.getInt("ioWorkerCount", DEFAULT_IO_WORKER_COUNT);
@@ -228,7 +228,7 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
         String connectionLimitPerIP = config.getString("connectionLimitPerIP", null);
         if (connectionLimitPerIP != null) {
             try {
-                connPerIP = new Integer(connectionLimitPerIP).intValue();
+                connPerIP = Integer.parseInt(connectionLimitPerIP);
             } catch (NumberFormatException nfe) {
                 logger.error("Connection limit per IP value is not properly formatted.", nfe);
             }
@@ -236,7 +236,7 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
                 logger.error("Connection limit per IP value cannot be less than zero.");
                 throw new ConfigurationException("Connection limit value cannot be less than zero.");
             } else if (connPerIP > 0) {
-                infoBuffer = new StringBuilder(128).append(getServiceType()).append(" will allow a maximum of ").append(connPerIP).append(" per IP connections for " + getServiceType());
+                infoBuffer = new StringBuilder(128).append(getServiceType()).append(" will allow a maximum of ").append(connPerIP).append(" per IP connections for ").append(getServiceType());
                 logger.info(infoBuffer.toString());
             }
         }
@@ -336,7 +336,7 @@ public abstract class AbstractConfigurableAsyncServer extends AbstractAsyncServe
      */
     protected void configureHelloName(Configuration handlerConfiguration) throws ConfigurationException {
         StringBuilder infoBuffer;
-        String hostName = null;
+        String hostName;
         try {
             hostName = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException ue) {

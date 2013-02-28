@@ -38,8 +38,8 @@ import org.apache.james.protocols.api.handler.CommandHandler;
  */
 public abstract class AbstractCommandHandlerStats extends StandardMBean implements CommandHandlerStatsMBean, Disposable {
 
-    private AtomicLong all = new AtomicLong(0);
-    private AtomicLong disconnect = new AtomicLong();
+    private final AtomicLong all = new AtomicLong(0);
+    private final AtomicLong disconnect = new AtomicLong();
 
     private String name;
     private String handlerName;

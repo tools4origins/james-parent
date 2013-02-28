@@ -42,7 +42,7 @@ import org.junit.Test;
 public abstract class AbstractStateMailetProcessorTest {
 
     protected abstract AbstractStateMailetProcessor createProcessor(HierarchicalConfiguration configuration) throws
-        ConfigurationException, Exception;
+            Exception;
 
     private HierarchicalConfiguration createConfig(Class<?> matcherClass, Class<?> mailetClass, int count) throws
         ConfigurationException {
@@ -61,7 +61,7 @@ public abstract class AbstractStateMailetProcessorTest {
     }
 
     @Test
-    public void testSimpleRouting() throws ConfigurationException, Exception {
+    public void testSimpleRouting() throws Exception {
     final CountDownLatch latch = new CountDownLatch(2);
     final MailImpl mail = new MailImpl();
     mail.setName(MailImpl.getId());
@@ -109,7 +109,7 @@ public abstract class AbstractStateMailetProcessorTest {
     }
 
     @Test
-    public void testSimpleRoutingMatchAll() throws ConfigurationException, Exception {
+    public void testSimpleRoutingMatchAll() throws Exception {
     final CountDownLatch latch = new CountDownLatch(2);
     final MailImpl mail = new MailImpl();
     mail.setName(MailImpl.getId());
@@ -158,7 +158,7 @@ public abstract class AbstractStateMailetProcessorTest {
     }
 
     @Test
-    public void testMatcherThrowException() throws ConfigurationException, Exception {
+    public void testMatcherThrowException() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     final MailImpl mail = new MailImpl();
     mail.setName(MailImpl.getId());
@@ -206,7 +206,7 @@ public abstract class AbstractStateMailetProcessorTest {
     }
 
     @Test
-    public void testMailetThrowException() throws ConfigurationException, Exception {
+    public void testMailetThrowException() throws Exception {
     final CountDownLatch latch = new CountDownLatch(2);
     final MailImpl mail = new MailImpl();
     mail.setName(MailImpl.getId());

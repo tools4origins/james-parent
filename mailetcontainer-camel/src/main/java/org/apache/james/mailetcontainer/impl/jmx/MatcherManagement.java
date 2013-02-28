@@ -28,13 +28,13 @@ import org.apache.mailet.MatcherConfig;
 
 public final class MatcherManagement extends StandardMBean implements MatcherManagementMBean {
     private MatcherConfig matcherConfig;
-    private AtomicLong errorCount = new AtomicLong(0);
-    private AtomicLong successCount = new AtomicLong(0);
-    private AtomicLong fastestProcessing = new AtomicLong(-1);
-    private AtomicLong slowestProcessing = new AtomicLong(-1);
-    private AtomicLong matchedCount = new AtomicLong(0);
-    private AtomicLong notMatchedCount = new AtomicLong(0);
-    private AtomicLong lastProcessing = new AtomicLong(-1);
+    private final AtomicLong errorCount = new AtomicLong(0);
+    private final AtomicLong successCount = new AtomicLong(0);
+    private final AtomicLong fastestProcessing = new AtomicLong(-1);
+    private final AtomicLong slowestProcessing = new AtomicLong(-1);
+    private final AtomicLong matchedCount = new AtomicLong(0);
+    private final AtomicLong notMatchedCount = new AtomicLong(0);
+    private final AtomicLong lastProcessing = new AtomicLong(-1);
 
     public MatcherManagement(MatcherConfig matcherConfig) throws NotCompliantMBeanException {
         super(MatcherManagementMBean.class);

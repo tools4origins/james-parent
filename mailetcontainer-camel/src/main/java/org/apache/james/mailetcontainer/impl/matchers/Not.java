@@ -41,7 +41,7 @@ public class Not extends GenericCompositeMatcher {
      */
     public Collection match(Mail mail) throws MessagingException {
         Collection finalResult = mail.getRecipients();
-        Matcher matcher = null;
+        Matcher matcher;
         for (Iterator matcherIter = iterator(); matcherIter.hasNext();) {
             matcher = (Matcher) (matcherIter.next());
             // log("Matching with " +

@@ -69,7 +69,7 @@ public class AbstractDNSServiceTest {
 
         assertEquals("localhost/127.0.0.1", DNS_SERVER.getByName("localhost").toString());
 
-        String localHost = DNS_SERVER.getHostName(InetAddress.getByName("127.0.0.1")).toString();
+        String localHost = DNS_SERVER.getHostName(InetAddress.getByName("127.0.0.1"));
         // We only can check if the returned localhost is not empty. Its value
         // depends on the hosts file.
         assertTrue(localHost.length() > 0);

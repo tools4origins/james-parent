@@ -30,11 +30,11 @@ public class MockMail implements Mail {
     private MimeMessage msg = null;
     private Collection recipients = new ArrayList();
     private String name = null;
-    private MailAddress sender = null;
+    private final MailAddress sender = null;
     private String state = null;
     private String errorMessage;
     private Date lastUpdated;
-    private HashMap attributes = new HashMap();
+    private final HashMap attributes = new HashMap();
     private static final long serialVersionUID = 1L;
     private long size = 0;
     private String remoteAddr = "127.0.0.1";

@@ -35,7 +35,7 @@ import org.slf4j.Logger;
  */
 public class FileMailQueueFactory implements MailQueueFactory, LogEnabled{
 
-    private Map<String, MailQueue> queues = new HashMap<String, MailQueue>();
+    private final Map<String, MailQueue> queues = new HashMap<String, MailQueue>();
     private FileSystem fs;
     private Logger log;
     private boolean sync = true;
@@ -57,9 +57,7 @@ public class FileMailQueueFactory implements MailQueueFactory, LogEnabled{
         this.sync = sync;
     }
     
-    /**
-     * @see org.apache.james.queue.api.MailQueueFactory#getQueue(java.lang.String)
-     */
+    @Override
     public MailQueue getQueue(String name) {
         MailQueue queue = queues.get(name);
         if (queue == null) {
@@ -75,9 +73,7 @@ public class FileMailQueueFactory implements MailQueueFactory, LogEnabled{
         return queue;
     }
 
-    /**
-     * @see org.apache.james.lifecycle.api.LogEnabled#setLog(org.slf4j.Logger)
-     */
+    @Override
     public void setLog(Logger log) {
         this.log = log;
     }

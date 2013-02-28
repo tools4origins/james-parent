@@ -63,7 +63,7 @@ public class MailboxDeliverToRecipientHandler implements DeliverToRecipientHook 
     @Override
     public HookResult deliver(SMTPSession session, MailAddress recipient, MailEnvelope envelope) {
         String username;
-        HookResult result = null;
+        HookResult result;
 
         try {
 
@@ -79,7 +79,7 @@ public class MailboxDeliverToRecipientHandler implements DeliverToRecipientHook 
             mailboxManager.startProcessingRequest(mailboxSession);
 
             // create inbox if not exist
-            if (mailboxManager.mailboxExists(inbox, mailboxSession) == false) {
+            if (!mailboxManager.mailboxExists(inbox, mailboxSession)) {
                 mailboxManager.createMailbox(inbox, mailboxSession);
             }
             mailboxManager.getMailbox(MailboxPath.inbox(mailboxSession), mailboxSession).appendMessage(envelope.getMessageInputStream(), new Date(), mailboxSession, true, null);

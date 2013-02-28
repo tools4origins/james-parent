@@ -32,7 +32,7 @@ import java.io.StreamCorruptedException;
 public class ClassLoaderObjectInputStream extends ObjectInputStream {
     private ClassLoader m_classLoader;
 
-    public ClassLoaderObjectInputStream(final ClassLoader classLoader, final InputStream inputStream) throws IOException, StreamCorruptedException {
+    public ClassLoaderObjectInputStream(final ClassLoader classLoader, final InputStream inputStream) throws IOException {
         super(inputStream);
         m_classLoader = classLoader;
     }

@@ -58,7 +58,7 @@ public class InSpammerBlacklistTest {
     private void setupMockedMail(String remoteAddr) throws ParseException {
         mockedMail = new FakeMail();
         mockedMail.setRemoteAddr(remoteAddr);
-        mockedMail.setRecipients(Arrays.asList(new MailAddress[]{new MailAddress("test@email")}));
+        mockedMail.setRecipients(Arrays.asList(new MailAddress("test@email")));
 
     }
 

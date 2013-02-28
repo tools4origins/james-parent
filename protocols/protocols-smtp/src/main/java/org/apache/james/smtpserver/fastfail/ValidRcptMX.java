@@ -116,7 +116,7 @@ public class ValidRcptMX implements InitializingLifecycleAwareProtocolHandler, R
         // Email should be deliver local
         if (!domain.equals(LOCALHOST)) {
 
-            Iterator<String> mx = null;
+            Iterator<String> mx;
             try {
                 mx = dnsService.findMXRecords(domain).iterator();
             } catch (TemporaryResolutionException e1) {

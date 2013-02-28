@@ -40,7 +40,7 @@ public class Or extends GenericCompositeMatcher {
      */
     public Collection match(Mail mail) throws MessagingException {
         Collection finalResult = null;
-        Matcher matcher = null;
+        Matcher matcher;
         boolean first = true;
 
         // the size of the complete set of recipients
@@ -76,9 +76,9 @@ public class Or extends GenericCompositeMatcher {
                             // must OR them
                             // Ensure that the finalResult only contains one
                             // copy of the recipients in the result collection
-                            MailAddress recipient = null;
-                            for (Iterator i = result.iterator(); i.hasNext();) {
-                                recipient = (MailAddress) i.next();
+                            MailAddress recipient;
+                            for (Object aResult : result) {
+                                recipient = (MailAddress) aResult;
                                 if (!finalResult.contains(recipient)) {
                                     System.out.println(recipient);
                                     finalResult.add(recipient);

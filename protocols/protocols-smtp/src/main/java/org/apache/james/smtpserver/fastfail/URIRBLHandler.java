@@ -60,7 +60,7 @@ public class URIRBLHandler implements JamesMessageHook, InitializingLifecycleAwa
      * Non context specific log should only be used when no context specific log
      * is available
      */
-    private Logger serviceLog = FALLBACK_LOG;
+    private final Logger serviceLog = FALLBACK_LOG;
 
     private final static String LISTED_DOMAIN = "LISTED_DOMAIN";
 
@@ -198,15 +198,13 @@ public class URIRBLHandler implements JamesMessageHook, InitializingLifecycleAwa
 
             HashSet<String> domains = scanMailForDomains(message, session);
 
-            Iterator<String> fDomains = domains.iterator();
-
-            while (fDomains.hasNext()) {
+            for (String domain : domains) {
                 Iterator<String> uRbl = uriRbl.iterator();
-                String target = fDomains.next().toString();
+                String target = domain;
 
                 while (uRbl.hasNext()) {
                     try {
-                        String uRblServer = uRbl.next().toString();
+                        String uRblServer = uRbl.next();
                         String address = target + "." + uRblServer;
 
                         if (session.getLogger().isDebugEnabled()) {
@@ -238,8 +236,7 @@ public class URIRBLHandler implements JamesMessageHook, InitializingLifecycleAwa
     public void init(Configuration config) throws ConfigurationException {
         String[] servers = config.getStringArray("uriRblServers.server");
         Collection<String> serverCollection = new ArrayList<String>();
-        for (int i = 0; i < servers.length; i++) {
-            String rblServerName = servers[i];
+        for (String rblServerName : servers) {
             serverCollection.add(rblServerName);
             if (serviceLog.isInfoEnabled()) {
                 serviceLog.info("Adding uriRBL server: " + rblServerName);

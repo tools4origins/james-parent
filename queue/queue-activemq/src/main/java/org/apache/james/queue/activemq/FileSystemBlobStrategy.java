@@ -18,6 +18,14 @@
  ****************************************************************/
 package org.apache.james.queue.activemq;
 
+import org.apache.activemq.BlobMessage;
+import org.apache.activemq.blob.BlobDownloadStrategy;
+import org.apache.activemq.blob.BlobTransferPolicy;
+import org.apache.activemq.blob.BlobUploadStrategy;
+import org.apache.activemq.command.ActiveMQBlobMessage;
+import org.apache.james.filesystem.api.FileSystem;
+
+import javax.jms.JMSException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,15 +33,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
-import javax.jms.JMSException;
-
-import org.apache.activemq.BlobMessage;
-import org.apache.activemq.blob.BlobDownloadStrategy;
-import org.apache.activemq.blob.BlobTransferPolicy;
-import org.apache.activemq.blob.BlobUploadStrategy;
-import org.apache.activemq.command.ActiveMQBlobMessage;
-import org.apache.james.filesystem.api.FileSystem;
 
 /**
  * {@link BlobUploadStrategy} and {@link BlobDownloadStrategy} implementation
@@ -44,7 +43,8 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
 
     private final FileSystem fileSystem;
     private final BlobTransferPolicy policy;
-    private int splitCount;
+    private final int splitCount;
+    private final Object lock = new Object();
 
     public FileSystemBlobStrategy(final BlobTransferPolicy policy, final FileSystem fileSystem, int splitCount) {
         this.fileSystem = fileSystem;
@@ -52,20 +52,12 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
         this.splitCount = splitCount;
     }
 
-    /**
-     * @see
-     * org.apache.activemq.blob.BlobUploadStrategy#uploadFile(org.apache.activemq.command.ActiveMQBlobMessage,
-     * java.io.File)
-     */
+    @Override
     public URL uploadFile(ActiveMQBlobMessage message, File file) throws JMSException, IOException {
         return uploadStream(message, new FileInputStream(file));
     }
 
-    /**
-     * @see
-     * org.apache.activemq.blob.BlobUploadStrategy#uploadStream(org.apache.activemq.command.ActiveMQBlobMessage,
-     * java.io.InputStream)
-     */
+    @Override
     public URL uploadStream(ActiveMQBlobMessage message, InputStream in) throws JMSException, IOException {
         FileOutputStream out = null;
         try {
@@ -98,13 +90,10 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
 
     }
 
-    /**
-     * @see
-     * org.apache.activemq.blob.BlobDownloadStrategy#deleteFile(org.apache.activemq.command.ActiveMQBlobMessage)
-     */
+    @Override
     public void deleteFile(ActiveMQBlobMessage message) throws IOException, JMSException {
         File f = getFile(message);
-        synchronized (f) {
+        synchronized (lock) {
             if (f.exists() && !f.delete()) {
                 throw new IOException("Unable to delete file " + f);
             }
@@ -114,15 +103,15 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
     /**
      * Returns a {@link FileInputStream} for the give {@link BlobMessage}
      */
+    @Override
     public InputStream getInputStream(ActiveMQBlobMessage message) throws IOException, JMSException {
-        File f = getFile(message);
-        return new FileInputStream(f);
+        return new FileInputStream(getFile(message));
     }
 
     /**
      * Return the {@link File} for the {@link ActiveMQBlobMessage}. The
      * {@link File} is lookup via the {@link FileSystem} service
-     * 
+     *
      * @param message
      * @return file
      * @throws JMSException
@@ -143,7 +132,7 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
 
         File queueF = fileSystem.getFile(queueUrl);
 
-        synchronized (queueF) {
+        synchronized (lock) {
             // check if we need to create the queue folder
             if (!queueF.exists() && !queueF.mkdirs()) {
                 throw new IOException("Unable to create directory " + queueF.getAbsolutePath());
@@ -151,6 +140,5 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
         }
 
         return fileSystem.getFile(queueUrl + "/" + filename);
-
     }
 }

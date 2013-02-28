@@ -59,14 +59,14 @@ public class JamesMailSpooler implements Runnable, Disposable, Configurable, Log
     /**
      * Number of active threads
      */
-    private AtomicInteger numActive = new AtomicInteger(0);
+    private final AtomicInteger numActive = new AtomicInteger(0);
 
-    private AtomicInteger processingActive = new AtomicInteger(0);
+    private final AtomicInteger processingActive = new AtomicInteger(0);
 
     /**
      * Spool threads are active
      */
-    private AtomicBoolean active = new AtomicBoolean(false);
+    private final AtomicBoolean active = new AtomicBoolean(false);
 
     /**
      * Spool threads
@@ -109,14 +109,14 @@ public class JamesMailSpooler implements Runnable, Disposable, Configurable, Log
      * Initializes the spool manager.
      */
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         logger.info(getClass().getName() + " init...");
 
         queue = queueFactory.getQueue(MailQueueFactory.SPOOL);
 
         if (logger.isInfoEnabled()) {
-            StringBuffer infoBuffer = new StringBuffer(64).append(getClass().getName()).append(" uses ").append(numThreads).append(" Thread(s)");
-            logger.info(infoBuffer.toString());
+            String infoBuffer = getClass().getName() + " uses " + numThreads + " Thread(s)";
+            logger.info(infoBuffer);
         }
 
         active.set(true);
@@ -158,8 +158,8 @@ public class JamesMailSpooler implements Runnable, Disposable, Configurable, Log
 
                             Mail mail = queueItem.getMail();
                             if (logger.isDebugEnabled()) {
-                                StringBuffer debugBuffer = new StringBuffer(64).append("==== Begin processing mail ").append(mail.getName()).append("====");
-                                logger.debug(debugBuffer.toString());
+                                String debugBuffer = "==== Begin processing mail " + mail.getName() + "====";
+                                logger.debug(debugBuffer);
                             }
 
                             try {

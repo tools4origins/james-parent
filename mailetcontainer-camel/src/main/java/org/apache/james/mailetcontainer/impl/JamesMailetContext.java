@@ -19,27 +19,6 @@
 
 package org.apache.james.mailetcontainer.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
-
-import javax.inject.Inject;
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.ParseException;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.james.core.MailImpl;
@@ -59,16 +38,35 @@ import org.apache.mailet.LookupException;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.apache.mailet.MailetContext;
-import org.apache.mailet.TemporaryLookupException;
 import org.apache.mailet.base.RFC2822Headers;
 import org.slf4j.Logger;
+
+import javax.inject.Inject;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
 
 public class JamesMailetContext implements MailetContext, LogEnabled, Configurable {
 
     /**
      * A hash table of server attributes These are the MailetContext attributes
      */
-    private Hashtable<String, Object> attributes = new Hashtable<String, Object>();
+    private final Hashtable<String, Object> attributes = new Hashtable<String, Object>();
     protected DNSService dns;
 
     protected Logger log;
@@ -101,9 +99,6 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         this.domains = domains;
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#getMailServers(String)
-     */
     @Override
     public Collection<String> getMailServers(String host) {
         try {
@@ -115,34 +110,21 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         }
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#getAttribute(java.lang.String)
-     */
     @Override
     public Object getAttribute(String key) {
         return attributes.get(key);
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#setAttribute(java.lang.String,
-     *      java.lang.Object)
-     */
     @Override
     public void setAttribute(String key, Object object) {
         attributes.put(key, object);
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#removeAttribute(java.lang.String)
-     */
     @Override
     public void removeAttribute(String key) {
         attributes.remove(key);
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#getAttributeNames()
-     */
     @Override
     public Iterator<String> getAttributeNames() {
         Vector<String> names = new Vector<String>();
@@ -219,7 +201,7 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
     }
 
     @Override
-    public List<String> dnsLookup(String s, RecordType recordType) throws TemporaryLookupException, LookupException {
+    public List<String> dnsLookup(String s, RecordType recordType) throws LookupException {
         throw new UnsupportedOperationException("Not implemented yet!");
     }
 
@@ -248,9 +230,6 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         return new MailImpl("replyTo-" + mail.getName(), new MailAddress(mail.getRecipients().iterator().next().toString()), recipients, reply);
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#isLocalUser(String)
-     */
     @Override
     public boolean isLocalUser(String name) {
         if (name == null) {
@@ -273,9 +252,6 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         }
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#isLocalEmail(org.apache.mailet.MailAddress)
-     */
     @Override
     public boolean isLocalEmail(MailAddress mailAddress) {
         if (mailAddress != null) {
@@ -296,25 +272,16 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         return false;
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#getPostmaster()
-     */
     @Override
     public MailAddress getPostmaster() {
         return postmaster;
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#getMajorVersion()
-     */
     @Override
     public int getMajorVersion() {
         return 2;
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#getMinorVersion()
-     */
     @Override
     public int getMinorVersion() {
         return 4;
@@ -345,17 +312,11 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         }
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#getServerInfo()
-     */
     @Override
     public String getServerInfo() {
         return "Apache JAMES";
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#isLocalServer(java.lang.String)
-     */
     @Override
     public boolean isLocalServer(String name) {
         try {
@@ -366,19 +327,12 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         }
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#log(java.lang.String)
-     */
     @Override
     @Deprecated
     public void log(String arg0) {
         log.info(arg0);
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#log(java.lang.String,
-     *      java.lang.Throwable)
-     */
     @Override
     @Deprecated
     public void log(String arg0, Throwable arg1) {
@@ -442,10 +396,6 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
         sendMail(sender, recipients, message);
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#sendMail(org.apache.mailet.MailAddress,
-     *      java.util.Collection, javax.mail.internet.MimeMessage)
-     */
     @SuppressWarnings("unchecked")
     public void sendMail(MailAddress sender, Collection recipients, MimeMessage message) throws MessagingException {
         sendMail(sender, recipients, message, Mail.DEFAULT);
@@ -453,18 +403,12 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
 
     /**
      * TODO: Should we use the MailProcessorList or the MailQueue here ?
-     *
-     * @see org.apache.mailet.MailetContext#sendMail(org.apache.mailet.Mail)
      */
     @Override
     public void sendMail(Mail mail) throws MessagingException {
         processorList.service(mail);
     }
 
-    /**
-     * @see org.apache.mailet.MailetContext#sendMail(org.apache.mailet.MailAddress,
-     *      java.util.Collection, javax.mail.internet.MimeMessage, java.lang.String)
-     */
     @SuppressWarnings("unchecked")
     public void sendMail(MailAddress sender, Collection recipients, MimeMessage message, String state) throws MessagingException {
         MailImpl mail = new MailImpl(MailImpl.getId(), sender, recipients, message);
@@ -490,21 +434,15 @@ public class JamesMailetContext implements MailetContext, LogEnabled, Configurab
      * @deprecated since 2.2.0 look at the LocalDelivery code to find out how to
      *             do the local delivery.
      */
-    public void storeMail(MailAddress sender, MailAddress recipient, MimeMessage msg) throws MessagingException {
+    public void storeMail(MailAddress sender, MailAddress recipient, MimeMessage msg) {
         throw new UnsupportedOperationException("Was removed");
     }
 
-    /**
-     * @see org.apache.james.lifecycle.api.LogEnabled#setLog(org.slf4j.Logger)
-     */
     @Override
     public void setLog(Logger log) {
         this.log = log;
     }
 
-    /**
-     * @see org.apache.james.lifecycle.api.Configurable#configure(HierarchicalConfiguration)
-     */
     @Override
     public void configure(HierarchicalConfiguration config) throws ConfigurationException {
         try {

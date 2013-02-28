@@ -18,21 +18,20 @@
  ****************************************************************/
 package org.apache.james.user.lib;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.apache.james.user.api.UsersRepository;
+import org.apache.james.user.api.UsersRepositoryException;
+import org.apache.james.user.api.UsersRepositoryManagementMBean;
+import org.apache.james.user.api.model.JamesUser;
+import org.apache.james.user.api.model.User;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
-
-import org.apache.james.user.api.UsersRepository;
-import org.apache.james.user.api.UsersRepositoryException;
-import org.apache.james.user.api.UsersRepositoryManagementMBean;
-import org.apache.james.user.api.model.JamesUser;
-import org.apache.james.user.api.model.User;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class UsersRepositoryManagement extends StandardMBean implements UsersRepositoryManagementMBean {
 
@@ -61,10 +60,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
         return (JamesUser) baseuser;
     }
 
-    /**
-     * @see
-     * org.apache.james.user.api.UsersRepositoryManagementMBean#addUser(java.lang.String, java.lang.String)
-     */
+    @Override
     public void addUser(String userName, String password) throws Exception {
         try {
             usersRepository.addUser(userName, password);
@@ -73,10 +69,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.user.api.UsersRepositoryManagementMBean#deleteUser(java.lang.String)
-     */
+    @Override
     public void deleteUser(String userName) throws Exception {
         try {
             usersRepository.removeUser(userName);
@@ -85,11 +78,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.user.api.UsersRepositoryManagementMBean#verifyExists
-     * (java.lang.String)
-     */
+    @Override
     public boolean verifyExists(String userName) throws Exception {
         try {
             return usersRepository.contains(userName);
@@ -98,10 +87,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.user.api.UsersRepositoryManagementMBean#countUsers()
-     */
+    @Override
     public long countUsers() throws Exception {
         try {
             return usersRepository.countUsers();
@@ -110,34 +96,27 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.user.api.UsersRepositoryManagementMBean#listAllUsers()
-     */
+    @Override
     public String[] listAllUsers() throws Exception {
         List<String> userNames = new ArrayList<String>();
         try {
-            for (Iterator<String> it = usersRepository.list(); it.hasNext();) {
+            for (Iterator<String> it = usersRepository.list(); it.hasNext(); ) {
                 userNames.add(it.next());
             }
         } catch (UsersRepositoryException e) {
             throw new Exception(e.getMessage());
 
         }
-        return (String[]) userNames.toArray(new String[] {});
+        return userNames.toArray(new String[userNames.size()]);
     }
 
-    /**
-     * @see
-     * org.apache.james.user.api.UsersRepositoryManagementMBean#setPassword
-     * (java.lang.String, java.lang.String)
-     */
+    @Override
     public void setPassword(String userName, String password) throws Exception {
         try {
             User user = usersRepository.getUserByName(userName);
             if (user == null)
                 throw new UsersRepositoryException("user not found: " + userName);
-            if (user.setPassword(password) == false) {
+            if (!user.setPassword(password)) {
                 throw new UsersRepositoryException("Unable to update password for user " + user);
             }
             usersRepository.updateUser(user);
@@ -148,10 +127,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
 
     }
 
-    /**
-     * @see
-     * org.apache.james.user.api.UsersRepositoryManagementMBean#unsetAlias(java.lang.String)
-     */
+    @Override
     public void unsetAlias(String userName) throws Exception {
         try {
             JamesUser user = getJamesUser(userName);
@@ -165,10 +141,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.user.api.UsersRepositoryManagementMBean#getAlias(java.lang.String)
-     */
+    @Override
     public String getAlias(String userName) throws Exception {
         try {
             JamesUser user = getJamesUser(userName);
@@ -182,11 +155,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.user.api.UsersRepositoryManagementMBean#unsetForwardAddress
-     * (java.lang.String)
-     */
+    @Override
     public void unsetForwardAddress(String userName) throws Exception {
         try {
             JamesUser user = getJamesUser(userName);
@@ -200,11 +169,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.user.api.UsersRepositoryManagementMBean#getForwardAddress
-     * (java.lang.String)
-     */
+    @Override
     public String getForwardAddress(String userName) throws Exception {
         try {
             JamesUser user = getJamesUser(userName);
@@ -217,9 +182,7 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
         }
     }
 
-    /**
-     * @see org.apache.james.user.api.UsersRepositoryManagementMBean#getVirtualHostingEnabled()
-     */
+    @Override
     public boolean getVirtualHostingEnabled() throws Exception {
         try {
             return usersRepository.supportVirtualHosting();
@@ -227,5 +190,4 @@ public class UsersRepositoryManagement extends StandardMBean implements UsersRep
             throw new Exception(e.getMessage());
         }
     }
-
 }

@@ -86,7 +86,7 @@ public abstract class AbstractNotify extends AbstractRedirect {
     /**
      * @return the <code>passThrough</code> init parameter, or true if missing
      */
-    protected boolean getPassThrough() throws MessagingException {
+    protected boolean getPassThrough() {
         return Boolean.valueOf(getInitParameter("passThrough", "true"));
     }
 
@@ -94,7 +94,7 @@ public abstract class AbstractNotify extends AbstractRedirect {
      * @return the <code>inline</code> init parameter, or <code>NONE</code> if
      *         missing
      */
-    protected int getInLineType() throws MessagingException {
+    protected int getInLineType() {
         return getTypeCode(getInitParameter("inline", "none"));
     }
 
@@ -102,7 +102,7 @@ public abstract class AbstractNotify extends AbstractRedirect {
      * @return the <code>attachment</code> init parameter, or
      *         <code>MESSAGE</code> if missing
      */
-    protected int getAttachmentType() throws MessagingException {
+    protected int getAttachmentType() {
         return getTypeCode(getInitParameter("attachment", "message"));
     }
 
@@ -147,28 +147,28 @@ public abstract class AbstractNotify extends AbstractRedirect {
         while (rcptTo.hasNext()) {
             out.println("           " + rcptTo.next());
         }
-        String[] addresses = null;
+        String[] addresses;
         addresses = message.getHeader(RFC2822Headers.FROM);
         if (addresses != null) {
             out.print("  From: ");
-            for (int i = 0; i < addresses.length; i++) {
-                out.print(addresses[i] + " ");
+            for (String address : addresses) {
+                out.print(address + " ");
             }
             out.println();
         }
         addresses = message.getHeader(RFC2822Headers.TO);
         if (addresses != null) {
             out.print("  To: ");
-            for (int i = 0; i < addresses.length; i++) {
-                out.print(addresses[i] + " ");
+            for (String address : addresses) {
+                out.print(address + " ");
             }
             out.println();
         }
         addresses = message.getHeader(RFC2822Headers.CC);
         if (addresses != null) {
             out.print("  CC: ");
-            for (int i = 0; i < addresses.length; i++) {
-                out.print(addresses[i] + " ");
+            for (String address : addresses) {
+                out.print(address + " ");
             }
             out.println();
         }
@@ -236,7 +236,7 @@ public abstract class AbstractNotify extends AbstractRedirect {
     /**
      * @return null
      */
-    protected String getSubject() throws MessagingException {
+    protected String getSubject() {
         return null;
     }
 

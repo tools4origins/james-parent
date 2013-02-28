@@ -25,8 +25,8 @@ import org.apache.mailet.Matcher;
  * A pair of {@link Matcher} and {@link Mailet}
  */
 public class MatcherMailetPair {
-    private Matcher matcher;
-    private Mailet mailet;
+    private final Matcher matcher;
+    private final Mailet mailet;
 
     public MatcherMailetPair(Matcher matcher, Mailet mailet) {
         this.matcher = matcher;

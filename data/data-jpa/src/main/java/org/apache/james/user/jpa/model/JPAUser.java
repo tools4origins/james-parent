@@ -123,11 +123,7 @@ public class JPAUser implements User {
         final boolean result;
         if (pass == null) {
             result = password == null;
-        } else if (password == null) {
-            result = false;
-        } else {
-            result = password.equals(hashPassword(name, pass, alg));
-        }
+        } else result = password != null && password.equals(hashPassword(name, pass, alg));
         return result;
     }
 

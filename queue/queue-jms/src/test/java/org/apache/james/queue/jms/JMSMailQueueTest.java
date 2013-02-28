@@ -290,7 +290,7 @@ public class JMSMailQueueTest {
 
     }
 
-    protected MailImpl createMail() throws MessagingException, MailAddressException {
+    protected MailImpl createMail() throws MessagingException {
         MailImpl mail = new MailImpl();
         mail.setName("" + System.currentTimeMillis());
         mail.setAttribute("test1", System.currentTimeMillis());

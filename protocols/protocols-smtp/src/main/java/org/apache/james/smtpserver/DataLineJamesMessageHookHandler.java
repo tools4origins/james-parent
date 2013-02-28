@@ -176,7 +176,7 @@ public class DataLineJamesMessageHookHandler implements DataLineFilter, Extensib
                 for (JamesMessageHook messageHandler : messageHandlers) {
                     session.getLogger().debug("executing james message handler " + messageHandler);
                     long start = System.currentTimeMillis();
-                    HookResult hRes = ((JamesMessageHook) messageHandler).onMessage(session, mail);
+                    HookResult hRes = messageHandler.onMessage(session, mail);
                     long executionTime = System.currentTimeMillis() - start;
                     if (rHooks != null) {
                         for (HookResultHook rHook : rHooks) {

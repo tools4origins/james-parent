@@ -95,7 +95,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
     public MailQueueItem deQueue() throws MailQueueException {
         Connection connection = null;
         Session session = null;
-        Message message = null;
+        Message message;
         MessageConsumer consumer = null;
 
         while (true) {
@@ -290,7 +290,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
      * @throws MessagingException
      */
     @SuppressWarnings("unchecked")
-    protected Map<String, Object> getJMSProperties(Mail mail, long delayInMillis) throws JMSException, MessagingException {
+    protected Map<String, Object> getJMSProperties(Mail mail, long delayInMillis) throws MessagingException {
         Map<String, Object> props = new HashMap<String, Object>();
         long nextDelivery = -1;
         if (delayInMillis > 0) {

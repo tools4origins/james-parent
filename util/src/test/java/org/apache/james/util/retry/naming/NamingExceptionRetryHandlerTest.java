@@ -51,24 +51,21 @@ public class NamingExceptionRetryHandlerTest {
     private class TestRetryingProxy implements ExceptionRetryingProxy {
 
 	/**
-	 * @see org.apache.james.user.ldap.api.ExceptionRetryingProxy#getDelegate()
-	 */
+     */
 	@Override
-	public Context getDelegate() throws NamingException {
+	public Context getDelegate() {
 	    return null;
 	}
 
 	/**
-	 * @see org.apache.james.user.ldap.api.ExceptionRetryingProxy#newDelegate()
-	 */
+     */
 	@Override
 	public Context newDelegate() throws NamingException {
 	    return null;
 	}
 
 	/**
-	 * @see org.apache.james.user.ldap.api.ExceptionRetryingProxy#resetDelegate()
-	 */
+     */
 	@Override
 	public void resetDelegate() throws NamingException {
 	}
@@ -77,8 +74,7 @@ public class NamingExceptionRetryHandlerTest {
     private class TestRetrySchedule implements RetrySchedule {
 
 	/**
-	 * @see org.apache.james.user.ldap.api.RetrySchedule#getInterval(int)
-	 */
+     */
 	@Override
 	public long getInterval(int index) {
 	    return index;
@@ -86,7 +82,7 @@ public class NamingExceptionRetryHandlerTest {
     }
 
     /**
-     * Test method for {@link org.apache.james.user.ldap.ExceptionRetryHandler#ExceptionRetryHandler(java.lang.Class<?>[], org.apache.james.user.ldap.api.ExceptionRetryingProxy, org.apache.james.user.ldap.api.RetrySchedule, int)}.
+     * Test method for .
      */
     @Test
     public final void testExceptionRetryHandler() {
@@ -101,7 +97,7 @@ public class NamingExceptionRetryHandlerTest {
     }
 
     /**
-     * Test method for {@link org.apache.james.user.ldap.ExceptionRetryHandler#perform()}.
+     * Test method for .
      * @throws Exception 
      */
     @Test

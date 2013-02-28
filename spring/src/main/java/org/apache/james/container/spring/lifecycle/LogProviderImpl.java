@@ -60,9 +60,7 @@ public class LogProviderImpl implements LogProvider, InitializingBean, LogProvid
      */
     public void afterPropertiesSet() throws Exception {
         if (logs != null) {
-            Iterator<String> it = logs.keySet().iterator();
-            while (it.hasNext()) {
-                String key = it.next();
+            for (String key : logs.keySet()) {
                 String value = logs.get(key);
                 registerLog(key, createLog(PREFIX + value));
             }
@@ -98,9 +96,7 @@ public class LogProviderImpl implements LogProvider, InitializingBean, LogProvid
      */
     public Map<String, String> getLogLevels() {
         TreeMap<String, String> levels = new TreeMap<String, String>();
-        Iterator<String> names = logMap.keySet().iterator();
-        while (names.hasNext()) {
-            String name = names.next();
+        for (String name : logMap.keySet()) {
             String level = getLogLevel(name);
             if (level != null)
                 levels.put(name, level);
@@ -117,7 +113,7 @@ public class LogProviderImpl implements LogProvider, InitializingBean, LogProvid
         if (log == null) {
             throw new IllegalArgumentException("No Log for component " + component);
         }
-        org.apache.log4j.Logger logger = ((org.apache.log4j.Logger) log).getRootLogger();
+        org.apache.log4j.Logger logger = org.apache.log4j.Logger.getRootLogger();
         if (logger == null || logger.getLevel() == null) {
             return null;
         }
@@ -129,7 +125,7 @@ public class LogProviderImpl implements LogProvider, InitializingBean, LogProvid
      * @see LogProviderManagementMBean#setLogLevel(String, String)
      */
     public void setLogLevel(String component, String loglevel) {
-        if (getSupportedLogLevels().contains(loglevel) == false) {
+        if (!getSupportedLogLevels().contains(loglevel)) {
             throw new IllegalArgumentException("Not supported loglevel given");
         } else {
             ((org.apache.log4j.Logger) logMap.get(component)).getRootLogger().setLevel(Level.toLevel(loglevel));

@@ -37,8 +37,8 @@ import java.util.Map;
 
 public class MockMailetContext implements MailetContext {
 
-    private Map<String, Object> attributes = new HashMap<String, Object>();
-    private List<Mail> mails = new ArrayList<Mail>();
+    private final Map<String, Object> attributes = new HashMap<String, Object>();
+    private final List<Mail> mails = new ArrayList<Mail>();
 
     @Override
     public void bounce(Mail arg0, String arg1) throws MessagingException {
@@ -51,7 +51,7 @@ public class MockMailetContext implements MailetContext {
     }
 
     @Override
-    public List<String> dnsLookup(String s, RecordType recordType) throws TemporaryLookupException, LookupException {
+    public List<String> dnsLookup(String s, RecordType recordType) throws LookupException {
         throw new UnsupportedOperationException("Not implemented");
     }
 

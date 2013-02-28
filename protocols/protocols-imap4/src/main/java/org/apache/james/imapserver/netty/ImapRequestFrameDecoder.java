@@ -97,7 +97,7 @@ public class ImapRequestFrameDecoder extends FrameDecoder implements NettyConsta
                     final File f;
                     int written;
 
-                    OutputStream out = null;
+                    OutputStream out;
                     // check if we have created a temporary file already or if
                     // we need to create a new one
                     if (attachment.containsKey(STORED_DATA)) {

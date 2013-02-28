@@ -46,7 +46,6 @@ abstract public class RetryingLdapContext extends RetryingDirContext implements 
      * Creates a new instance of RetryingLdapContext.
      *
      * @param maxRetries
-     * @param retryInterval
      * @throws NamingException
      */
     public RetryingLdapContext(RetrySchedule schedule, int maxRetries, Logger logger) throws NamingException {

@@ -40,7 +40,7 @@ import org.apache.james.protocols.smtp.hook.HookResultHook;
  */
 public class HookResultJMXMonitor implements HookResultHook, ExtensibleHandler, InitializingLifecycleAwareProtocolHandler {
 
-    private Map<String, HookStats> hookStats = new HashMap<String, HookStats>();
+    private final Map<String, HookStats> hookStats = new HashMap<String, HookStats>();
     private String jmxPath;
 
     /**
@@ -77,9 +77,8 @@ public class HookResultJMXMonitor implements HookResultHook, ExtensibleHandler, 
         if (interfaceName.equals(Hook.class)) {
 
             // add stats for all hooks
-            for (int i = 0; i < extension.size(); i++) {
-                Object hook = extension.get(i);
-                if (equals(hook) == false) {
+            for (Object hook : extension) {
+                if (!equals(hook)) {
                     String hookName = hook.getClass().getName();
                     try {
                         hookStats.put(hookName, new HookStats(jmxPath, hookName));
@@ -104,9 +103,8 @@ public class HookResultJMXMonitor implements HookResultHook, ExtensibleHandler, 
     @Override
     public void destroy() {
         synchronized (hookStats) {
-            Iterator<HookStats> stats = hookStats.values().iterator();
-            while (stats.hasNext()) {
-                stats.next().dispose();
+            for (HookStats hookStats1 : hookStats.values()) {
+                hookStats1.dispose();
             }
             hookStats.clear();
         }        

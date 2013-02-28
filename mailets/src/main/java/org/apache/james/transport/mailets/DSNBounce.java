@@ -19,6 +19,22 @@
 
 package org.apache.james.transport.mailets;
 
+import com.google.common.base.Throwables;
+import org.apache.james.core.MailImpl;
+import org.apache.james.protocols.smtp.dsn.DSNStatus;
+import org.apache.james.transport.util.Patterns;
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
+import org.apache.mailet.base.RFC2822Headers;
+import org.apache.mailet.base.RFC822DateFormat;
+import org.apache.mailet.base.mail.MimeMultipartReport;
+
+import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.ConnectException;
@@ -28,28 +44,11 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.mail.MessagingException;
-import javax.mail.SendFailedException;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-
-import org.apache.james.core.MailImpl;
-import org.apache.james.protocols.smtp.dsn.DSNStatus;
-import org.apache.mailet.Mail;
-import org.apache.mailet.MailAddress;
-import org.apache.mailet.base.RFC2822Headers;
-import org.apache.mailet.base.RFC822DateFormat;
-import org.apache.mailet.base.mail.MimeMultipartReport;
-
 /**
- * 
  * <p>
  * Generates a Delivery Status Notification (DSN) Note that this is different
  * than a mail-client's reply, which would use the Reply-To or From header.
@@ -66,17 +65,17 @@ import org.apache.mailet.base.mail.MimeMultipartReport;
  * <p>
  * Supports the <code>passThrough</code> init parameter (true if missing).
  * </p>
- * 
+ * <p/>
  * <p>
  * Sample configuration:
  * </p>
- * 
+ * <p/>
  * <pre>
  * <code>
  * &lt;mailet match="All" class="DSNBounce">
- *   &lt;sender&gt;<i>an address or postmaster or sender or unaltered, 
+ *   &lt;sender&gt;<i>an address or postmaster or sender or unaltered,
  *  default=postmaster</i>&lt;/sender&gt;
- *   &lt;prefix&gt;<i>optional subject prefix prepended to the original 
+ *   &lt;prefix&gt;<i>optional subject prefix prepended to the original
  *  message</i>&lt;/prefix&gt;
  *   &lt;attachment&gt;<i>message, heads or none, default=message</i>&lt;/attachment&gt;
  *   &lt;messageString&gt;<i>the message sent in the bounce, the first occurrence of the pattern [machine] is replaced with the name of the executing machine, default=Hi. This is the James mail server at [machine] ... </i>&lt;/messageString&gt;
@@ -85,7 +84,7 @@ import org.apache.mailet.base.mail.MimeMultipartReport;
  * &lt;/mailet&gt;
  * </code>
  * </pre>
- * 
+ *
  * @see org.apache.james.transport.mailets.AbstractNotify
  */
 
@@ -93,40 +92,21 @@ public class DSNBounce extends AbstractNotify {
 
     private static final RFC822DateFormat rfc822DateFormat = new RFC822DateFormat();
 
-    // regexp pattern for scaning status code from exception message
-    private static Pattern statusPattern;
+    public static final String STATUS_PATTERN_STRING = ".*\\s*([245]\\.\\d{1,3}\\.\\d{1,3}).*\\s*";
+    public static final String DIAG_PATTERN_STRING = "^\\d{3}\\s.*$";
 
-    private static Pattern diagPattern;
+    // regexp pattern for scaning status code from exception message
+    private static final Pattern statusPattern = Patterns.compilePatternUncheckedException(STATUS_PATTERN_STRING);
+    private static final Pattern diagPattern = Patterns.compilePatternUncheckedException(DIAG_PATTERN_STRING);
 
     private static final String MACHINE_PATTERN = "[machine]";
 
     private String messageString = null;
 
-    /*
-     * Static initializer.<p> Compiles patterns for processing exception
-     * messages.<p>
-     */
-    static {
-        String status_pattern_string = ".*\\s*([245]\\.\\d{1,3}\\.\\d{1,3}).*\\s*";
-        String diag_pattern_string = "^\\d{3}\\s.*$";
-        try {
-            statusPattern = Pattern.compile(status_pattern_string);
-        } catch (PatternSyntaxException mpe) {
-            // this should not happen as the pattern string is hardcoded.
-            System.err.println("Malformed pattern: " + status_pattern_string);
-            mpe.printStackTrace(System.err);
-        }
-        try {
-            diagPattern = Pattern.compile(diag_pattern_string);
-        } catch (PatternSyntaxException mpe) {
-            // this should not happen as the pattern string is hardcoded.
-            System.err.println("Malformed pattern: " + diag_pattern_string);
-        }
-    }
-
     /**
      * Initialize the mailet
      */
+    @Override
     public void init() throws MessagingException {
         super.init();
         messageString = getInitParameter("messageString",
@@ -136,14 +116,12 @@ public class DSNBounce extends AbstractNotify {
     /**
      * Service does the hard work and bounces the originalMail in the format
      * specified by RFC3464.
-     * 
-     * @param originalMail
-     *            the mail to bounce
-     * @throws MessagingException
-     *             if a problem arises formulating the redirected mail
-     * 
+     *
+     * @param originalMail the mail to bounce
+     * @throws MessagingException if a problem arises formulating the redirected mail
      * @see org.apache.mailet.Mailet#service(org.apache.mailet.Mail)
      */
+    @Override
     public void service(Mail originalMail) throws MessagingException {
 
         // duplicates the Mail object, to be able to modify the new mail keeping
@@ -238,7 +216,7 @@ public class DSNBounce extends AbstractNotify {
 
     /**
      * Create a MimeBodyPart with a textual description for human readers.
-     * 
+     *
      * @param originalMail
      * @return MimeBodyPart
      * @throws MessagingException
@@ -247,7 +225,7 @@ public class DSNBounce extends AbstractNotify {
         MimeBodyPart part1 = new MimeBodyPart();
         StringWriter sout = new StringWriter();
         PrintWriter out = new PrintWriter(sout, true);
-        String machine = "[unknown]";
+        String machine;
         try {
             InetAddress me = InetAddress.getLocalHost();
             machine = me.getHostName();
@@ -255,15 +233,15 @@ public class DSNBounce extends AbstractNotify {
             machine = "[address unknown]";
         }
 
-        StringBuffer bounceBuffer = new StringBuffer(128).append(messageString);
+        StringBuilder bounceBuffer = new StringBuilder(128).append(messageString);
         int m_idx_begin = messageString.indexOf(MACHINE_PATTERN);
         if (m_idx_begin != -1) {
             bounceBuffer.replace(m_idx_begin, m_idx_begin + MACHINE_PATTERN.length(), machine);
         }
         out.println(bounceBuffer.toString());
         out.println("Failed recipient(s):");
-        for (Iterator<?> i = originalMail.getRecipients().iterator(); i.hasNext();) {
-            out.println(i.next());
+        for (MailAddress mailAddress : originalMail.getRecipients()) {
+            out.println(mailAddress);
         }
         String ex = (String) originalMail.getAttribute("delivery-error");
         out.println();
@@ -277,7 +255,7 @@ public class DSNBounce extends AbstractNotify {
 
     /**
      * creates the DSN-bodypart for automated processing
-     * 
+     *
      * @param originalMail
      * @return MimeBodyPart dsn-bodypart
      * @throws MessagingException
@@ -286,7 +264,7 @@ public class DSNBounce extends AbstractNotify {
         MimeBodyPart dsn = new MimeBodyPart();
         StringWriter sout = new StringWriter();
         PrintWriter out = new PrintWriter(sout, true);
-        String nameType = null;
+        String nameType;
 
         // //////////////////////
         // per message fields //
@@ -330,9 +308,7 @@ public class DSNBounce extends AbstractNotify {
         // per recipient fields //
         // ////////////////////////
 
-        Iterator<MailAddress> recipients = originalMail.getRecipients().iterator();
-        while (recipients.hasNext()) {
-            MailAddress rec = (MailAddress) recipients.next();
+        for (MailAddress rec : originalMail.getRecipients()) {
             String addressType = "rfc822";
 
             // required: blank line
@@ -364,7 +340,7 @@ public class DSNBounce extends AbstractNotify {
             // to which MTA were we talking while the Error occured?
 
             // optional: diagnostic-code
-            String diagnosticType = null;
+            String diagnosticType;
             // this typically is the return value received during smtp
             // (or other transport) communication
             // and should be stored as attribute by the smtp handler
@@ -406,7 +382,7 @@ public class DSNBounce extends AbstractNotify {
 
     /**
      * Create a MimeBodyPart with the original Mail as Attachment
-     * 
+     *
      * @param originalMail
      * @return MimeBodyPart
      * @throws MessagingException
@@ -434,17 +410,16 @@ public class DSNBounce extends AbstractNotify {
     /**
      * Guessing status code by the exception provided. This method should use
      * the status attribute when the SMTP-handler somewhen provides it
-     * 
-     * @param me
-     *            the MessagingException of which the statusCode should be
-     *            generated
+     *
+     * @param me the MessagingException of which the statusCode should be
+     *           generated
      * @return status the generated statusCode
      */
     protected String getStatus(MessagingException me) {
         if (me.getNextException() == null) {
             String mess = me.getMessage();
             Matcher m = statusPattern.matcher(mess);
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             if (m.matches()) {
                 sb.append(m.group(1));
                 return sb.toString();
@@ -463,7 +438,7 @@ public class DSNBounce extends AbstractNotify {
         } else {
             Exception ex1 = me.getNextException();
             Matcher m = statusPattern.matcher(ex1.getMessage());
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             if (m.matches()) {
                 sb.append(m.group(1));
                 return sb.toString();
@@ -477,58 +452,58 @@ public class DSNBounce extends AbstractNotify {
 
                 switch (smtpCode) {
 
-                // Req mail action not taken: mailbox unavailable
-                case 450:
-                    return DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.MAILBOX_OTHER);
-                    // Req action aborted: local error in processing
-                case 451:
-                    return DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.SYSTEM_OTHER);
-                    // Req action not taken: insufficient sys storage
-                case 452:
-                    return DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.SYSTEM_FULL);
-                    // Syntax error, command unrecognized
-                case 500:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_SYNTAX);
-                    // Syntax error in parameters or arguments
-                case 501:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_INVALID_ARG);
-                    // Command not implemented
-                case 502:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_INVALID_CMD);
-                    // Bad sequence of commands
-                case 503:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_INVALID_CMD);
-                    // Command parameter not implemented
-                case 504:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_INVALID_ARG);
                     // Req mail action not taken: mailbox unavailable
-                case 550:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.MAILBOX_OTHER);
+                    case 450:
+                        return DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.MAILBOX_OTHER);
+                    // Req action aborted: local error in processing
+                    case 451:
+                        return DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.SYSTEM_OTHER);
+                    // Req action not taken: insufficient sys storage
+                    case 452:
+                        return DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.SYSTEM_FULL);
+                    // Syntax error, command unrecognized
+                    case 500:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_SYNTAX);
+                    // Syntax error in parameters or arguments
+                    case 501:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_INVALID_ARG);
+                    // Command not implemented
+                    case 502:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_INVALID_CMD);
+                    // Bad sequence of commands
+                    case 503:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_INVALID_CMD);
+                    // Command parameter not implemented
+                    case 504:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_INVALID_ARG);
+                    // Req mail action not taken: mailbox unavailable
+                    case 550:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.MAILBOX_OTHER);
                     // User not local; please try <...>
                     // 5.7.1 Select another host to act as your forwarder
-                case 551:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.SECURITY_AUTH);
+                    case 551:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.SECURITY_AUTH);
                     // Req mail action aborted: exceeded storage alloc
-                case 552:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.MAILBOX_FULL);
+                    case 552:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.MAILBOX_FULL);
                     // Req action not taken: mailbox name not allowed
-                case 553:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.ADDRESS_SYNTAX);
+                    case 553:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.ADDRESS_SYNTAX);
                     // Transaction failed
-                case 554:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.UNDEFINED_STATUS);
+                    case 554:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.UNDEFINED_STATUS);
                     // Not authorized. This is not an SMTP code, but many server
                     // use it.
-                case 571:
-                    return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.SECURITY_AUTH);
+                    case 571:
+                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.SECURITY_AUTH);
 
-                default:
-                    // if we get an smtp returncode starting with 4
-                    // it is an persistent transient error, else permanent
-                    if (ex1.getMessage().startsWith("4")) {
-                        return DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.DELIVERY_OTHER);
-                    } else
-                        return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_OTHER);
+                    default:
+                        // if we get an smtp returncode starting with 4
+                        // it is an persistent transient error, else permanent
+                        if (ex1.getMessage().startsWith("4")) {
+                            return DSNStatus.getStatus(DSNStatus.TRANSIENT, DSNStatus.DELIVERY_OTHER);
+                        } else
+                            return DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.DELIVERY_OTHER);
                 }
 
             } else if (ex1 instanceof UnknownHostException) {
@@ -547,13 +522,17 @@ public class DSNBounce extends AbstractNotify {
         }
     }
 
+    @Override
     public String getMailetInfo() {
         return "DSNBounce Mailet";
     }
 
-    /** Gets the expected init parameters. */
+    /**
+     * Gets the expected init parameters.
+     */
+    @Override
     protected String[] getAllowedInitParameters() {
-        String[] allowedArray = { "debug", "passThrough", "messageString", "attachment", "sender", "prefix" };
+        String[] allowedArray = {"debug", "passThrough", "messageString", "attachment", "sender", "prefix"};
         return allowedArray;
     }
 
@@ -561,13 +540,15 @@ public class DSNBounce extends AbstractNotify {
      * @return the <code>attachment</code> init parameter, or
      *         <code>MESSAGE</code> if missing
      */
-    protected int getAttachmentType() throws MessagingException {
+    @Override
+    protected int getAttachmentType() {
         return getTypeCode(getInitParameter("attachment", "message"));
     }
 
     /**
      * @return <code>SpecialAddress.REVERSE_PATH</code>
      */
+    @Override
     protected Collection<MailAddress> getRecipients() {
         Collection<MailAddress> newRecipients = new HashSet<MailAddress>();
         newRecipients.add(SpecialAddress.REVERSE_PATH);
@@ -577,6 +558,7 @@ public class DSNBounce extends AbstractNotify {
     /**
      * @return <code>SpecialAddress.REVERSE_PATH</code>
      */
+    @Override
     protected InternetAddress[] getTo() {
         InternetAddress[] apparentlyTo = new InternetAddress[1];
         apparentlyTo[0] = SpecialAddress.REVERSE_PATH.toInternetAddress();
@@ -586,6 +568,7 @@ public class DSNBounce extends AbstractNotify {
     /**
      * @return <code>SpecialAddress.NULL</code> (the meaning of bounce)
      */
+    @Override
     protected MailAddress getReversePath(Mail originalMail) {
         return SpecialAddress.NULL;
     }

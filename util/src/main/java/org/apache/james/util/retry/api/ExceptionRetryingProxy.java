@@ -36,7 +36,7 @@ public interface ExceptionRetryingProxy {
      * @return the current instance of the proxy delegate
      * @throws Exception
      */
-    abstract public Object getDelegate() throws Exception;
+    abstract public Object getDelegate();
     
     /**
      * Resets the delegate instance to a state from which it can perform the 

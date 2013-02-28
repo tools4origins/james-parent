@@ -56,19 +56,19 @@ public class ImapChannelUpstreamHandler extends SimpleChannelUpstreamHandler imp
 
     private final String hello;
 
-    private String[] enabledCipherSuites;
+    private final String[] enabledCipherSuites;
 
-    private SSLContext context;
+    private final SSLContext context;
 
-    private boolean compress;
+    private final boolean compress;
 
-    private ImapProcessor processor;
+    private final ImapProcessor processor;
 
-    private ImapEncoder encoder;
+    private final ImapEncoder encoder;
 
     private final ImapHeartbeatHandler heartbeatHandler = new ImapHeartbeatHandler();
 
-    private boolean plainAuthDisallowed;
+    private final boolean plainAuthDisallowed;
     
     public ImapChannelUpstreamHandler(final String hello, final ImapProcessor processor, ImapEncoder encoder, final Logger logger, boolean compress, boolean plainAuthDisallowed) {
         this(hello, processor, encoder, logger, compress, plainAuthDisallowed, null, null);

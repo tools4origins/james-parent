@@ -42,7 +42,7 @@ import org.apache.james.protocols.lib.lifecycle.InitializingLifecycleAwareProtoc
  */
 public abstract class AbstractLineHandlerResultJMXMonitor<R extends Response, S extends ProtocolSession> implements ProtocolHandlerResultHandler<R, S>, ExtensibleHandler, InitializingLifecycleAwareProtocolHandler {
 
-    private Map<String, LineHandlerStats> lStats = new HashMap<String, LineHandlerStats>();
+    private final Map<String, LineHandlerStats> lStats = new HashMap<String, LineHandlerStats>();
     private String jmxName;
 
     /**
@@ -77,9 +77,9 @@ public abstract class AbstractLineHandlerResultJMXMonitor<R extends Response, S 
 
         if (interfaceName.equals(LineHandler.class)) {
             // add stats for all hooks
-            for (int i = 0; i < extension.size(); i++) {
-                LineHandler c = (LineHandler) extension.get(i);
-                if (equals(c) == false) {
+            for (Object anExtension : extension) {
+                LineHandler c = (LineHandler) anExtension;
+                if (!equals(c)) {
                     String cName = c.getClass().getName();
                     try {
                         lStats.put(cName, new LineHandlerStats(jmxName, cName));
@@ -98,9 +98,8 @@ public abstract class AbstractLineHandlerResultJMXMonitor<R extends Response, S 
 
     @Override
     public void destroy() {
-        Iterator<LineHandlerStats> it = lStats.values().iterator();
-        while(it.hasNext()) {
-            it.next().dispose();
+        for (LineHandlerStats lineHandlerStats : lStats.values()) {
+            lineHandlerStats.dispose();
         }
     }
 

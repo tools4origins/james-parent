@@ -52,8 +52,8 @@ public class ProcessorUtil {
         mail.setState(nextState);
         StringWriter sout = new StringWriter();
         PrintWriter out = new PrintWriter(sout, true);
-        StringBuffer exceptionBuffer = new StringBuffer(128).append("Exception calling ").append(offendersName).append(": ").append(me.getMessage());
-        out.println(exceptionBuffer.toString());
+        String exceptionBuffer = "Exception calling " + offendersName + ": " + me.getMessage();
+        out.println(exceptionBuffer);
         Exception e = me;
         while (e != null) {
             e.printStackTrace(out);
@@ -79,7 +79,7 @@ public class ProcessorUtil {
     @SuppressWarnings("rawtypes")
     public static void verifyMailAddresses(Collection col) throws MessagingException {
         try {
-            MailAddress addresses[] = (MailAddress[]) col.toArray(new MailAddress[0]);
+            MailAddress addresses[] = (MailAddress[]) col.toArray(new MailAddress[col.size()]);
 
             // Why is this here? According to the javadoc for
             // java.util.Collection.toArray(Object[]), this should

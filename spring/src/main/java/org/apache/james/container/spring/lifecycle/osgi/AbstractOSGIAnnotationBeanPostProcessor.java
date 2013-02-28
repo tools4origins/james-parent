@@ -58,7 +58,7 @@ public abstract class AbstractOSGIAnnotationBeanPostProcessor<A extends Annotati
     public final static long DEFAULT_TIMEOUT = 60 * 1000* 5;
     private BundleContext bundleContext;
 
-    private static Logger logger = LoggerFactory.getLogger(AbstractOSGIAnnotationBeanPostProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractOSGIAnnotationBeanPostProcessor.class);
 
     protected BeanFactory beanFactory;
 
@@ -111,7 +111,7 @@ public abstract class AbstractOSGIAnnotationBeanPostProcessor<A extends Annotati
             ((InitializingBean) importer).afterPropertiesSet();
         }
 
-        static void setFilter(Object importer, String filter) throws Exception {
+        static void setFilter(Object importer, String filter) {
             if (importer instanceof OsgiServiceProxyFactoryBean)
                 ((OsgiServiceProxyFactoryBean) importer).setFilter(filter);
             else

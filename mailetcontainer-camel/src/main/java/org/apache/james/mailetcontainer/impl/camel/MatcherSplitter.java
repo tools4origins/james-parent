@@ -115,15 +115,13 @@ public class MatcherSplitter {
             }
 
             // check if the matcher matched
-            if (matchedRcpts != null && matchedRcpts.isEmpty() == false) {
+            if (matchedRcpts != null && !matchedRcpts.isEmpty()) {
                 List<MailAddress> rcpts = new ArrayList<MailAddress>(mail.getRecipients());
 
-                Iterator<MailAddress> rcptsIterator = matchedRcpts.iterator();
-
-                while (rcptsIterator.hasNext()) {
+                for (MailAddress matchedRcpt : matchedRcpts) {
                     // loop through the recipients and remove the recipients
                     // that matched
-                    rcpts.remove(rcptsIterator.next());
+                    rcpts.remove(matchedRcpt);
                 }
 
                 if (rcpts.isEmpty()) {
@@ -158,8 +156,7 @@ public class MatcherSplitter {
 
             long complete = System.currentTimeMillis() - start;
             List<MailetProcessorListener> listeners = container.getListeners();
-            for (int i = 0; i < listeners.size(); i++) {
-                MailetProcessorListener listener = listeners.get(i);
+            for (MailetProcessorListener listener : listeners) {
                 // need to check if its null or empty!
                 if (matchedRcpts == null || matchedRcpts.isEmpty()) {
                     listener.afterMatcher(matcher, mail.getName(), origRcpts, null, complete, ex);

@@ -44,8 +44,8 @@ public class ValidRcptMXTest {
     private SMTPSession setupMockedSMTPSession(final MailAddress rcpt) {
         SMTPSession session = new BaseFakeSMTPSession() {
 
-            private HashMap<String, Object> sstate = new HashMap<String, Object>();
-            private HashMap<String, Object> connectionState = new HashMap<String, Object>();
+            private final HashMap<String, Object> sstate = new HashMap<String, Object>();
+            private final HashMap<String, Object> connectionState = new HashMap<String, Object>();
 
             @Override
             public Object setAttachment(String key, Object value, State state) {

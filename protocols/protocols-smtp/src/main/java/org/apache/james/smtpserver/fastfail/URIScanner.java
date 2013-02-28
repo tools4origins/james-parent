@@ -166,9 +166,6 @@ public class URIScanner {
      */
     static private final Pattern tld3CapPattern = Pattern.compile(tld3Cap);
 
-    /** controls testing/debug output */
-    static private boolean testing = false;
-
     /**
      * <p>
      * Scans a character sequence for URIs. Then add all unique domain strings
@@ -194,7 +191,7 @@ public class URIScanner {
             final String domain = domainFromHost(host);
 
             if (null != domain) {
-                if (false == domains.contains(domain)) {
+                if (!domains.contains(domain)) {
                     newDomains.add(domain);
                 }
             }
@@ -244,7 +241,7 @@ public class URIScanner {
             String host = hostFromUriStr(found);
             if (null != host) {
                 host = host.toLowerCase();
-                if (false == set.contains(host)) {
+                if (!set.contains(host)) {
                     set.add(host);
                 }
             }
@@ -262,7 +259,7 @@ public class URIScanner {
             if (null != host) {
 
                 host = host.toLowerCase();
-                if (false == set.contains(host)) {
+                if (!set.contains(host)) {
                     set.add(host);
                 }
             }
@@ -357,7 +354,9 @@ public class URIScanner {
      * Debugging output
      */
     private static void debugOut(String msg) {
-        if (true == testing) {
+        /* controls testing/debug output */
+        boolean testing = false;
+        if (testing) {
             System.out.println(msg);
         }
     }
@@ -370,7 +369,7 @@ public class URIScanner {
      * @return modified "escaped" string
      */
     private static String escape(String str) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < str.length(); i++) {
             char ch = str.charAt(i);
             if (Character.isDigit(ch) || Character.isUpperCase(ch) || Character.isLowerCase(ch) || ch == '_') {
