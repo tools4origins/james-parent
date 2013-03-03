@@ -219,7 +219,6 @@ public class InetNetworkBuilder {
         final int mask = (bits == 32) ? 0 : 0xFFFFFFFF - ((1 << bits) - 1);
 
         return netspec.substring(0, netspec.indexOf('/') + 1) + Integer.toString(mask >> 24 & 0xFF, 10) + "." + Integer.toString(mask >> 16 & 0xFF, 10) + "." + Integer.toString(mask >> 8 & 0xFF, 10) + "." + Integer.toString(mask & 0xFF, 10);
-
     }
 
 }

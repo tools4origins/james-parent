@@ -24,10 +24,7 @@ import java.net.UnknownHostException;
 
 import org.apache.james.dnsservice.library.inetnetwork.InetNetworkBuilder;
 
-/**
- * 
- * 
- */
+
 public class Inet4Network implements InetNetwork {
 
     /**
@@ -54,9 +51,7 @@ public class Inet4Network implements InetNetwork {
         this.netmask = netmask;
     }
 
-    /**
-     * @see org.apache.james.dnsservice.library.inetnetwork.model.InetNetwork#contains(InetAddress)
-     */
+    @Override
     public boolean contains(final InetAddress ip) {
         if (InetNetworkBuilder.isV6(ip.getHostAddress())) {
             return false;
@@ -68,30 +63,21 @@ public class Inet4Network implements InetNetwork {
         }
     }
 
-    /**
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         return network.getHostAddress() + "/" + netmask.getHostAddress();
     }
 
-    /**
-     * @see java.lang.Object#hashCode()
-     */
+    @Override
     public int hashCode() {
         return maskIP(network, netmask).hashCode();
     }
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    @Override
     public boolean equals(Object obj) {
         return (obj != null) && (obj instanceof InetNetwork) && ((((Inet4Network) obj).network.equals(network)) && (((Inet4Network) obj).netmask.equals(netmask)));
     }
 
-    /**
-     * @see #maskIP(byte[], byte[])
-     */
     private static InetAddress maskIP(final InetAddress ip, final InetAddress mask) {
         return maskIP(ip.getAddress(), mask.getAddress());
     }
@@ -143,7 +129,6 @@ public class Inet4Network implements InetNetwork {
         }
 
         return addr;
-
     }
 
 }

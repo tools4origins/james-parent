@@ -18,16 +18,13 @@
  ****************************************************************/
 package org.apache.james.dnsservice.library.inetnetwork.model;
 
+import org.apache.james.dnsservice.library.inetnetwork.InetNetworkBuilder;
+
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.james.dnsservice.library.inetnetwork.InetNetworkBuilder;
 
-/**
- * 
- * 
- */
 public class Inet6Network implements InetNetwork {
 
     /**
@@ -43,20 +40,16 @@ public class Inet6Network implements InetNetwork {
     /**
      * You need a IP address (InetAddress) and an subnetmask (Integer) to
      * construct an Inet6Network.
-     * 
-     * @param ip
-     *            the InetAddress to init the class
-     * @param netmask
-     *            the InetAddress represent the netmask to init the class
+     *
+     * @param ip      the InetAddress to init the class
+     * @param netmask the InetAddress represent the netmask to init the class
      */
     public Inet6Network(InetAddress ip, Integer netmask) {
         network = maskIP(ip, netmask);
         this.netmask = netmask;
     }
 
-    /**
-     * @see org.apache.james.dnsservice.library.inetnetwork.model.InetNetwork#contains(InetAddress)
-     */
+    @Override
     public boolean contains(final InetAddress ip) {
         if (!InetNetworkBuilder.isV6(ip.getHostAddress())) {
             return false;
@@ -68,34 +61,21 @@ public class Inet6Network implements InetNetwork {
         }
     }
 
-    /**
-     * Return String representation of this class.
-     * 
-     * @return string String representation of this class
-     */
+    @Override
     public String toString() {
         return network.getHostAddress() + "/" + netmask;
     }
 
-    /**
-     * Return hashCode representation of this class
-     * 
-     * @return hashCode the hashCode representation of this class
-     */
+    @Override
     public int hashCode() {
         return maskIP(network, netmask).hashCode();
     }
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    @Override
     public boolean equals(Object obj) {
         return (obj != null) && (obj instanceof InetNetwork) && ((((Inet6Network) obj).network.equals(network)) && (((Inet6Network) obj).netmask.equals(netmask)));
     }
 
-    /**
-     * @see #maskIP(byte[], byte[])
-     */
     private static InetAddress maskIP(final InetAddress ip, Integer mask) {
         byte[] maskBytes = new byte[16];
         int i = 0;
@@ -110,11 +90,9 @@ public class Inet6Network implements InetNetwork {
     /**
      * Return InetAddress generated of the passed arguments. Return Null if any
      * error occurs
-     * 
-     * @param ip
-     *            the byte[] represent the ip
-     * @param mask
-     *            the byte[] represent the netmask
+     *
+     * @param ip   the byte[] represent the ip
+     * @param mask the byte[] represent the netmask
      * @return inetAddress the InetAddress generated of the passed arguments.
      */
     private static InetAddress maskIP(final byte[] ip, final byte[] mask) {
@@ -137,9 +115,8 @@ public class Inet6Network implements InetNetwork {
 
     /**
      * Return InetAddress which represent the given byte[]
-     * 
-     * @param ip
-     *            the byte[] represent the ip
+     *
+     * @param ip the byte[] represent the ip
      * @return ip the InetAddress generated of the given byte[]
      * @throws java.net.UnknownHostException
      */
@@ -155,7 +132,6 @@ public class Inet6Network implements InetNetwork {
         }
 
         return addr;
-
     }
 
 }

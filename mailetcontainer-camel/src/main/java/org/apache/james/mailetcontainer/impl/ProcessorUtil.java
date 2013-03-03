@@ -44,7 +44,7 @@ public class ProcessorUtil {
      *            the matcher or mailet than generated the exception
      * @param nextState
      *            the next state to set
-     * 
+     *
      * @throws MessagingException
      *             thrown always, rethrowing the passed in exception
      */

@@ -117,16 +117,14 @@ public class NetMatcher {
 
     }
 
-    /**
-     * Return a sorted representation of the inet networks.
-     */
+    @Override
     public String toString() {
         return networks.toString();
     }
 
     /**
      * Can be overwritten for logging
-     * 
+     *
      * @param s
      *            the String to log
      */

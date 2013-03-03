@@ -109,17 +109,12 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
 
     private Logger logger;
 
-    /**
-     * @see org.apache.james.lifecycle.api.LogEnabled#setLog(org.slf4j.Logger)
-     */
     public void setLog(Logger logger) {
         this.logger = logger;
     }
 
-    /**
-     * @see org.apache.james.lifecycle.api.Configurable#configure(org.apache.commons.configuration.HierarchicalConfiguration)
-     */
     @SuppressWarnings("unchecked")
+    @Override
     public void configure(HierarchicalConfiguration configuration) throws ConfigurationException {
 
         final boolean autodiscover = configuration.getBoolean("autodiscover", true);
@@ -233,6 +228,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
      *
      * @return an array of DNS server names
      */
+    @Override
     public String[] getDNSServers() {
         return dnsServers.toArray(new String[dnsServers.size()]);
     }
@@ -309,9 +305,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
         return servers;
     }
 
-    /**
-     * @see org.apache.james.dnsservice.api.DNSService#findMXRecords(String)
-     */
+    @Override
     public Collection<String> findMXRecords(String hostname) throws TemporaryResolutionException {
         List<String> servers = new ArrayList<String>();
         try {
@@ -429,9 +423,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
         return host;
     }
 
-    /**
-     * @see org.apache.james.dnsservice.api.DNSService#getByName(String)
-     */
+    @Override
     public InetAddress getByName(String host) throws UnknownHostException {
         String name = allowIPLiteral(host);
 
@@ -453,9 +445,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
         }
     }
 
-    /**
-     * @see org.apache.james.dnsservice.api.DNSService#getAllByName(String)
-     */
+    @Override
     public InetAddress[] getAllByName(String host) throws UnknownHostException {
         String name = allowIPLiteral(host);
         try {
@@ -481,9 +471,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
         }
     }
 
-    /**
-     * @see org.apache.james.dnsservice.api.DNSService#findTXTRecords(String)
-     */
+    @Override
     public Collection<String> findTXTRecords(String hostname) {
         List<String> txtR = new ArrayList<String>();
         Record[] records = lookupNoException(hostname, Type.TXT, "TXT");
@@ -498,9 +486,7 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
         return txtR;
     }
 
-    /**
-     * @see org.apache.james.dnsservice.api.DNSService#getHostName(java.net.InetAddress)
-     */
+    @Override
     public String getHostName(InetAddress addr) {
         String result;
         Name name = ReverseMap.fromAddress(addr);
@@ -515,30 +501,22 @@ public class DNSJavaService implements DNSService, DNSServiceMBean, LogEnabled, 
         return result;
     }
 
-    /**
-     * @see org.apache.james.dnsservice.api.DNSService#getLocalHost()
-     */
+    @Override
     public InetAddress getLocalHost() throws UnknownHostException {
         return InetAddress.getLocalHost();
     }
 
-    /**
-     * @see org.apache.james.dnsservice.api.DNSServiceMBean#getMaximumCacheSize()
-     */
+    @Override
     public int getMaximumCacheSize() {
         return maxCacheSize;
     }
 
-    /**
-     * @see org.apache.james.dnsservice.api.DNSServiceMBean#getCurrentCacheSize()
-     */
+    @Override
     public int getCurrentCacheSize() {
         return cache.getSize();
     }
 
-    /**
-     * @see org.apache.james.dnsservice.api.DNSServiceMBean#clearCache()
-     */
+    @Override
     public void clearCache() {
         cache.clearCache();
     }

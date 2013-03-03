@@ -18,30 +18,84 @@
  ****************************************************************/
 package org.apache.james.dnsservice.dnsjava;
 
+import com.google.common.io.Resources;
+import org.apache.commons.configuration.DefaultConfigurationBuilder;
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import org.slf4j.LoggerFactory;
+import org.xbill.DNS.Cache;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Resolver;
+import org.xbill.DNS.Zone;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.apache.commons.configuration.DefaultConfigurationBuilder;
-import org.junit.After;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.LoggerFactory;
-import org.xbill.DNS.*;
 
 public class DNSJavaServiceTest {
 
     private TestableDNSServer dnsServer;
+    private static byte[] DNS_SERVER_CONFIG = ("<dnsserver>" +
+            "<autodiscover>true</autodiscover>" +
+            "<authoritative>false</authoritative>" +
+            "</dnsserver>").getBytes();
+
     private Cache defaultCache;
     private Resolver defaultResolver;
     private Name[] defaultSearchPaths;
 
+    private Cache mockedCache;
+
+    @Before
+    public void setUp() throws Exception {
+        dnsServer = new TestableDNSServer();
+        DefaultConfigurationBuilder db = new DefaultConfigurationBuilder();
+
+        db.load(new ByteArrayInputStream(DNS_SERVER_CONFIG));
+
+        dnsServer.setLog(LoggerFactory.getLogger(DNSJavaServiceTest.class));
+        dnsServer.configure(db);
+        dnsServer.init();
+
+        defaultCache = Lookup.getDefaultCache(DClass.IN);
+        defaultResolver = Lookup.getDefaultResolver();
+        defaultSearchPaths = Lookup.getDefaultSearchPath();
+        Lookup.setDefaultCache(null, DClass.IN);
+        Lookup.setDefaultResolver(null);
+        Lookup.setDefaultSearchPath(new Name[]{});
+
+        dnsServer.setResolver(null);
+        mockedCache = mock(Cache.class);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        dnsServer.setCache(null);
+        dnsServer = null;
+        Lookup.setDefaultCache(defaultCache, DClass.IN);
+        Lookup.setDefaultResolver(defaultResolver);
+        Lookup.setDefaultSearchPath(defaultSearchPaths);
+    }
+
     @Test
     public void testNoMX() throws Exception {
-        dnsServer.setResolver(null);
-        dnsServer.setCache(new ZoneCache("dnstest.com."));
+        doAnswer(new ZoneCacheLookupRecordsAnswer(loadZone("dnstest.com.")))
+                .when(mockedCache).lookupRecords(any(Name.class), anyInt(), anyInt());
+        dnsServer.setCache(mockedCache);
+
         // a.setSearchPath(new String[] { "searchdomain.com." });
         Collection<String> records = dnsServer.findMXRecords("nomx.dnstest.com.");
         assertEquals(1, records.size());
@@ -50,8 +104,10 @@ public class DNSJavaServiceTest {
 
     @Test
     public void testBadMX() throws Exception {
-        dnsServer.setResolver(null);
-        dnsServer.setCache(new ZoneCache("dnstest.com."));
+        doAnswer(new ZoneCacheLookupRecordsAnswer(loadZone("dnstest.com.")))
+                .when(mockedCache).lookupRecords(any(Name.class), anyInt(), anyInt());
+        dnsServer.setCache(mockedCache);
+
         // a.setSearchPath(new String[] { "searchdomain.com." });
         Collection<String> records = dnsServer.findMXRecords("badmx.dnstest.com.");
         assertEquals(1, records.size());
@@ -63,9 +119,10 @@ public class DNSJavaServiceTest {
 
     @Test
     public void testINARecords() throws Exception {
-        // Zone z = loadZone("pippo.com.");
-        dnsServer.setResolver(null);
-        dnsServer.setCache(new ZoneCache("pippo.com."));
+        doAnswer(new ZoneCacheLookupRecordsAnswer(loadZone("pippo.com.")))
+                .when(mockedCache).lookupRecords(any(Name.class), anyInt(), anyInt());
+        dnsServer.setCache(mockedCache);
+
         // dnsServer.setLookupper(new ZoneLookupper(z));
         Collection<String> records = dnsServer.findMXRecords("www.pippo.com.");
         assertEquals(1, records.size());
@@ -74,9 +131,10 @@ public class DNSJavaServiceTest {
 
     @Test
     public void testMXCatches() throws Exception {
-        // Zone z = loadZone("test-zone.com.");
-        dnsServer.setResolver(null);
-        dnsServer.setCache(new ZoneCache("test-zone.com."));
+        doAnswer(new ZoneCacheLookupRecordsAnswer(loadZone("test-zone.com.")))
+                .when(mockedCache).lookupRecords(any(Name.class), anyInt(), anyInt());
+        dnsServer.setCache(mockedCache);
+
         // dnsServer.setLookupper(new ZoneLookupper(z));
         Collection<String> res = dnsServer.findMXRecords("test-zone.com.");
         try {
@@ -93,8 +151,10 @@ public class DNSJavaServiceTest {
      */
     @Test
     public void testTwoMXSamePrio() throws Exception {
-        dnsServer.setResolver(null);
-        dnsServer.setCache(new ZoneCache("two-mx.sameprio."));
+        doAnswer(new ZoneCacheLookupRecordsAnswer(loadZone("two-mx.sameprio.")))
+                .when(mockedCache).lookupRecords(any(Name.class), anyInt(), anyInt());
+        dnsServer.setCache(mockedCache);
+
         // a.setSearchPath(new String[] { "searchdomain.com." });
         Collection<String> records = dnsServer.findMXRecords("two-mx.sameprio.");
         assertEquals(2, records.size());
@@ -104,8 +164,10 @@ public class DNSJavaServiceTest {
 
     @Test
     public void testThreeMX() throws Exception {
-        dnsServer.setResolver(null);
-        dnsServer.setCache(new ZoneCache("three-mx.bar."));
+        doAnswer(new ZoneCacheLookupRecordsAnswer(loadZone("three-mx.bar.")))
+                .when(mockedCache).lookupRecords(any(Name.class), anyInt(), anyInt());
+        dnsServer.setCache(mockedCache);
+
         // a.setSearchPath(new String[] { "searchdomain.com." });
         ArrayList<String> records = new ArrayList<String>(dnsServer.findMXRecords("three-mx.bar."));
         assertEquals(3, records.size());
@@ -120,8 +182,9 @@ public class DNSJavaServiceTest {
      */
     @Test
     public void testTwoMXDifferentPrio() throws Exception {
-        dnsServer.setResolver(null);
-        dnsServer.setCache(new ZoneCache("two-mx.differentprio."));
+        doAnswer(new ZoneCacheLookupRecordsAnswer(loadZone("two-mx.differentprio.")))
+                .when(mockedCache).lookupRecords(any(Name.class), anyInt(), anyInt());
+        dnsServer.setCache(mockedCache);
         // a.setSearchPath(new String[] { "searchdomain.com." });
         Collection<String> records = dnsServer.findMXRecords("two-mx.differentprio.");
         assertEquals(2, records.size());
@@ -135,13 +198,14 @@ public class DNSJavaServiceTest {
      */
     @Test
     public void testOneMX() throws Exception {
-        dnsServer.setResolver(null);
-        dnsServer.setCache(new ZoneCache("one-mx.bar."));
+        doAnswer(new ZoneCacheLookupRecordsAnswer(loadZone("one-mx.bar.")))
+                .when(mockedCache).lookupRecords(any(Name.class), anyInt(), anyInt());
+        dnsServer.setCache(mockedCache);
+
         // a.setSearchPath(new String[] { "searchdomain.com." });
         Collection<String> records = dnsServer.findMXRecords("one-mx.bar.");
         assertEquals(1, records.size());
         assertTrue(records.contains("mx1.one-mx.bar."));
-
     }
     /*
      * public void testCNAMEasMXrecords() throws Exception { // Zone z =
@@ -152,147 +216,11 @@ public class DNSJavaServiceTest {
      * //assertEquals(true, records.hasNext()); }
      */
 
-    @Before
-    public void setUp() throws Exception {
-        dnsServer = new TestableDNSServer();
-        DefaultConfigurationBuilder db = new DefaultConfigurationBuilder();
-
-        db.load(new ByteArrayInputStream("<dnsserver><autodiscover>true</autodiscover><authoritative>false</authoritative></dnsserver>".
-                getBytes()));
-        dnsServer.setLog(LoggerFactory.getLogger("MockLog"));
-        dnsServer.configure(db);
-        dnsServer.init();
-
-        defaultCache = Lookup.getDefaultCache(DClass.IN);
-        defaultResolver = Lookup.getDefaultResolver();
-        defaultSearchPaths = Lookup.getDefaultSearchPath();
-        Lookup.setDefaultCache(null, DClass.IN);
-        Lookup.setDefaultResolver(null);
-        Lookup.setDefaultSearchPath(new Name[]{});
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dnsServer.setCache(null);
-        dnsServer = null;
-        Lookup.setDefaultCache(defaultCache, DClass.IN);
-        Lookup.setDefaultResolver(defaultResolver);
-        Lookup.setDefaultSearchPath(defaultSearchPaths);
-    }
-
-    private Zone loadZone(String zoneName) throws IOException {
+    private static Zone loadZone(String zoneName) throws IOException {
         String zoneFilename = zoneName + "zone";
-        URL zoneResource = getClass().getResource(zoneFilename);
+        URL zoneResource = Resources.getResource(DNSJavaServiceTest.class, zoneFilename);
         assertNotNull("test resource for zone could not be loaded: " + zoneFilename, zoneResource);
-        String zoneFile = zoneResource.getFile();
-        Zone zone = new Zone(Name.fromString(zoneName), zoneFile);
-        return zone;
-    }
-
-    private final class ZoneCache extends Cache {
-
-        Zone z = null;
-
-        public ZoneCache(String string) throws IOException {
-            z = loadZone(string);
-        }
-
-        @Override
-        public SetResponse addMessage(Message arg0) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public synchronized void addNegative(Name arg0, int arg1, SOARecord arg2, int arg3) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public synchronized void addRecord(Record arg0, int arg1, Object arg2) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public synchronized void addRRset(RRset arg0, int arg1) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public synchronized void clearCache() {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public RRset[] findAnyRecords(Name arg0, int arg1) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public RRset[] findRecords(Name arg0, int arg1) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public void flushName(Name arg0) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public void flushSet(Name arg0, int arg1) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public int getDClass() {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public int getMaxCache() {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public int getMaxEntries() {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public int getMaxNCache() {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public int getSize() {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        protected synchronized SetResponse lookup(Name arg0, int arg1, int arg2) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public SetResponse lookupRecords(Name arg0, int arg1, int arg2) {
-            System.out.println("Cache.lookupRecords " + arg0 + "," + arg1 + "," + arg2);
-            return z.findRecords(arg0, arg1);
-            // return super.lookupRecords(arg0, arg1, arg2);
-        }
-
-        @Override
-        public void setMaxCache(int arg0) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public void setMaxEntries(int arg0) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
-
-        @Override
-        public void setMaxNCache(int arg0) {
-            throw new UnsupportedOperationException("ZoneCache is a mock used only for testing purpose");
-        }
+        return new Zone(Name.fromString(zoneName), zoneResource.getFile());
     }
 
     private final class TestableDNSServer extends DNSJavaService {
