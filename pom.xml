@@ -58,17 +58,17 @@
         <module>karaf/features</module>
         <module>karaf/integration</module>
 
-        <module>util</module>
-        <module>cli</module>
-        <module>spring</module>
-        <module>core</module>
-        <module>lifecycle-api</module>
-        <module>mailbox-adapter</module>
-        <module>mailetcontainer-api</module>
-        <module>mailetcontainer-camel</module>
-        <module>mailets</module>
-        <module>fetchmail</module>
-        <module>filesystem-api</module>
+        <module>container/util</module>
+        <module>container/cli</module>
+        <module>container/spring</module>
+        <module>container/core</module>
+        <module>container/lifecycle-api</module>
+        <module>container/mailbox-adapter</module>
+        <module>container/filesystem-api</module>
+
+        <module>mailet/mailetcontainer-api</module>
+        <module>mailet/mailetcontainer-camel</module>
+        <module>mailet/mailets</module>
 
         <module>dns-service/dnsservice-api</module>
         <module>dns-service/dnsservice-dnsjava</module>
@@ -83,6 +83,7 @@
         <module>data/data-ldap</module>
         <module>data/data-hbase</module>
 
+        <module>protocols/fetchmail</module>
         <module>protocols/protocols-imap4</module>
         <module>protocols/protocols-library</module>
         <module>protocols/protocols-lmtp</module>

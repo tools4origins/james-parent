@@ -31,7 +31,6 @@ import javax.mail.MessagingException;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * This class represent an AbstractMailRepository. All MailRepositories should

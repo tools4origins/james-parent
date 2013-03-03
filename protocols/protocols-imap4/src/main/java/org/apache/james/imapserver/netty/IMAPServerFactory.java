@@ -21,7 +21,6 @@ package org.apache.james.imapserver.netty;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 

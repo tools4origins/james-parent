@@ -19,8 +19,6 @@
 
 package org.apache.james.smtpserver.fastfail;
 
-import java.util.Iterator;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 

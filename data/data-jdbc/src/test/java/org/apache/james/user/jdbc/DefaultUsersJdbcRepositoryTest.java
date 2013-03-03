@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
