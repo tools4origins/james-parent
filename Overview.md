@@ -15,8 +15,14 @@ I'll explain what I mean by 'component' and 'service' bellow.
 
 ~~~
 |-- app
-|-- cli
-|-- core
+|-- container
+    `-- cli
+    `-- core
+    `-- lifecycle-api
+    `-- filesystem-api
+    `-- mailbox-adapter
+    `-- spring
+    `-- util
 |-- data
     `-- data-api
     `-- data-file
@@ -30,30 +36,26 @@ I'll explain what I mean by 'component' and 'service' bellow.
     `-- dnsservice-api
     `-- dnsservice-dnsjava
     `-- dnsservice-library
-|-- fetchmail
-|-- filesystem-api
 |-- karaf
     `-- distribution
      `-- features
      `-- integration
-|-- lifecycle-api
-|-- mailbox-adapter
-|-- mailetcontainer-api
-|-- mailetcontainer-camel
-|-- mailets
+|--mailet
+    `-- mailetcontainer-api
+    `-- mailetcontainer-camel
+    `-- mailets
 |-- protocols
     `-- protocols-imap4
     `-- protocols-library
     `-- protocols-lmtp
     `-- protocols-pop3
     `-- protocols-smtp
+    `-- fetchmail
 |-- queue
     `-- queue-activemq
     `-- queue-api
     `-- queue-file
     `-- queue-jms
-|-- spring
-|-- util
 
 ~~~
 
