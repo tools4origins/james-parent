@@ -45,9 +45,7 @@ public class JMSMailQueueItem implements MailQueueItem {
         this.consumer = consumer;
     }
 
-    /**
-     * @see org.apache.james.queue.api.MailQueue.MailQueueItem#done(boolean)
-     */
+    @Override
     public void done(boolean success) throws MailQueueException {
         try {
             if (success) {
@@ -86,9 +84,7 @@ public class JMSMailQueueItem implements MailQueueItem {
         }
     }
 
-    /**
-     * @see org.apache.james.queue.api.MailQueue.MailQueueItem#getMail()
-     */
+    @Override
     public Mail getMail() {
         return mail;
     }

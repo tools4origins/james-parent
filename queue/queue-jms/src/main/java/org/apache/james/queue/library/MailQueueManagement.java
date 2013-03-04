@@ -18,13 +18,14 @@
  ****************************************************************/
 package org.apache.james.queue.library;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.apache.james.queue.api.MailQueue.MailQueueException;
+import org.apache.james.queue.api.MailQueueManagementMBean;
+import org.apache.james.queue.api.ManageableMailQueue;
+import org.apache.james.queue.api.ManageableMailQueue.MailQueueItemView;
+import org.apache.james.queue.api.ManageableMailQueue.MailQueueIterator;
+import org.apache.james.queue.api.ManageableMailQueue.Type;
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
 
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
@@ -33,15 +34,13 @@ import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.OpenType;
 import javax.management.openmbean.SimpleType;
-
-import org.apache.james.queue.api.MailQueueManagementMBean;
-import org.apache.james.queue.api.ManageableMailQueue;
-import org.apache.james.queue.api.MailQueue.MailQueueException;
-import org.apache.james.queue.api.ManageableMailQueue.MailQueueItemView;
-import org.apache.james.queue.api.ManageableMailQueue.MailQueueIterator;
-import org.apache.james.queue.api.ManageableMailQueue.Type;
-import org.apache.mailet.Mail;
-import org.apache.mailet.MailAddress;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * JMX MBean implementation which expose management functions by wrapping a
@@ -56,9 +55,7 @@ public class MailQueueManagement extends StandardMBean implements MailQueueManag
 
     }
 
-    /**
-     * @see org.apache.james.queue.api.MailQueueManagementMBean#clear()
-     */
+    @Override
     public long clear() throws Exception {
         try {
             return queue.clear();
@@ -67,9 +64,7 @@ public class MailQueueManagement extends StandardMBean implements MailQueueManag
         }
     }
 
-    /**
-     * @see org.apache.james.queue.api.MailQueueManagementMBean#flush()
-     */
+    @Override
     public long flush() throws Exception {
         try {
             return queue.flush();
@@ -78,9 +73,7 @@ public class MailQueueManagement extends StandardMBean implements MailQueueManag
         }
     }
 
-    /**
-     * @see org.apache.james.queue.api.MailQueueManagementMBean#getSize()
-     */
+    @Override
     public long getSize() throws Exception {
         try {
             return queue.getSize();
@@ -89,10 +82,7 @@ public class MailQueueManagement extends StandardMBean implements MailQueueManag
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.queue.api.MailQueueManagementMBean#removeWithName(java.lang.String)
-     */
+    @Override
     public long removeWithName(String name) throws Exception {
         try {
             return queue.remove(Type.Name, name);
@@ -101,11 +91,7 @@ public class MailQueueManagement extends StandardMBean implements MailQueueManag
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.queue.api.MailQueueManagementMBean#removeWithRecipient
-     * (java.lang.String)
-     */
+    @Override
     public long removeWithRecipient(String address) throws Exception {
         try {
             return queue.remove(Type.Recipient, address);
@@ -114,10 +100,7 @@ public class MailQueueManagement extends StandardMBean implements MailQueueManag
         }
     }
 
-    /**
-     * @see
-     * org.apache.james.queue.api.MailQueueManagementMBean#removeWithSender(java.lang.String)
-     */
+    @Override
     public long removeWithSender(String address) throws Exception {
         try {
             return queue.remove(Type.Sender, address);
@@ -126,16 +109,14 @@ public class MailQueueManagement extends StandardMBean implements MailQueueManag
         }
     }
 
-    /**
-     * @see org.apache.james.queue.api.MailQueueManagementMBean#browse()
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public List<CompositeData> browse() throws Exception {
         MailQueueIterator it = queue.browse();
         List<CompositeData> data = new ArrayList<CompositeData>();
-        String[] names = new String[] { "name", "sender", "state", "recipients", "size", "lastUpdated", "remoteAddress", "remoteHost", "errorMessage", "attributes", "nextDelivery" };
-        String[] descs = new String[] { "Unique name", "Sender", "Current state", "Recipients", "Size in bytes", "Timestamp of last update", "IPAddress of the sender", "Hostname of the sender", "Errormessage if any", "Attributes stored", "Timestamp of when the next delivery attempt will be make" };
-        OpenType[] types = new OpenType[] { SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.LONG, SimpleType.LONG, SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.LONG };
+        String[] names = new String[]{"name", "sender", "state", "recipients", "size", "lastUpdated", "remoteAddress", "remoteHost", "errorMessage", "attributes", "nextDelivery"};
+        String[] descs = new String[]{"Unique name", "Sender", "Current state", "Recipients", "Size in bytes", "Timestamp of last update", "IPAddress of the sender", "Hostname of the sender", "Errormessage if any", "Attributes stored", "Timestamp of when the next delivery attempt will be make"};
+        OpenType[] types = new OpenType[]{SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.LONG, SimpleType.LONG, SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.STRING, SimpleType.LONG};
 
         while (it.hasNext()) {
 

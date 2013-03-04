@@ -18,19 +18,15 @@
  ****************************************************************/
 package org.apache.james.queue.jms;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
-import java.util.concurrent.TimeUnit;
+import com.google.common.io.Closeables;
+import org.apache.james.core.MailImpl;
+import org.apache.james.core.MimeMessageCopyOnWriteProxy;
+import org.apache.james.queue.api.MailPrioritySupport;
+import org.apache.james.queue.api.MailQueue;
+import org.apache.james.queue.api.ManageableMailQueue;
+import org.apache.mailet.Mail;
+import org.apache.mailet.MailAddress;
+import org.slf4j.Logger;
 
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
@@ -46,15 +42,19 @@ import javax.jms.Session;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.MimeMessage;
-
-import org.apache.james.core.MailImpl;
-import org.apache.james.core.MimeMessageCopyOnWriteProxy;
-import org.apache.james.queue.api.MailPrioritySupport;
-import org.apache.james.queue.api.MailQueue;
-import org.apache.james.queue.api.ManageableMailQueue;
-import org.apache.mailet.Mail;
-import org.apache.mailet.MailAddress;
-import org.slf4j.Logger;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -69,14 +69,14 @@ import org.slf4j.Logger;
  */
 public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPrioritySupport {
 
-    protected final String queuename;
+    protected final String queueName;
     protected final ConnectionFactory connectionFactory;
     protected final Logger logger;
     public final static String FORCE_DELIVERY = "FORCE_DELIVERY";
 
-    public JMSMailQueue(final ConnectionFactory connectionFactory, final String queuename, final Logger logger) {
+    public JMSMailQueue(final ConnectionFactory connectionFactory, final String queueName, final Logger logger) {
         this.connectionFactory = connectionFactory;
-        this.queuename = queuename;
+        this.queueName = queueName;
         this.logger = logger;
     }
 
@@ -92,6 +92,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
      * should get overridden by these implementations
      * </p>
      */
+    @Override
     public MailQueueItem deQueue() throws MailQueueException {
         Connection connection = null;
         Session session = null;
@@ -104,7 +105,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
                 connection.start();
 
                 session = connection.createSession(true, Session.SESSION_TRANSACTED);
-                Queue queue = session.createQueue(queuename);
+                Queue queue = session.createQueue(queueName);
                 consumer = session.createConsumer(queue, getMessageSelector());
 
                 message = consumer.receive(10000);
@@ -173,10 +174,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
 
     }
 
-    /**
-     * @see org.apache.james.queue.api.MailQueue#enQueue(org.apache.mailet.Mail,
-     * long, java.util.concurrent.TimeUnit)
-     */
+    @Override
     public void enQueue(Mail mail, long delay, TimeUnit unit) throws MailQueueException {
         Connection connection = null;
         Session session = null;
@@ -230,9 +228,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
         }
     }
 
-    /**
-     * @see org.apache.james.queue.api.MailQueue#enQueue(org.apache.mailet.Mail)
-     */
+    @Override
     public void enQueue(Mail mail) throws MailQueueException {
         enQueue(mail, NO_DELAY, TimeUnit.MILLISECONDS);
     }
@@ -244,7 +240,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
         MessageProducer producer = null;
 
         try {
-            Queue queue = session.createQueue(queuename);
+            Queue queue = session.createQueue(queueName);
 
             producer = session.createProducer(queue);
             ObjectMessage message = session.createObjectMessage();
@@ -283,7 +279,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
 
     /**
      * Get JMS Message properties with values
-     * 
+     *
      * @param mail
      * @param delayInMillis
      * @throws JMSException
@@ -347,7 +343,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
     /**
      * Create the complete Mail from the JMS Message. So the created
      * {@link Mail} is completely populated
-     * 
+     *
      * @param message
      * @return the complete mail
      * @throws MessagingException
@@ -365,7 +361,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
      * Populat the given {@link Mail} instance with a {@link MimeMessage}. The
      * {@link MimeMessage} is read from the JMS Message. This implementation use
      * a {@link BytesMessage}
-     * 
+     *
      * @param message
      * @param mail
      * @throws MessagingException
@@ -382,7 +378,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
     /**
      * Populate Mail with values from Message. This exclude the
      * {@link MimeMessage}
-     * 
+     *
      * @param message
      * @param mail
      * @throws JMSException
@@ -396,14 +392,14 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
         String recipients = message.getStringProperty(JAMES_MAIL_RECIPIENTS);
         StringTokenizer recipientTokenizer = new StringTokenizer(recipients, JAMES_MAIL_SEPARATOR);
         while (recipientTokenizer.hasMoreTokens()) {
-        	String token = recipientTokenizer.nextToken();
+            String token = recipientTokenizer.nextToken();
             try {
                 MailAddress rcpt = new MailAddress(token);
                 rcpts.add(rcpt);
             } catch (AddressException e) {
                 // Should never happen as long as the user does not modify the
                 // the header by himself
-            	logger.error("Unable to parse the recipient address " + token + " for mail " + mail.getName() + ", so we ignore it", e);
+                logger.error("Unable to parse the recipient address " + token + " for mail " + mail.getName() + ", so we ignore it", e);
             }
         }
         mail.setRecipients(rcpts);
@@ -414,14 +410,14 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
         StringTokenizer namesTokenizer = new StringTokenizer(attributeNames, JAMES_MAIL_SEPARATOR);
         while (namesTokenizer.hasMoreTokens()) {
             String name = namesTokenizer.nextToken();
-            
+
             // Now cast the property back to Serializable and set it as attribute.
             // See JAMES-1241
             Object attrValue = message.getObjectProperty(name);
-           
+
             // ignore null values. See JAMES-1294
             if (attrValue != null) {
-                if (attrValue instanceof Serializable) {   
+                if (attrValue instanceof Serializable) {
                     mail.setAttribute(name, (Serializable) attrValue);
                 } else {
                     logger.error("Not supported mail attribute " + name + " of type " + attrValue + " for mail " + mail.getName());
@@ -438,8 +434,8 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
             } catch (AddressException e) {
                 // Should never happen as long as the user does not modify the
                 // the header by himself
-            	logger.error("Unable to parse the sender address " + sender + " for mail " + mail.getName() + ", so we fallback to a null sender", e);
-            	mail.setSender(null);
+                logger.error("Unable to parse the sender address " + sender + " for mail " + mail.getName() + ", so we fallback to a null sender", e);
+                mail.setSender(null);
             }
         }
 
@@ -449,7 +445,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
 
     /**
      * Convert the attribute value if necessary.
-     * 
+     *
      * @param value
      * @return convertedValue
      */
@@ -462,12 +458,12 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
 
     @Override
     public String toString() {
-        return "MailQueue:" + queuename;
+        return "MailQueue:" + queueName;
     }
 
     /**
      * Create a {@link org.apache.james.queue.api.MailQueue.MailQueueItem} for the given parameters
-     * 
+     *
      * @param connection
      * @param session
      * @param consumer
@@ -485,10 +481,8 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
         return JAMES_NEXT_DELIVERY + " <= " + System.currentTimeMillis() + " OR " + FORCE_DELIVERY + " = true";
     }
 
-    /**
-     * @see org.apache.james.queue.api.ManageableMailQueue#getSize()
-     */
     @SuppressWarnings("unchecked")
+    @Override
     public long getSize() throws MailQueueException {
         Connection connection = null;
         Session session = null;
@@ -498,7 +492,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
             connection = connectionFactory.createConnection();
             connection.start();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Queue queue = session.createQueue(queuename);
+            Queue queue = session.createQueue(queueName);
 
             browser = session.createBrowser(queue);
 
@@ -510,8 +504,8 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
             }
             return size;
         } catch (Exception e) {
-            logger.error("Unable to get size of queue " + queuename, e);
-            throw new MailQueueException("Unable to get size of queue " + queuename, e);
+            logger.error("Unable to get size of queue " + queueName, e);
+            throw new MailQueueException("Unable to get size of queue " + queueName, e);
         } finally {
             try {
                 if (browser != null)
@@ -536,9 +530,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
         }
     }
 
-    /**
-     * @see org.apache.james.queue.api.ManageableMailQueue#flush()
-     */
+    @Override
     public long flush() throws MailQueueException {
         Connection connection = null;
         Session session = null;
@@ -552,7 +544,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
             connection.start();
 
             session = connection.createSession(true, Session.SESSION_TRANSACTED);
-            Queue queue = session.createQueue(queuename);
+            Queue queue = session.createQueue(queueName);
             consumer = session.createConsumer(queue);
             producer = session.createProducer(queue);
 
@@ -581,7 +573,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
             } catch (JMSException e1) {
                 // ignore on rollback
             }
-            throw new MailQueueException("Unable to get size of queue " + queuename, e);
+            throw new MailQueueException("Unable to get size of queue " + queueName, e);
         } finally {
             if (consumer != null) {
 
@@ -616,9 +608,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
         }
     }
 
-    /**
-     * @see org.apache.james.queue.api.MailQueueManagementMBean#clear()
-     */
+    @Override
     public long clear() throws MailQueueException {
         return count(removeWithSelector(null));
     }
@@ -633,7 +623,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
 
     /**
      * Remove messages with the given selector
-     * 
+     *
      * @param selector
      * @return messages
      */
@@ -650,7 +640,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
             connection.start();
 
             session = connection.createSession(true, Session.SESSION_TRANSACTED);
-            Queue queue = session.createQueue(queuename);
+            Queue queue = session.createQueue(queueName);
             consumer = session.createConsumer(queue, selector);
             while (first || message != null) {
                 if (first) {
@@ -703,7 +693,7 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
     /**
      * Create a copy of the given {@link Message}. This includes the properties
      * and the payload
-     * 
+     *
      * @param session
      * @param m
      * @return copy
@@ -723,28 +713,22 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
         return copy;
     }
 
-    /**
-     * @see
-     * org.apache.james.queue.api.ManageableMailQueue#remove(org.apache.james.queue.api.ManageableMailQueue.Type,
-     * java.lang.String)
-     */
+    @Override
     public long remove(Type type, String value) throws MailQueueException {
         switch (type) {
-        case Name:
-            return count(removeWithSelector(JAMES_MAIL_NAME + " = '" + value + "'"));
-        case Sender:
-            return count(removeWithSelector(JAMES_MAIL_SENDER + " = '" + value + "'"));
-        case Recipient:
-            return count(removeWithSelector(JAMES_MAIL_RECIPIENTS + " = '" + value + "' or " + JAMES_MAIL_RECIPIENTS + " = '%," + value + "' or " + JAMES_MAIL_RECIPIENTS + " = '%," + value + "%'"));
-        default:
-            break;
+            case Name:
+                return count(removeWithSelector(JAMES_MAIL_NAME + " = '" + value + "'"));
+            case Sender:
+                return count(removeWithSelector(JAMES_MAIL_SENDER + " = '" + value + "'"));
+            case Recipient:
+                return count(removeWithSelector(JAMES_MAIL_RECIPIENTS + " = '" + value + "' or " + JAMES_MAIL_RECIPIENTS + " = '%," + value + "' or " + JAMES_MAIL_RECIPIENTS + " = '%," + value + "%'"));
+            default:
+                break;
         }
         return -1;
     }
 
-    /**
-     * @see org.apache.james.queue.api.ManageableMailQueue#browse()
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public MailQueueIterator browse() throws MailQueueException {
         Connection connection = null;
@@ -754,28 +738,24 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
             connection = connectionFactory.createConnection();
             connection.start();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Queue queue = session.createQueue(queuename);
+            Queue queue = session.createQueue(queueName);
 
             browser = session.createBrowser(queue);
 
             final Enumeration<Message> messages = browser.getEnumeration();
 
-            final Connection myconnection = connection;
-            final Session mysession = session;
-            final QueueBrowser mybrowser = browser;
+            final Connection myConnection = connection;
+            final Session mySession = session;
+            final QueueBrowser myBrowser = browser;
 
             return new MailQueueIterator() {
 
-                /**
-                 * Not supported, read-only
-                 */
+                @Override
                 public void remove() {
                     throw new UnsupportedOperationException("Read-only");
                 }
 
-                /**
-                 * @see java.util.Iterator#next()
-                 */
+                @Override
                 public MailQueueItemView next() {
                     while (hasNext()) {
                         try {
@@ -784,18 +764,12 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
                             final long nextDelivery = m.getLongProperty(JAMES_NEXT_DELIVERY);
                             return new MailQueueItemView() {
 
-                                /**
-                                 * @see
-                                 * org.apache.james.queue.api.ManageableMailQueue.MailQueueItemView#getNextDelivery()
-                                 */
+                                @Override
                                 public long getNextDelivery() {
                                     return nextDelivery;
                                 }
 
-                                /**
-                                 * @see
-                                 * org.apache.james.queue.api.ManageableMailQueue.MailQueueItemView#getMail()
-                                 */
+                                @Override
                                 public Mail getMail() {
                                     return mail;
                                 }
@@ -808,39 +782,33 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
                     }
 
                     throw new NoSuchElementException();
-
                 }
 
-                /**
-                 * @see java.util.Iterator#hasNext()
-                 */
+                @Override
                 public boolean hasNext() {
                     return messages.hasMoreElements();
                 }
 
-                /**
-                 * @see
-                 * org.apache.james.queue.api.ManageableMailQueue.MailQueueIterator#close()
-                 */
+                @Override
                 public void close() {
 
                     try {
-                        if (mybrowser != null)
-                            mybrowser.close();
+                        if (myBrowser != null)
+                            myBrowser.close();
                     } catch (JMSException e1) {
                         // ignore here
                     }
 
                     try {
-                        if (mysession != null)
-                            mysession.close();
+                        if (mySession != null)
+                            mySession.close();
                     } catch (JMSException e1) {
                         // ignore here
                     }
 
                     try {
-                        if (myconnection != null)
-                            myconnection.close();
+                        if (myConnection != null)
+                            myConnection.close();
                     } catch (JMSException e1) {
                         // ignore here
                     }
@@ -869,8 +837,8 @@ public class JMSMailQueue implements ManageableMailQueue, JMSSupport, MailPriori
             } catch (JMSException e1) {
                 // ignore here
             }
-            logger.error("Unable to browse queue " + queuename, e);
-            throw new MailQueueException("Unable to browse queue " + queuename, e);
+            logger.error("Unable to browse queue " + queueName, e);
+            throw new MailQueueException("Unable to browse queue " + queueName, e);
         }
     }
 

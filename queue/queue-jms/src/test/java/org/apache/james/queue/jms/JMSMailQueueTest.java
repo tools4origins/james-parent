@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.james.queue.jms;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import javax.jms.ConnectionFactory;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
@@ -37,17 +30,33 @@ import org.apache.james.queue.api.ManageableMailQueue.MailQueueIterator;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.junit.After;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.ConnectionFactory;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 public class JMSMailQueueTest {
 
+    protected final static String QUEUE_NAME = "test";
     protected JMSMailQueue queue;
     private BrokerService broker;
-    protected final static String QUEUE_NAME = "test";
 
     @Before
     public void setUp() throws Exception {
@@ -77,13 +86,10 @@ public class JMSMailQueueTest {
         aBroker.setDestinationPolicy(pMap);
 
         return aBroker;
-
     }
 
     protected JMSMailQueue createQueue(ConnectionFactory factory, String queueName) {
-        Logger log = LoggerFactory.getLogger("MockLog");
-        // slf4j can't set programmatically any log level. It's just a facade
-        // log.setLevel(SimpleLog.LOG_LEVEL_DEBUG);
+        Logger log = LoggerFactory.getLogger(JMSMailQueueTest.class);
         return new JMSMailQueue(factory, queueName, log);
     }
 

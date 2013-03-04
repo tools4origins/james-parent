@@ -70,10 +70,7 @@ public abstract class AbstractMailQueueFactory implements MailQueueFactory, LogE
 
     }
 
-    /**
-     * @see
-     * org.apache.james.queue.api.MailQueueFactory#getQueue(java.lang.String)
-     */
+    @Override
     public synchronized final MailQueue getQueue(String name) {
         
         MailQueue queue = queues.get(name);
@@ -128,9 +125,7 @@ public abstract class AbstractMailQueueFactory implements MailQueueFactory, LogE
 
     }
 
-    /**
-     * @see org.apache.james.lifecycle.api.LogEnabled#setLog(org.slf4j.Logger)
-     */
+    @Override
     public void setLog(Logger log) {
         this.log = log;
     }

@@ -117,9 +117,9 @@ public class ActiveMQMailQueue extends JMSMailQueue implements ActiveMQSupport {
             try {
                 BlobMessage blobMessage = (BlobMessage) message;
                 try {
-                    // store URL and queuename for later usage
+                    // store URL and queueName for later usage
                     mail.setAttribute(JAMES_BLOB_URL, blobMessage.getURL());
-                    mail.setAttribute(JAMES_QUEUE_NAME, queuename);
+                    mail.setAttribute(JAMES_QUEUE_NAME, queueName);
                 } catch (MalformedURLException e) {
                     // Ignore on error
                     logger.debug("Unable to get url from blobmessage for mail " + mail.getName());
@@ -185,9 +185,9 @@ public class ActiveMQMailQueue extends JMSMailQueue implements ActiveMQSupport {
                  
                     
                 // store the queue name in the props
-                props.put(JAMES_QUEUE_NAME, queuename);
+                props.put(JAMES_QUEUE_NAME, queueName);
 
-                Queue queue = session.createQueue(queuename);
+                Queue queue = session.createQueue(queueName);
 
                 producer = session.createProducer(queue);
                 for (Map.Entry<String, Object> entry : props.entrySet()) {
@@ -300,7 +300,7 @@ public class ActiveMQMailQueue extends JMSMailQueue implements ActiveMQSupport {
             replyTo = session.createTemporaryQueue();
             consumer = session.createConsumer(replyTo);
 
-            Queue myQueue = session.createQueue(queuename);
+            Queue myQueue = session.createQueue(queueName);
             producer = session.createProducer(null);
 
             String queueName = "ActiveMQ.Statistics.Destination." + myQueue.getQueueName();
