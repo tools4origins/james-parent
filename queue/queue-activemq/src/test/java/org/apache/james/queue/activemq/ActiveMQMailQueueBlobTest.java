@@ -18,17 +18,21 @@
  ****************************************************************/
 package org.apache.james.queue.activemq;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.james.filesystem.api.FileSystem;
+import org.apache.james.queue.jms.JMSMailQueue;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.james.filesystem.api.FileSystem;
 
 public class ActiveMQMailQueueBlobTest extends ActiveMQMailQueueTest {
 
     public final static String BASE_DIR = "file://target/james-test";
     private MyFileSystem fs;
+
+    private JMSMailQueue queue;
 
     @Override
     protected ActiveMQConnectionFactory createConnectionFactory() {
@@ -48,12 +52,20 @@ public class ActiveMQMailQueueBlobTest extends ActiveMQMailQueueTest {
         super.setUp();
     }
 
-    @Override
     public void tearDown() throws Exception {
-        super.tearDown();
         if (fs != null) {
             fs.destroy();
         }
+    }
+
+    @Override
+    public JMSMailQueue getQueue() {
+        return queue;
+    }
+
+    @Override
+    public void setQueue(JMSMailQueue queue) {
+        this.queue = queue;
     }
 
     @Override

@@ -20,19 +20,49 @@ package org.apache.james.queue.activemq;
 
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.broker.region.policy.PolicyEntry;
+import org.apache.activemq.broker.region.policy.PolicyMap;
 import org.apache.activemq.plugin.StatisticsBrokerPlugin;
+import org.apache.james.queue.jms.AbstractJMSMailQueueTest;
 import org.apache.james.queue.jms.JMSMailQueue;
-import org.apache.james.queue.jms.JMSMailQueueTest;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.ConnectionFactory;
+import java.util.Arrays;
 
-public class ActiveMQMailQueueTest extends JMSMailQueueTest {
+public abstract class ActiveMQMailQueueTest extends AbstractJMSMailQueueTest {
 
-    @Override
-    protected BrokerService createBroker() throws Exception {
-        BrokerService broker = super.createBroker();
+    private static BrokerService brokerService;
+
+    @BeforeClass
+    public static void setupBroker() throws Exception {
+        brokerService = createBroker();
+        brokerService.start();
+    }
+
+    @AfterClass
+    public static void tearDownBroker() throws Exception {
+        if (brokerService != null) {
+            brokerService.stop();
+        }
+    }
+
+    protected static BrokerService createBroker() throws Exception {
+        BrokerService broker = new BrokerService();
+        broker.setPersistent(false);
+        broker.setUseJmx(false);
+        broker.addConnector("tcp://127.0.0.1:61616");
+
+        // Enable priority support
+        PolicyMap pMap = new PolicyMap();
+        PolicyEntry entry = new PolicyEntry();
+        entry.setPrioritizedMessages(true);
+        entry.setQueue(QUEUE_NAME);
+        pMap.setPolicyEntries(Arrays.asList(entry));
+        broker.setDestinationPolicy(pMap);
         // Enable statistics
         broker.setPlugins(new BrokerPlugin[]{new StatisticsBrokerPlugin()});
         broker.setEnableStatistics(true);
@@ -42,14 +72,11 @@ public class ActiveMQMailQueueTest extends JMSMailQueueTest {
 
     @Override
     protected JMSMailQueue createQueue(ConnectionFactory factory, String queueName) {
-        Logger log = LoggerFactory.getLogger("MockLog");
-        // slf4j can't set programmatically any log level. It's just a facade
-        // log.setLevel(SimpleLog.LOG_LEVEL_DEBUG);
+        Logger log = LoggerFactory.getLogger(ActiveMQMailQueueTest.class);
         return new ActiveMQMailQueue(factory, queueName, useBlobMessages(), log);
     }
 
     protected boolean useBlobMessages() {
         return false;
     }
-
 }

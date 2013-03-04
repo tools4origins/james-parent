@@ -107,7 +107,6 @@ public interface MailQueue {
     }
 
     /**
-     * 
      *
      */
     public interface MailQueueItem {
