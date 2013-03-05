@@ -123,7 +123,7 @@
 
     <bean id="locker" class="org.apache.james.mailbox.store.JVMMailboxPathLocker"/>
 
-    <import resource="classpath:META-INF/org/apache/james/spring-mailbox.xml"/>
+    <import resource="classpath:META-INF/spring/spring-mailbox.xml"/>
 
     <!-- Mailbox Copier -->
     <bean id="mailboxcopier" class="org.apache.james.mailbox.copier.MailboxCopierImpl"/>
