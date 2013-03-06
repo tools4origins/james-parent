@@ -27,7 +27,7 @@
 
   <section name="Recipient Rewrite Table Configuration">
 
-    <p>Consult <a href="https://svn.apache.org/repos/asf/james/app/tags/apache-james-3.0-beta4/src/main/resources/recipientrewritetable-template.xml">recipientrewritetable-template.xml</a> in SVN to get some examples and hints.</p>
+    <p>Consult <a href="http://svn.apache.org/repos/asf/james/server/trunk/app/src/main/resources/recipientrewritetable-template.xml">recipientrewritetable-template.xml</a> in SVN to get some examples and hints.</p>
 
     <subsection name="JPA Recipient Rewrite Table">
     

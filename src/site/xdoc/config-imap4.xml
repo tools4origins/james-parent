@@ -27,7 +27,7 @@
 
 <section name="IMAP4 Configuration">
 
-      <p>Consult <a href="https://svn.apache.org/repos/asf/james/app/tags/apache-james-3.0-beta4/src/main/resources/imapserver-template.xml">imapserver-template.xml</a> in SVN to get some examples and hints.</p>
+      <p>Consult <a href="http://svn.apache.org/repos/asf/james/server/trunk/app/src/main/resources/imapserver-template.xml">imapserver-template.xml</a> in SVN to get some examples and hints.</p>
 
     <p>The IMAP4 service is controlled by a configuration block in the imap4server.xml.
        The imap4server tag defines the boundaries of the configuration block.  It encloses 

@@ -35,15 +35,15 @@
 
     <p>The result was:</p>
     <ol> 
-      <li>The queuing of the 100.000 emails took 8 minutes.</li>
-      <li>The dequeueing of the 100.000 emails took 16 minutes.</li>
+      <li>The queuing of the 100000 emails took 8 minutes.</li>
+      <li>The dequeueing of the 100000 emails took 16 minutes.</li>
     </ol>
 
     <p>We thus have a throughput of more than <b>100 mails/second</b>.</p>
 
     <p>These numbers are obtained with the out-of-the-box configuration (not optimized).
        I you run for example (depends on JVM) with <code>-XX:+UseParallelGC -XX:+AggressiveOpts -XX:+UseFastAccessorMethods</code>,
-       you may have 10.000 mails enqueued in 38 seconds, which represents <b>263 mails per second</b>.</p>
+       you may have 10000 mails enqueued in 38 seconds, which represents <b>263 mails per second</b>.</p>
 
   </section>
 
