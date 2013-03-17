@@ -123,7 +123,7 @@
         <javax.activation.artifactId>geronimo-activation_1.1_spec</javax.activation.artifactId>
         <jackrabbit.version>2.5.2</jackrabbit.version>
         <jsieve.version>0.6-SNAPSHOT</jsieve.version>
-        <mailbox.version>0.5-SNAPSHOT</mailbox.version>
+        <mailbox.version>0.5</mailbox.version>
         <mailet.version>2.5.1-SNAPSHOT</mailet.version>
         <productName>Apache-James Mail Server</productName>
         <protocols.version>1.6.3-SNAPSHOT</protocols.version>
@@ -525,6 +525,13 @@
                         <artifactId>commons-logging</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.james</groupId>
+                <artifactId>apache-james-mailbox-hbase</artifactId>
+                <classifier>tests</classifier>
+                <version>${mailbox.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.james</groupId>

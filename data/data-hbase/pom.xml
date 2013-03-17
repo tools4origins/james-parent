@@ -122,8 +122,8 @@
         <dependency>
             <groupId>org.apache.james</groupId>
             <artifactId>apache-james-mailbox-hbase</artifactId>
-            <version>0.5-SNAPSHOT</version>
             <classifier>tests</classifier>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.hbase</groupId>
