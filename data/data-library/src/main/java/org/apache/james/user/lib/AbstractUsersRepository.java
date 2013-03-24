@@ -19,7 +19,9 @@
 
 package org.apache.james.user.lib;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -68,7 +70,8 @@ public abstract class AbstractUsersRepository implements UsersRepository, LogEna
     }
 
     @Inject
-    public void setDomainList(DomainList domainList) {
+    @Resource
+    public void setDomainList(@Named("domainlist") DomainList domainList) {
         this.domainList = domainList;
     }
 
