@@ -19,6 +19,13 @@
 
 package org.apache.james.transport.matchers;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
+import javax.inject.Inject;
+import javax.mail.MessagingException;
+
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.MessageManager;
@@ -30,19 +37,12 @@ import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.model.MailboxQuery;
 import org.apache.james.mailbox.model.MessageRange;
 import org.apache.james.mailbox.model.MessageResult;
-import org.apache.james.mailet.standard.matchers.AbstractQuotaMatcher;
 import org.apache.james.transport.util.MailetContextLog;
 import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.apache.mailet.MailetContext;
-
-import javax.inject.Inject;
-import javax.mail.MessagingException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * <p>
@@ -59,7 +59,7 @@ import java.util.Locale;
  * can slow down things if there are many mails in the mailbox. Some users also
  * report big problems with the matcher if a JDBC based mailrepository is used.
  * </p>
- *
+ * 
  * @since 2.2.0
  */
 abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
@@ -90,8 +90,9 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
      * recipient is a known user in the local server.<br>
      * If a subclass overrides this method it should "and"
      * <code>super.isRecipientChecked</code> to its check.
-     *
-     * @param recipient the recipient to check
+     * 
+     * @param recipient
+     *            the recipient to check
      */
     protected boolean isRecipientChecked(MailAddress recipient) throws MessagingException {
         MailetContext mailetContext = getMailetContext();
@@ -108,8 +109,9 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
 
     /**
      * Gets the storage used in the recipient's inbox.
-     *
-     * @param recipient the recipient to check
+     * 
+     * @param recipient
+     *            the recipient to check
      */
     @Override
     protected long getUsed(MailAddress recipient, Mail _) throws MessagingException {
@@ -122,10 +124,12 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
                 // See JAMES-1197
                 if (localUsers.supportVirtualHosting()) {
                     username = recipient.toString().toLowerCase(Locale.US);
-                } else {
+                }
+                else {
                     username = recipient.getLocalPart().toLowerCase(Locale.US);
                 }
-            } catch (UsersRepositoryException e) {
+            }
+            catch (UsersRepositoryException e) {
                 throw new MessagingException("Unable to access UsersRepository", e);
             }
             session = manager.createSystemSession(username, log);
@@ -145,9 +149,11 @@ abstract public class AbstractStorageQuota extends AbstractQuotaMatcher {
             }
             manager.endProcessingRequest(session);
             manager.logout(session, true);
-        } catch (BadCredentialsException e) {
+        }
+        catch (BadCredentialsException e) {
             throw new MessagingException("Unable to authenticate to mailbox", e);
-        } catch (MailboxException e) {
+        }
+        catch (MailboxException e) {
             throw new MessagingException("Unable to get used space from mailbox", e);
         }
 

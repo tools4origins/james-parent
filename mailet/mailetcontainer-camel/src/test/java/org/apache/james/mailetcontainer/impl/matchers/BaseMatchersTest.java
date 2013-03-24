@@ -19,17 +19,18 @@
 
 package org.apache.james.mailetcontainer.impl.matchers;
 
-import org.apache.james.mailet.standard.matchers.All;
-import org.apache.james.mailet.standard.matchers.RecipientIs;
+import java.util.Arrays;
+
+import javax.mail.MessagingException;
+
+import org.apache.james.transport.matchers.All;
+import org.apache.james.transport.matchers.RecipientIs;
 import org.apache.mailet.MailAddress;
 import org.apache.mailet.Matcher;
 import org.apache.mailet.base.test.FakeMail;
 import org.apache.mailet.base.test.FakeMailContext;
 import org.apache.mailet.base.test.FakeMatcherConfig;
 import org.junit.Before;
-
-import javax.mail.MessagingException;
-import java.util.Arrays;
 
 public class BaseMatchersTest {
 
@@ -56,7 +57,8 @@ public class BaseMatchersTest {
         Matcher child;
         if (matcherName.equals("All")) {
             child = new All();
-        } else {
+        }
+        else {
             child = new RecipientIs();
         }
         FakeMatcherConfig sub = new FakeMatcherConfig(matcherName, context);

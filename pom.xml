@@ -125,7 +125,7 @@
         <jackrabbit.version>2.5.2</jackrabbit.version>
         <jsieve.version>0.6-SNAPSHOT</jsieve.version>
         <mailbox.version>0.5</mailbox.version>
-        <mailet.version>2.5.0</mailet.version>
+        <mailet.version>2.5.1-SNAPSHOT</mailet.version>
         <protocols.version>1.6.3</protocols.version>
         <spring.version>3.1.2.RELEASE</spring.version>
         <geronimo-jms-spec.version>1.1.1</geronimo-jms-spec.version>
