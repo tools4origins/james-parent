@@ -385,7 +385,7 @@ processor.</p>
   
   <p>Parameters:
     <ul>
-      <li><strong>outgoing</strong> (required) - The URL for the repository that will hold messages being processed
+      <li><strong>outgoing</strong> (required) - The name of the queue that will hold messages being processed
       by the RemoteDelivery Mailet.</li>
       <li><strong>delayTime</strong> (optional) - a non-negative Long value that is the time in
       milliseconds between redelivery attempts for a particular mail.  Defaults to six hours.</li>
