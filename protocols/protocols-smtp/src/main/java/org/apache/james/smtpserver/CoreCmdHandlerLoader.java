@@ -33,6 +33,7 @@ import org.apache.james.protocols.smtp.core.PostmasterAbuseRcptHook;
 import org.apache.james.protocols.smtp.core.QuitCmdHandler;
 import org.apache.james.protocols.smtp.core.ReceivedDataLineFilter;
 import org.apache.james.protocols.smtp.core.RsetCmdHandler;
+import org.apache.james.protocols.smtp.core.UnknownCmdHandler;
 import org.apache.james.protocols.smtp.core.VrfyCmdHandler;
 import org.apache.james.protocols.smtp.core.esmtp.AuthCmdHandler;
 import org.apache.james.protocols.smtp.core.esmtp.EhloCmdHandler;
@@ -98,6 +99,8 @@ public class CoreCmdHandlerLoader implements HandlersPackage {
         commands.add(ADDDEFAULTATTRIBUTESHANDLER);
         String SENDMAILHANDLER = SendMailHandler.class.getName();
         commands.add(SENDMAILHANDLER);
+        String UNKNOWNCMDHANDLER = UnknownCmdHandler.class.getName();
+        commands.add(UNKNOWNCMDHANDLER);
 
         // Add logging stuff
         String COMMANDHANDLERRESULTLOGGER = CommandHandlerResultLogger.class.getName();
