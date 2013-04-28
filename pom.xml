@@ -124,7 +124,7 @@
         <javax.activation.artifactId>geronimo-activation_1.1_spec</javax.activation.artifactId>
         <jackrabbit.version>2.5.2</jackrabbit.version>
         <jsieve.version>0.6-SNAPSHOT</jsieve.version>
-        <mailbox.version>0.5</mailbox.version>
+        <mailbox.version>0.6-SNAPSHOT</mailbox.version>
         <mailet.version>2.5.1-SNAPSHOT</mailet.version>
         <protocols.version>1.6.3</protocols.version>
         <spring.version>3.1.2.RELEASE</spring.version>
