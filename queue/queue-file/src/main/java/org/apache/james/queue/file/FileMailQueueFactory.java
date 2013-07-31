@@ -24,7 +24,9 @@ import org.apache.james.queue.api.MailQueue;
 import org.apache.james.queue.api.MailQueueFactory;
 import org.slf4j.Logger;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +42,7 @@ public class FileMailQueueFactory implements MailQueueFactory, LogEnabled {
     private boolean sync = true;
 
     @Inject
+    @Resource
     public void setFileSystem(FileSystem fs) {
         this.fs = fs;
     }
