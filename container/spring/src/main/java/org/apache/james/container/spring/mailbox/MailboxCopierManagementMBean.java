@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.james.container.spring.mailbox;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.apache.james.mailbox.MailboxManager;

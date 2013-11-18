@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -49,6 +50,7 @@ public class MailboxCopierManagement implements MailboxCopierManagementMBean, Ap
 
     @Inject
     @Named("mailboxcopier")
+    @Resource(name = "mailboxcopier")
     public void setMailboxCopier(MailboxCopier copier) {
         this.copier = copier;
     }
@@ -70,6 +72,7 @@ public class MailboxCopierManagement implements MailboxCopierManagementMBean, Ap
         }
 
         return bMap;
+
     }
 
     /**
