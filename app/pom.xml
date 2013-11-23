@@ -718,7 +718,7 @@
                                                 </property>
                                                 <property>
                                                     <name>wrapper.logfile</name>
-                                                    <value>../log/wrapper.log</value>
+                                                    <value>log/wrapper.log</value>
                                                 </property>
                                                 <property>
                                                     <name>wrapper.java.library.path</name>
