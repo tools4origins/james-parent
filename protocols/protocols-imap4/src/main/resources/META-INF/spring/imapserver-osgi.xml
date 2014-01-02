@@ -32,4 +32,5 @@
        <beans:value>org.apache.james.imapserver.netty.IMAPServerMBean</beans:value>
       </osgi:interfaces>
     </osgi:service>                            
+
 </beans:beans>

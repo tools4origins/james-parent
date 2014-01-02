@@ -32,4 +32,5 @@
        <beans:value>org.apache.james.pop3server.netty.POP3ServerMBean</beans:value>
       </osgi:interfaces>
     </osgi:service>                            
+
 </beans:beans>
