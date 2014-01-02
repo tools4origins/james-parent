@@ -43,7 +43,8 @@ public class JmxServerProbe implements ServerProbe {
     private final static String USERSREPOSITORY_OBJECT_NAME = "org.apache.james:type=component,name=usersrepository";
     private final static String MAILBOXCOPIER_OBJECT_NAME = "org.apache.james:type=component,name=mailboxcopier";
 
-    private MBeanServerConnection mbeanServerConn;
+    private JMXConnector jmxc;
+    
     private DomainListManagementMBean domainListProcxy;
     private RecipientRewriteTableManagementMBean virtualUserTableProxy;
     private UsersRepositoryManagementMBean usersRepositoryProxy;
@@ -86,9 +87,9 @@ public class JmxServerProbe implements ServerProbe {
      */
     private void connect() throws IOException {
         JMXServiceURL jmxUrl = new JMXServiceURL(String.format(fmtUrl, host, port));
-        JMXConnector jmxc = JMXConnectorFactory.connect(jmxUrl, null);
-        mbeanServerConn = jmxc.getMBeanServerConnection();
-
+        jmxc = JMXConnectorFactory.connect(jmxUrl, null);
+        MBeanServerConnection mbeanServerConn = jmxc.getMBeanServerConnection();
+        
         try {
             ObjectName name = new ObjectName(DOMAINLIST_OBJECT_NAME);
             domainListProcxy = MBeanServerInvocationHandler.newProxyInstance(
@@ -107,6 +108,11 @@ public class JmxServerProbe implements ServerProbe {
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        jmxc.close();
+    }
+    
     @Override
     public void addUser(String userName, String password) throws Exception {
         usersRepositoryProxy.addUser(userName, password);

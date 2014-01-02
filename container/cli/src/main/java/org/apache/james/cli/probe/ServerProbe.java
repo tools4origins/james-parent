@@ -18,10 +18,11 @@
  ****************************************************************/
 package org.apache.james.cli.probe;
 
+import java.io.Closeable;
 import java.util.Collection;
 import java.util.Map;
 
-public interface ServerProbe {
+public interface ServerProbe extends Closeable {
 	/**
 	 * Add a user to this mail server.
 	 * 
