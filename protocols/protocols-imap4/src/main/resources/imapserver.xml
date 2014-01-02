@@ -21,10 +21,13 @@
 <!-- See http://james.apache.org/server/3/config.html for usage -->
 
 <imapservers>
+
   <imapserver enabled="true">
+
     <jmxName>imapserver</jmxName>
     <bind>0.0.0.0:143</bind>
     <connectionBacklog>200</connectionBacklog>
+
     <tls socketTLS="false" startTLS="false">
       <keystore>file://conf/keystore</keystore>
       <secret>yoursecret</secret>
@@ -48,6 +51,7 @@
       <connectionLimit> 0 </connectionLimit>
       <connectionLimitPerIP> 0 </connectionLimitPerIP>
     </handler>
-  </imapserver>
-</imapservers>
 
+  </imapserver>
+
+</imapservers>
