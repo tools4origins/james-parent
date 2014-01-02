@@ -26,4 +26,29 @@
         <property name="fileSystem" ref="filesystem"/>
     </bean>
 
+    <!-- The imapProcessor configuration will be reviewed when IMAP will be integrated into Protocols project -->
+    <!-- Temporary configuration - see IMAP-357 -->
+    <bean id="imapProcessor" class="org.apache.james.imap.processor.main.DefaultImapProcessorFactory"
+          factory-method="createXListSupportingProcessor">
+        <constructor-arg index="0" ref="mailboxmanager"/>
+        <constructor-arg index="1" ref="subscriptionManager"/>
+        <!-- The mailboxTyper -->
+        <constructor-arg index="2" value="#{null}"/>
+        <!-- The idleKeepAlive -->
+        <constructor-arg index="3" value="120"/>
+        <!-- The list of disabled capabilities -->
+        <constructor-arg index="4">
+            <set>
+                <value>ACL</value>
+                <value>MOVE</value>
+            </set>
+        </constructor-arg>
+    </bean>
+
+    <bean id="imapDecoderFactory" class="org.apache.james.imap.main.DefaultImapDecoderFactory"/>
+    <bean id="imapDecoder" factory-bean="imapDecoderFactory" factory-method="buildImapDecoder"/>
+
+    <bean id="imapEncoderFactory" class="org.apache.james.imap.encode.main.DefaultImapEncoderFactory"/>
+    <bean id="imapEncoder" factory-bean="imapEncoderFactory" factory-method="buildImapEncoder"/>
+
 </beans>
