@@ -61,13 +61,12 @@ public class JPAUser implements User {
         } else if (alg.equals("SHA-512")) {
             newPass = DigestUtils.sha512Hex(password);
         } else {
-            newPass = DigestUtils.shaHex(password);
+            newPass = DigestUtils.sha1Hex(password);
         }
         return newPass;
     }
 
     /** Prevents concurrent modification */
-    @SuppressWarnings("unused")
     @Version
     private int version;
 
@@ -78,7 +77,7 @@ public class JPAUser implements User {
 
     /** Hashed password */
     @Basic
-    @Column(name = "PASSWORD", nullable = false, length = 100)
+    @Column(name = "PASSWORD", nullable = false, length = 128)
     private String password;
 
     @Basic
