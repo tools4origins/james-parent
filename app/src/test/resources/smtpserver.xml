@@ -17,7 +17,10 @@
   under the License.                                           
  -->
 
-<!-- See http://james.apache.org/server/3/config.html for usage -->
+<!--
+   Configuration file used to run a local James server from the IDE.
+   See http://james.apache.org/server/3/config.html for usage.
+-->
 
 <smtpservers>
   <smtpserver enabled="true">
@@ -43,4 +46,3 @@
     </handlerchain>            
   </smtpserver>
 </smtpservers>
-
