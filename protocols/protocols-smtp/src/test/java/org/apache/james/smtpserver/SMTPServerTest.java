@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.james.smtpserver;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,10 +32,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-
+import org.apache.commons.net.ProtocolCommandEvent;
+import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.smtp.SMTPClient;
 import org.apache.commons.net.smtp.SMTPReply;
 import org.apache.james.dnsservice.api.DNSService;
@@ -62,7 +55,14 @@ import org.apache.mailet.HostAddress;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,6 +153,8 @@ public class SMTPServerTest {
             return InetAddress.getLocalHost();
         }
     }
+
+    private static final Logger log = LoggerFactory.getLogger(SMTPServerTest.class.getName());
 
     protected final int smtpListenerPort;
     
@@ -460,42 +462,71 @@ public class SMTPServerTest {
 
     }
 
-    /**
-     * TODO: Understand why this fails!
-     *
-     * public void testEmptyMessage() throws Exception {
-     * finishSetUp(m_testConfiguration);
-     *
-     * SMTPClient smtp = new SMTPClient(); smtp.connect("127.0.0.1",
-     * m_smtpListenerPort);
-     *
-     * // no message there, yet assertNull("no mail received by mail server",
-     * m_mailServer.getLastMail());
-     *
-     * smtp.helo(InetAddress.getLocalHost().toString());
-     *
-     * smtp.setSender("mail@localhost");
-     *
-     * smtp.addRecipient("mail@localhost");
-     *
-     * smtp.sendShortMessageData("");
-     *
-     * smtp.quit();
-     *
-     * smtp.disconnect();
-     *
-     * // mail was propagated by SMTPServer
-     * assertNotNull("mail received by mail server",
-     * m_mailServer.getLastMail());
-     *
-     * // added to check a NPE in the test (JAMES-474) due to MockMailServer //
-     * not cloning the message (added a MimeMessageCopyOnWriteProxy there)
-     * System.gc();
-     *
-     * int size = queue.getLastMail().getMessage().getSize();
-     *
-     * assertEquals(size, 2); }
-     */
+    protected SMTPClient newSMTPClient() throws IOException {
+        SMTPClient smtp = new SMTPClient();
+        smtp.connect("127.0.0.1", smtpListenerPort);
+        if (log.isDebugEnabled()) {
+            smtp.addProtocolCommandListener(new ProtocolCommandListener() {
+
+                @Override
+                public void protocolCommandSent(ProtocolCommandEvent event) {
+                    log.debug("> " + event.getMessage().trim());
+                }
+
+                @Override
+                public void protocolReplyReceived(ProtocolCommandEvent event) {
+                    log.debug("< " + event.getMessage().trim());
+                }
+            });
+        }
+        return smtp;
+    }
+
+    @Test
+    public void testReceivedHeader() throws Exception {
+        init(smtpConfiguration);
+
+        SMTPClient smtp = newSMTPClient();
+
+        // no message there, yet
+        assertNull("no mail received by mail server", queue.getLastMail());
+
+        smtp.helo(InetAddress.getLocalHost().toString());
+        smtp.setSender("mail@localhost");
+        smtp.addRecipient("mail@localhost");
+        smtp.sendShortMessageData("Subject: test\r\n\r\n");
+
+        smtp.quit();
+        smtp.disconnect();
+
+        assertNotNull("spooled mail has Received header",
+                queue.getLastMail().getMessage().getHeader("Received"));
+    }
+
+    // FIXME
+    @Ignore
+    @Test
+    public void testEmptyMessageReceivedHeader() throws Exception {
+        init(smtpConfiguration);
+
+        SMTPClient smtp = newSMTPClient();
+
+        // no message there, yet
+        assertNull("no mail received by mail server", queue.getLastMail());
+
+        smtp.helo(InetAddress.getLocalHost().toString());
+        smtp.setSender("mail@localhost");
+        smtp.addRecipient("mail@localhost");
+        smtp.sendShortMessageData("");
+
+        smtp.quit();
+        smtp.disconnect();
+
+        assertNotNull("spooled mail has Received header",
+                queue.getLastMail().getMessage().getHeader("Received"));
+        // TODO: test body size
+    }
+
     @Test
     public void testSimpleMailSendWithHELO() throws Exception {
         init(smtpConfiguration);
