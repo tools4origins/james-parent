@@ -13,3 +13,9 @@ and should contain everything you need to start with.
 
 For just building without running junit tests:
 $ mvn clean package -DskipTests=true
+
+Some tests have been disabled by default (*TestLive.java) because they
+are not reliable enough for continuous integration testing. To run the
+full set of tests, do:
+$ mvn clean install -Plivetests
+
