@@ -187,31 +187,29 @@
           </p>
           <p>For Linux users, Subversion is probably packaged by your distribution so use your distribution tools to install it (aptitude, yum, etc.)</p>
           <p>Once you have Subversion, go to <strong>Team->Subversion->Checkout</strong> menu entry. <br/>
-          You will see an dialog window used to enter the information about the Subversion repository you are going to use. It looks like this:
-          <img src="./images/netbeans/netbeans-svn-checkout1.png"/>. <br/>
-          In the <code>Repository URL</code> field enter the location for James repository and click <code>Next</code>.
-          You can use the following URL to get the trunk or developement version:
+          You will see an dialog window used to enter the information about the Subversion repository you are going to use. It looks like this:</p>
+          <img src="./images/netbeans/netbeans-svn-checkout1.png"/>
+          <p>In the <code>Repository URL</code> field enter the location for James repository and click <code>Next</code>.
+          You can use the following URL to get the trunk or development version:
           <a href="http://svn.apache.org/repos/asf/james/server/trunk">http://svn.apache.org/repos/asf/james/server/trunk</a>.<br/>
-          After this you will be presented with another dialog window where you can configure which folders to check out and where to save them on your machine.
-          <img src="./images/netbeans/netbeans-svn-checkout2.png"/>. <br/>
-          If you supplied the above URL you can click <code>Finish</code> to get trunk version and start hacking.
-          You can choose another folder by clicking <code>Browse</code>. A new dialog window will open and from there you cand browse
-          the whole subversion repository. I wanted to build James 3.0beta so I choosed <code>james-serve-3.0-beta1</code> under james/server/tags/ folder.
-          <img src="./images/netbeans/netbeans-svn-checkout-browse.png"/>. <br/>
-          </p>
+          After this you will be presented with another dialog window where you can configure which folders to check out and where to save them on your machine.</p>
+          <img src="./images/netbeans/netbeans-svn-checkout2.png"/>
+          <p>If you supplied the above URL you can click <code>Finish</code> to get trunk version and start hacking.
+          You can choose another folder by clicking <code>Browse</code>. A new dialog window will open and from there you can browse
+          the whole subversion repository. I wanted to build James 3.0beta so I choosed <code>james-serve-3.0-beta1</code> under james/server/tags/ folder. <br/></p>
+          <img src="./images/netbeans/netbeans-svn-checkout-browse.png"/>
+
           <p>After you click <code>Finish</code> NetBeans will checkout the sources. It will detect the Maven project and ask you if you wish to open the project.
-          If you open the project you will see in the Projects Window (<code>CTRL+1</code> if not visible) something similar to the next image:<br/>
-          <img src="./images/netbeans/netbeans-james-project.png"/>.
-          </p>
+          If you open the project you will see in the Projects Window (<code>CTRL+1</code> if not visible) something similar to the next image:<br/></p>
+          <img src="./images/netbeans/netbeans-james-project.png"/>
 
       </subsection>
 
       <subsection name="Building the project">
         <p> Building the project does not require too much work. Just go to <code>Run->Build Project</code> menu option.
         Make sure that James is the main project (if you have other projects open) or NetBeans will build that project instead of James.
-        Once the build is finished you will find the binary distribution in <code>container-spring/target</code> directory.
-        <img src="./images/netbeans/james-build-dir.png"/>. <br/>
-        </p>
+        Once the build is finished you will find the binary distribution in <code>container-spring/target</code> directory. <br/></p>
+        <img src="./images/netbeans/james-build-dir.png"/>
       </subsection>
 
   </section>
@@ -225,27 +223,24 @@
       <subsection name="Getting the sources from the repository">
           <p>To download the source code, you can use the Subversion support that comes with IntelliJ IDEA following the next steps:</p>
 
-          <ol>
-              <li>In the Welcome page, click on <strong>Check out from Version Control</strong> and select <strong>Subversion</strong></li>
-              <img src="./images/intellij-idea/intellij-new-project.png"/>
-              <li>In the pop-up window, press the <strong>+</strong> button to add the James code repository in the next pop-up</li>
-              <img src="./images/intellij-idea/intellij-svn-repo.png"/>
-              <img src="./images/intellij-idea/intellij-svn-repo-add-repo.png"/>
-              <li>Choose the location for the project</li>
-              <img src="./images/intellij-idea/intellij-svn-repo-checkout-choose-folder.png"/>
-          </ol>
-          <p>When this process is done, the project should look like this. <br/>
-              <img src="./images/intellij-idea/intellij-svn-james-project.png"/>
-          </p>
+          <p>First, in the Welcome page, click on <strong>Check out from Version Control</strong> and select <strong>Subversion</strong>.</p>
+          <img src="./images/intellij-idea/intellij-new-project.png"/>
+          <p>In the pop-up window, press the <strong>+</strong> button to add the James code repository in the next pop-up.</p>
+          <img src="./images/intellij-idea/intellij-svn-repo.png"/>            <br/>
+          <img src="./images/intellij-idea/intellij-svn-repo-add-repo.png"/>        <br/>
+          <p>Then, choose the location for the project.</p>
+          <img src="./images/intellij-idea/intellij-svn-repo-checkout-choose-folder.png"/>
+
+          <p>When this process is done, the project should look like this. <br/></p>
+          <img src="./images/intellij-idea/intellij-james-project.png"/>
 
       </subsection>
 
     <subsection name="Building the project">
-        <p> To build the project, you must open the <strong>Maven Projects</strong> panel. Then double click on the install goal to run this goal.<br/>
-            <img src="./images/intellij-idea/intellij-mvn.png"/>
-        </p>
-        <p>Then you will find the James server zip in zhe <strong>app/target</strong> folder.<br/>
-            <img src="./images/intellij-idea/intellij-james-zip.png"/></p>
+        <p> To build the project, you must open the <strong>Maven Projects</strong> panel. Then double click on the install goal to run this goal.<br/></p>
+        <img src="./images/intellij-idea/intellij-mvn.png"/>
+        <p>Then you will find the James server zip in the <strong>app/target</strong> folder.<br/></p>
+        <img src="./images/intellij-idea/intellij-james-zip.png"/>
     </subsection>
   </section>
 
