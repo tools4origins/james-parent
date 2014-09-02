@@ -502,6 +502,12 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.james</groupId>
+                <artifactId>apache-james-mailbox-cassandra</artifactId>
+                <version>${mailbox.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.james</groupId>
                 <artifactId>apache-james-mailbox-api</artifactId>
                 <version>${mailbox.version}</version>
             </dependency>
