@@ -918,6 +918,13 @@
                                     </excludes>
                                 </resource>
                                 <resource>
+                                    <directory>../container/spring/src/main/resources/META-INF</directory>
+                                    <targetPath>WEB-INF/conf/META-INF</targetPath>
+                                    <includes>
+                                        <include>**/*.xml</include>
+                                    </includes>
+                                </resource>
+                                <resource>
                                     <directory>.</directory>
                                     <targetPath>META-INF</targetPath>
                                     <includes>
