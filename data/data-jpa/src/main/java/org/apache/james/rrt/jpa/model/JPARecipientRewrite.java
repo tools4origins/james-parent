@@ -97,11 +97,13 @@ public class JPARecipientRewrite {
     private String targetAddress = "";
     
     /**
-     * Default no-args constructor to avoid warning during JPA class enhancement.
-     * Do not us this.
+     * Default no-args constructor for JPA class enhancement.
+     * The constructor need to be public or protected to be used by JPA.
+     * See:  http://docs.oracle.com/javaee/6/tutorial/doc/bnbqa.html
+     * Do not us this constructor, it is for JPA only.
      */
     @SuppressWarnings(value = "unused" )
-    private JPARecipientRewrite() {
+    protected JPARecipientRewrite() {
     }
 
     /**
