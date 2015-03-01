@@ -104,6 +104,11 @@
 
   <section name="Build James Source from Eclipse">
 
+    <p>Upon the following documentation, an interessting resource 
+       <a href="http://blog.bonnydoonmedia.com/post.cfm/walkthrough-tutorials-compiling-apache-james-v3-with-eclipse">
+       can be found here</a>
+    </p>
+
     <subsection name="Import projects in Eclipse with m2eclipse">
 
       <p>You should have Eclipse IDE with <a href="http://m2eclipse.sonatype.org">m2eclipse</a> plugin installed.</p>
