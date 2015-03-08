@@ -56,6 +56,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimePart;
 import javax.mail.internet.ParseException;
 
+import org.apache.geronimo.javamail.transport.smtp.SMTPTransport;
 import org.apache.james.dnsservice.api.DNSService;
 import org.apache.james.dnsservice.api.TemporaryResolutionException;
 import org.apache.james.dnsservice.library.MXHostAddressIterator;
@@ -957,9 +958,10 @@ public class RemoteDelivery extends GenericMailet implements Runnable {
                     // "mail.smtp.dsn.notify" //default to nothing...appended as
                     // NOTIFY= after RCPT TO line.
 
-                    Transport transport = null;
+                    SMTPTransport transport = null;
                     try {
-                        transport = session.getTransport(outgoingMailServer);
+                        transport =  (SMTPTransport) session.getTransport(outgoingMailServer);
+                        transport.setLocalHost( props.getProperty("mail.smtp.localhost", heloName) );
                         try {
                             if (authUser != null) {
                                 transport.connect(outgoingMailServer.getHostName(), authUser, authPass);
