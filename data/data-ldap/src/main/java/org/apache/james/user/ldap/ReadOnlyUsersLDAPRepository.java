@@ -41,6 +41,7 @@ import javax.naming.ldap.LdapContext;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.james.lifecycle.api.Configurable;
 import org.apache.james.lifecycle.api.LogEnabled;
 import org.apache.james.user.api.UsersRepository;
@@ -252,6 +253,12 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
     private String userObjectClass;
 
     /**
+     * The value of this field is taken from the configuration attribute &quot;filter&quot;.
+     * This is the search filter to use to find the desired user. 
+     */
+    private String filter;
+    
+    /**
      * This is the LDAP context/sub-context within which to search for user
      * entities. The value of this field is taken from the configuration
      * attribute &quot;userBase&quot;.
@@ -351,6 +358,9 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
             restrictionConfig = configuration.configurationAt("restriction");
         }
         restriction = new ReadOnlyLDAPGroupRestriction(restrictionConfig);
+
+        //see if there is a filter argument
+        filter = configuration.getString("[@filter]");
 
     }
 
@@ -534,7 +544,14 @@ public class ReadOnlyUsersLDAPRepository implements UsersRepository, Configurabl
 
       StringBuilder builderFilter = new StringBuilder("(&(");
       builderFilter.append(userIdAttribute).append("=").append(name).append(")")
-                   .append("(objectClass=").append(userObjectClass).append("))");
+                   .append("(objectClass=").append(userObjectClass).append(")");
+
+     if(StringUtils.isNotEmpty(filter)){
+    	 builderFilter.append(filter).append(")");
+    	 }
+     else{
+    	 builderFilter.append(")");
+     }
 
       NamingEnumeration<SearchResult> sr = ldapContext.search(userBase, builderFilter.toString(),
           sc);
