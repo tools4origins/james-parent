@@ -4,3 +4,6 @@ target
 *.log
 var/
 log/
+.classpath
+.project
+.settings/

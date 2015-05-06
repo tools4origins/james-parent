@@ -16,11 +16,18 @@
   specific language governing permissions and limitations      
   under the License.                                           
  -->
-<!-- SQL Statements used by James for database access. -->
+
+<!--
+   This template file can be used as example for James Server configuration
+   DO NOT USE IT AS SUCH AND ADAPT IT TO YOUR NEEDS
+-->
+ 
+<!-- See http://james.apache.org/server/3/config.html for usage -->
+
 <sqlResources>
 
 <!--
-     This section provided configuration to determine the determine the
+     This section provided configuration to determine the
      database product which is being used for storage. Different database
      products may require different SQL syntax.
 
@@ -769,6 +776,7 @@
     </sql>
 
 </sqlDefs>
+
 <!-- SQL statements to support the GreyList Handler-->
 <!-- -->
 <sqlDefs name="GreyList">

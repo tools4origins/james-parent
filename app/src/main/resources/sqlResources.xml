@@ -26,6 +26,20 @@
 
 <sqlResources>
 
+<!--
+     This section provided configuration to determine the
+     database product which is being used for storage. Different database
+     products may require different SQL syntax.
+
+     The jdbc database connection is examined to see if it matches with the
+     regular expressions specified in any of the defined matchers. The matchers
+     are processed in the over provided here, with the first successful match
+     defining the "db" value for this connection.
+
+     This value is then used to choose between different definitions for various
+     named sql statements, defined below. If no match is found,
+     the default sql statements are used.
+-->
 <dbMatchers>
     <dbMatcher db="mssql" databaseProductName="microsoft sql server"/>
     <dbMatcher db="oracle" databaseProductName="oracle.*"/>
@@ -39,6 +53,32 @@
     <dbMatcher db="ingres" databaseProductName="ingres.*"/>
 </dbMatchers>
 
+<!--
+    With the following section it is possible to associate several name/value pairs
+        of options to a database product, identified by the "db" XML attribute name.
+    
+    An element without a "db" attribute, if used for an option name, will become a default value for such option.
+    Each option may have a "default default", i.e. a default that applies if no element with an empty
+        "db" attribute (default element) exists as said above;
+        such default default must be documented for such option below.
+    
+    The order of the XML elements is meaningless.
+    
+    Here only "getBody" and "getAttributes" option names are set, but others could be used in the future.
+    Option names:
+        "getBody" - a string (case insensitive) telling which JDBC ResultSet method will be used to
+            get the message body field for a database product.
+            The default default value is "useBytes"..
+            Values (case insensitive):
+                "useBytes"  - use getBytes(int).
+                "useBlob"   - use getBlob(int).
+        "getAttributes" - a string (case insensitive) telling which JDBC ResultSet method will be used to
+            get the message attributes field for a database product.
+           The default default value is "useBytes"..
+            Values (case insensitive):
+                "useBytes"  - use getBytes(int).
+                "useBlob"   - use getBlob(int).
+-->
 <dbOptions>
     <dbOption name="getBody" value="useBytes"/>
     <dbOption name="getAttributes" value="useBytes"/>
@@ -64,6 +104,19 @@
     <dbOption db="ingres" name="getAttributes" value="useBytes"/>
 </dbOptions>
 
+<!-- SQL statements to use for various components. -->
+<!-- -->
+<!-- Parameter definitions ${param} are replaced with parameter values -->
+<!-- read from the configuration file. -->
+<!-- -->
+<!-- If a named statement has a definition defined for the current database product, -->
+<!-- then that statement is used. Otherwise the default statement is used. -->
+
+<!-- SQL statements for the JamesUsersJdbcRepository -->
+<!-- -->
+<!-- The JamesUsersJdbcRepository allows James to use a JDBC compliant database -->
+<!-- to hold user related data.  This includes aliases, forward addresses, -->
+<!-- and password data.  The last is stored as an irreversible hash. -->
 <sqlDefs name="org.apache.james.user.jdbc.JamesUsersJdbcRepository">
     <sql name="tableName">${table}</sql>
 
@@ -113,6 +166,12 @@
     -->
 </sqlDefs>
 
+<!-- SQL statements for the DefaultUsersJdbcRepository -->
+<!-- -->
+<!-- The DefaultUsersJdbcRepository allows James to use a JDBC compliant database -->
+<!-- to hold user ids and password data. The password is stored as an irreversible hash. -->
+<!-- Unlike the JamesUsersJdbcRepository, this repository implementation doesn't support -->
+<!-- aliases or forwards. -->
 <sqlDefs name="org.apache.james.user.jdbc.DefaultUsersJdbcRepository">
     <sql name="tableName">${table}</sql>
 
@@ -141,6 +200,10 @@
     <sql name="createTable">CREATE TABLE ${table} (username VARCHAR(64) NOT NULL, pwdHash VARCHAR(50), pwdAlgorithm VARCHAR(20), PRIMARY KEY(username))</sql>
 </sqlDefs>
 
+<!-- SQL statements for the ListUsersJdbcRepository -->
+<!-- -->
+<!-- This class is used for basic list management.  The database table can -->
+<!-- be used to store subscriber data for mulitple lists.  -->
 <sqlDefs name="org.apache.james.user.jdbc.ListUsersJdbcRepository">
     <!-- An example of defining "default" parameters within the definition file.
          This is used if no key parameter is specified in config. -->
@@ -176,6 +239,7 @@
     <sql name="createTable">CREATE TABLE ${table} (listName VARCHAR(64) NOT NULL, listSubscriber VARCHAR(255) NOT NULL, PRIMARY KEY(listName, listSubscriber))</sql>
 </sqlDefs>
 
+<!-- SQL statements for the JdbcMailRepository  -->
 <sqlDefs name="org.apache.james.mailrepository.jdbc.JDBCMailRepository">
 
     <!-- Statements used to check whether a particular message exists in this repository. -->
@@ -385,6 +449,9 @@
     </sql>
 </sqlDefs>
 
+
+<!-- SQL statements to support the BayesianAnalysis and the BayesianAnalysisFeeder mailets -->
+<!-- -->
 <sqlDefs name="org.apache.james.util.bayesian.JDBCBayesianAnalyzer">
 
     <sql name="hamTableName">bayesiananalysis_ham</sql>
@@ -518,6 +585,8 @@
     </sql>
 </sqlDefs>
 
+<!-- SQL statements to support the WhiteListManager mailet and the IsInWhiteList matcher -->
+<!-- -->
 <sqlDefs name="WhiteList">
 
     <sql name="whiteListTableName">whitelist</sql>
@@ -708,6 +777,8 @@
 
 </sqlDefs>
 
+<!-- SQL statements to support the GreyList Handler-->
+<!-- -->
 <sqlDefs name="GreyList">
 
     <sql name="greyListTableName">greylist</sql>
@@ -830,6 +901,7 @@
     </sql>
 </sqlDefs>
 
+<!-- SQL statements for the JdbcRecipientRewriteTable  -->
 <sqlDefs name="org.apache.james.rrt.jdbc.JDBCRecipientRewriteTable">
 
     <!-- Statements used to check whether a particular message exists in this repository. -->
@@ -847,6 +919,10 @@
     <sql name="addMapping">insert into RecipientRewriteTable values(?,?,?) </sql>
     
     <sql name="selectAllMappings">select * from RecipientRewriteTable </sql>
+    
+    <sql name="selectDomains">select distinct domain from RecipientRewriteTable</sql>
+    
+    <sql name="selectDomain">select distinct domain from RecipientRewriteTable where domain = ? </sql>
     
     <!-- Statements used to create the table associated with this class. -->
     <sql name="createTable" db="mysql">
@@ -934,5 +1010,67 @@
     </sql>
 </sqlDefs>
 
+<!-- SQL statements for the JDBCDomainList  -->
+<sqlDefs name="org.apache.james.domainlist.jdbc.JDBCDomainList">
+    <sql name="selectDomains">select distinct domain from ${table} </sql>
+    
+    <sql name="selectDomain">select distinct domain from ${table} where domain = ? </sql>
+    
+    <sql name="addDomain">insert into ${table} values (?) </sql>
+    
+    <sql name="removeDomain">delete from ${table} where domain = ? </sql>
+    
+        <!-- Statements used to create the table associated with this class. -->
+    <sql name="createTable" db="mysql">
+        CREATE TABLE ${table} (
+            domain varchar(100) NOT NULL default ''
+        )
+    </sql>
+    <sql name="createTable" db="hypersonic">
+        CREATE CACHED TABLE ${table} (
+            user varchar(100) NOT NULL default ''
+        )
+    </sql>
+    <sql name="createTable" db="hsqldb">
+        CREATE CACHED TABLE  ${table} (
+            domain varchar(100) NOT NULL default ''
+        )
+    </sql>
+    <sql name="createTable" db="mssql">
+        CREATE TABLE [${table}] (
+            [user] [domain] (100) NOT NULL default ''
+        )
+    </sql>
+    <sql name="createTable" db="oracle">
+        CREATE TABLE ${table} (
+            domain varchar2(100) NOT NULL default ''
+        )
+    </sql>
+    <sql name="createTable" db="postgresql">
+        CREATE TABLE ${table} (
+            domain varchar(64) NOT NULL default ''
+        )
+    </sql>
+    <sql name="createTable" db="sapdb">
+        CREATE TABLE ${table} (
+            domain varchar(100) NOT NULL default '',
+        )
+    </sql>
+    <sql name="createTable" db="db2">
+        CREATE TABLE ${table} (
+            domain varchar(100) NOT NULL default ''
+        )
+    </sql>
+    <sql name="createTable" db="ingres">
+        CREATE TABLE ${table} (
+            domain varchar(100) NOT NULL default ''
+        )
+    </sql>
+    <sql name="createTable" db="derby">
+        CREATE TABLE ${table} (
+            domain varchar (100) NOT NULL default ''
+        )
+    </sql>
+</sqlDefs>
 </sqlResources>
 
