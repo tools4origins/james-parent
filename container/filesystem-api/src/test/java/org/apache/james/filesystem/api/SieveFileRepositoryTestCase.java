@@ -262,10 +262,8 @@ public class SieveFileRepositoryTestCase {
         repo.putScript(user, scriptName1, content1);
         summaries = repo.listScripts(user);
         assertEquals(2, summaries.size());
-        assertEquals(scriptName, summaries.get(0).getName());
-        assertTrue(summaries.get(0).isActive());
-        assertEquals(scriptName1, summaries.get(1).getName());
-        assertTrue(!summaries.get(1).isActive());
+        assertTrue(summaries.contains(new ScriptSummary(scriptName, true)));
+        assertTrue(summaries.contains(new ScriptSummary(scriptName1, false)));
     }
 
     /**

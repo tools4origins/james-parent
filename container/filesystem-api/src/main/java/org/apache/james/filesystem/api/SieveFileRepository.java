@@ -64,6 +64,7 @@ public class SieveFileRepository implements SieveRepository {
     private static final String FILE_NAME_ACTIVE = ".active";
     private static final List<String> SYSTEM_FILES = Arrays.asList(FILE_NAME_QUOTA, FILE_NAME_ACTIVE);
     private static final int MAX_BUFF_SIZE = 32768;
+    public static final String SIEVE_EXTENSION = ".sieve";
 
     private FileSystem _fileSystem = null;
     private final Object lock = new Object();
@@ -242,26 +243,17 @@ public class SieveFileRepository implements SieveRepository {
         } catch (ScriptNotFoundException ex) {
             // no op
         }
-        final File activeFile1 = activeFile;
         for (final File file : files) {
             if (!SYSTEM_FILES.contains(file.getName())) {
-                summaries.add(new ScriptSummary() {
-
-                    public String getName() {
-                        return file.getName();
-                    }
-
-                    public boolean isActive() {
-                        boolean isActive = false;
-                        if (null != activeFile1) {
-                            isActive = 0 == activeFile1.compareTo(file);
-                        }
-                        return isActive;
-                    }
-                });
+                summaries.add(new ScriptSummary(file.getName(), isActive(file, activeFile)));
             }
         }
         return summaries;
+    }
+
+    private boolean isActive(File file, File activeFile) {
+        return null != activeFile
+            && activeFile.equals(file);
     }
 
     @Override
@@ -284,11 +276,10 @@ public class SieveFileRepository implements SieveRepository {
             if (newFile.exists()) {
                 throw new DuplicateException("User: " + user + "Script: " + newName);
             }
-            boolean isActive = isActiveFile(user, oldFile);
             try {
                 FileUtils.copyFile(oldFile, newFile);
-                if (isActive) {
-                    setActiveFile(newFile, true);
+                if (isActiveFile(user, oldFile)) {
+                    setActiveFile(newFile, user, true);
                 }
                 FileUtils.forceDelete(oldFile);
             } catch (IOException ex) {
@@ -317,17 +308,17 @@ public class SieveFileRepository implements SieveRepository {
             File oldActive = null;
             try {
                 oldActive = getActiveFile(user);
-                setActiveFile(oldActive, false);
+                setActiveFile(oldActive, user, false);
             } catch (ScriptNotFoundException ex) {
                 // This is permissible
             }
             // Turn on the new active script if not an empty name
             if ((null != name) && (!name.trim().isEmpty())) {
                 try {
-                    setActiveFile(getScriptFile(user, name), true);
+                    setActiveFile(getScriptFile(user, name), user, true);
                 } catch (ScriptNotFoundException ex) {
                     if (null != oldActive) {
-                        setActiveFile(oldActive, true);
+                        setActiveFile(oldActive, user, true);
                     }
                     throw ex;
                 }
@@ -368,23 +359,29 @@ public class SieveFileRepository implements SieveRepository {
     }
 
     protected boolean isActiveFile(String user, File file) throws UserNotFoundException {
-        boolean isActive = false;
         try {
-            isActive = 0 == getActiveFile(user).compareTo(file);
+            return 0 == getActiveFile(user).compareTo(file);
         } catch (ScriptNotFoundException ex) {
-            // no op;
+            return false;
         }
-        return isActive;
     }
 
-    protected void setActiveFile(File activeFile, boolean isActive) throws StorageException {
-        File file = new File(activeFile.getParentFile(), FILE_NAME_ACTIVE);
+    protected void setActiveFile(File scriptToBeActivated, String userName, boolean isActive) throws StorageException {
+        File personalScriptDirectory = scriptToBeActivated.getParentFile();
+        File sieveBaseDirectory = personalScriptDirectory.getParentFile();
+        File activeScriptPersistenceFile = new File(personalScriptDirectory, FILE_NAME_ACTIVE);
+        File activeScriptCopy = new File(sieveBaseDirectory, userName + SIEVE_EXTENSION);
         if (isActive) {
-            String content = activeFile.getName();
-            toFile(file, content);
+            toFile(activeScriptPersistenceFile, scriptToBeActivated.getName());
+            try {
+                FileUtils.copyFile(scriptToBeActivated, activeScriptCopy);
+            } catch (IOException exception) {
+                throw new StorageException("Can not copy active script to make it accessible for sieve utils", exception);
+            }
         } else {
             try {
-                FileUtils.forceDelete(file);
+                FileUtils.forceDelete(activeScriptPersistenceFile);
+                FileUtils.forceDelete(activeScriptCopy);
             } catch (IOException ex) {
                 throw new StorageException(ex);
             }
@@ -392,7 +389,7 @@ public class SieveFileRepository implements SieveRepository {
     }
 
     protected File getScriptFile(String user, String name) throws UserNotFoundException,
-            ScriptNotFoundException {
+        ScriptNotFoundException {
         File file = new File(getUserDirectory(user), name);
         if (!file.exists()) {
             throw new ScriptNotFoundException("User: " + user + "Script: " + name);
