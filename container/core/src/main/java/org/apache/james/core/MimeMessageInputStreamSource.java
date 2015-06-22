@@ -19,20 +19,21 @@
 
 package org.apache.james.core;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.DeferredFileOutputStream;
-import org.apache.james.lifecycle.api.Disposable;
-
-import javax.mail.MessagingException;
-import javax.mail.util.SharedByteArrayInputStream;
-import javax.mail.util.SharedFileInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.mail.MessagingException;
+import javax.mail.util.SharedByteArrayInputStream;
+import javax.mail.util.SharedFileInputStream;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.DeferredFileOutputStream;
+import org.apache.james.lifecycle.api.Disposable;
 
 /**
  * Takes an input stream and creates a repeatable input stream source for a
@@ -88,7 +89,7 @@ public class MimeMessageInputStreamSource extends MimeMessageSource implements D
 
                     File file = out.getFile();
                     if (file != null) {
-                        file.delete();
+                        FileUtils.forceDelete(file);
                     }
                 }
             } catch (IOException ioe) {

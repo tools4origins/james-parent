@@ -37,6 +37,7 @@ import javax.inject.Named;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.io.FileUtils;
 import org.apache.james.filesystem.api.FileSystem;
 import org.apache.james.lifecycle.api.Configurable;
 import org.apache.james.lifecycle.api.LogEnabled;
@@ -107,9 +108,7 @@ public abstract class AbstractFileRepository implements Repository, Configurable
         m_filter = new ExtensionFileFilter(m_extension);
         // m_filter = new NumberedRepositoryFileFilter(getExtensionDecorator());
 
-        if (!directory.exists() && !directory.mkdirs()) {
-            throw new IOException("Unable to create directory " + directory);
-        }
+        FileUtils.forceMkdir(directory);
 
         getLogger().info(getClass().getName() + " opened in " + m_baseDirectory);
 
@@ -266,11 +265,12 @@ public abstract class AbstractFileRepository implements Repository, Configurable
      */
     public synchronized void remove(final String key) {
         try {
-            final File file = getFile(key);
-            file.delete();
+            FileUtils.forceDelete(getFile(key));
             if (DEBUG)
                 getLogger().debug("removed key " + key);
-        } catch (final Exception e) {
+        } catch (FileNotFoundException e) {
+            getLogger().debug("File for " + key + " not found: wasn't able to remove");
+        } catch (Exception e) {
             throw new RuntimeException("Exception caught while removing" + " an object: " + e);
         }
     }

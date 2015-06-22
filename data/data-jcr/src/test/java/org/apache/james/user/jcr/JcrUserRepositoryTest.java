@@ -19,7 +19,10 @@
 package org.apache.james.user.jcr;
 
 import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
+import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.james.user.api.UsersRepository;
@@ -28,6 +31,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
+
+import com.google.common.base.Throwables;
 
 public class JcrUserRepositoryTest extends AbstractUsersRepositoryTest {
 
@@ -60,13 +65,11 @@ public class JcrUserRepositoryTest extends AbstractUsersRepositoryTest {
     }
 
     private void delete(File file) {
-        if (file.isDirectory()) {
-            File[] contents = file.listFiles();
-            for (File content : contents) {
-                delete(content);
-            }
+        try {
+            FileUtils.forceDelete(file);
+        } catch (IOException e) {
+            Throwables.propagate(e);
         }
-        file.delete();
     }
 
     @Override

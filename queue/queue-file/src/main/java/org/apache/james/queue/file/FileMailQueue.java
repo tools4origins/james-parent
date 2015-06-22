@@ -18,17 +18,6 @@
  ****************************************************************/
 package org.apache.james.queue.file;
 
-import com.google.common.io.Closeables;
-import org.apache.james.core.MimeMessageCopyOnWriteProxy;
-import org.apache.james.core.MimeMessageSource;
-import org.apache.james.lifecycle.api.Disposable;
-import org.apache.james.lifecycle.api.LifecycleUtil;
-import org.apache.james.queue.api.ManageableMailQueue;
-import org.apache.mailet.Mail;
-import org.slf4j.Logger;
-
-import javax.mail.MessagingException;
-import javax.mail.util.SharedFileInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -48,6 +37,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.mail.MessagingException;
+import javax.mail.util.SharedFileInputStream;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.james.core.MimeMessageCopyOnWriteProxy;
+import org.apache.james.core.MimeMessageSource;
+import org.apache.james.lifecycle.api.Disposable;
+import org.apache.james.lifecycle.api.LifecycleUtil;
+import org.apache.james.queue.api.ManageableMailQueue;
+import org.apache.mailet.Mail;
+import org.slf4j.Logger;
+
+import com.google.common.io.Closeables;
 
 /**
  * {@link ManageableMailQueue} implementation which use the fs to store {@link Mail}'s
@@ -84,9 +87,7 @@ public class FileMailQueue implements ManageableMailQueue {
         for (int i = 1; i <= SPLITCOUNT; i++) {
 
             File qDir = new File(queueDir, Integer.toString(i));
-            if (!qDir.exists() && !qDir.mkdirs()) {
-                throw new IOException("Unable to create queue directory " + qDir);
-            }
+            FileUtils.forceMkdir(qDir);
 
             String[] files = qDir.list(new FilenameFilter() {
                 @Override
@@ -379,22 +380,18 @@ public class FileMailQueue implements ManageableMailQueue {
         }
 
         public void delete() throws MailQueueException {
-            File msgFile = new File(getMessageFile());
-            File objectFile = new File(getObjectFile());
-
-            if (objectFile.exists()) {
-                if (!objectFile.delete()) {
-                    throw new MailQueueException("Unable to delete mail");
-                }
+            try {
+                FileUtils.forceDelete(new File(getObjectFile()));
+            } catch (IOException e) {
+                throw new MailQueueException("Unable to delete mail");
             }
-            if (msgFile.exists()) {
-                if (!msgFile.delete()) {
-                    log.debug("Remove of msg file for mail failed");
-                }
 
+            try {
+                FileUtils.forceDelete(new File(getMessageFile()));
+            } catch (IOException e) {
+                log.debug("Remove of msg file for mail failed");
             }
         }
-
     }
 
     @Override

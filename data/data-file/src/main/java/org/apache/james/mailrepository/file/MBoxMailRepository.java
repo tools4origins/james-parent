@@ -71,6 +71,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.io.FileUtils;
 import org.apache.james.core.MailImpl;
 import org.apache.james.lifecycle.api.Configurable;
 import org.apache.james.lifecycle.api.LogEnabled;
@@ -683,7 +684,9 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
         // Just delete the MBOX file
         String lockFileName = mboxFile + LOCKEXT;
         File mBoxLock = new File(lockFileName);
-        if (!mBoxLock.delete()) {
+        try {
+            FileUtils.forceDelete(mBoxLock);
+        } catch (IOException e) {
             String logBuffer = this.getClass().getName() + " Failed to delete lock file " + lockFileName;
             getLogger().error(logBuffer);
         }
@@ -748,9 +751,7 @@ public class MBoxMailRepository implements MailRepository, LogEnabled, Configura
             outputFile.close();
             // Delete the old mbox file
             File mbox = new File(mboxFile);
-            if (!mbox.delete()) {
-                throw new IOException("Unable to delete file " + mbox);
-            }
+            FileUtils.forceDelete(mbox);
             // And rename the lock file to be the new mbox
             mbox = new File(mboxFile + WORKEXT);
             if (!mbox.renameTo(new File(mboxFile))) {

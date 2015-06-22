@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.james.queue.activemq;
 
-import org.apache.activemq.BlobMessage;
-import org.apache.activemq.blob.BlobDownloadStrategy;
-import org.apache.activemq.blob.BlobTransferPolicy;
-import org.apache.activemq.blob.BlobUploadStrategy;
-import org.apache.activemq.command.ActiveMQBlobMessage;
-import org.apache.james.filesystem.api.FileSystem;
-
-import javax.jms.JMSException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,6 +25,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
+import javax.jms.JMSException;
+
+import org.apache.activemq.BlobMessage;
+import org.apache.activemq.blob.BlobDownloadStrategy;
+import org.apache.activemq.blob.BlobTransferPolicy;
+import org.apache.activemq.blob.BlobUploadStrategy;
+import org.apache.activemq.command.ActiveMQBlobMessage;
+import org.apache.commons.io.FileUtils;
+import org.apache.james.filesystem.api.FileSystem;
 
 /**
  * {@link BlobUploadStrategy} and {@link BlobDownloadStrategy} implementation
@@ -94,9 +96,7 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
     public void deleteFile(ActiveMQBlobMessage message) throws IOException, JMSException {
         File f = getFile(message);
         synchronized (lock) {
-            if (f.exists() && !f.delete()) {
-                throw new IOException("Unable to delete file " + f);
-            }
+            FileUtils.forceDelete(f);
         }
     }
 
@@ -134,9 +134,7 @@ public class FileSystemBlobStrategy implements BlobUploadStrategy, BlobDownloadS
 
         synchronized (lock) {
             // check if we need to create the queue folder
-            if (!queueF.exists() && !queueF.mkdirs()) {
-                throw new IOException("Unable to create directory " + queueF.getAbsolutePath());
-            }
+            FileUtils.forceMkdir(queueF);
         }
 
         return fileSystem.getFile(queueUrl + "/" + filename);

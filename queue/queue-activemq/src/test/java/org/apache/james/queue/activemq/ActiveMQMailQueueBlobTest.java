@@ -18,14 +18,17 @@
  ****************************************************************/
 package org.apache.james.queue.activemq;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.james.filesystem.api.FileSystem;
-import org.apache.james.queue.jms.JMSMailQueue;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.commons.io.FileUtils;
+import org.apache.james.filesystem.api.FileSystem;
+import org.apache.james.queue.jms.JMSMailQueue;
+
+import com.google.common.base.Throwables;
 
 public class ActiveMQMailQueueBlobTest extends ActiveMQMailQueueTest {
 
@@ -98,7 +101,13 @@ public class ActiveMQMailQueueBlobTest extends ActiveMQMailQueueTest {
         }
 
         public void destroy() throws FileNotFoundException {
-            getFile(BASE_DIR).delete();
+            try {
+                FileUtils.forceDelete(getFile(BASE_DIR));
+            } catch (FileNotFoundException e) {
+                throw e;
+            } catch (IOException e) {
+                Throwables.propagate(e);
+            }
         }
     }
 }

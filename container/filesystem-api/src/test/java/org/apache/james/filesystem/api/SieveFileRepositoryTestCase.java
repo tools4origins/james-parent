@@ -19,11 +19,27 @@
  */
 package org.apache.james.filesystem.api;
 
-import java.io.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+
 import org.apache.commons.io.FileUtils;
-import org.apache.james.managesieve.api.*;
-import static org.junit.Assert.*;
+import org.apache.james.managesieve.api.DuplicateException;
+import org.apache.james.managesieve.api.DuplicateUserException;
+import org.apache.james.managesieve.api.IsActiveException;
+import org.apache.james.managesieve.api.QuotaExceededException;
+import org.apache.james.managesieve.api.QuotaNotFoundException;
+import org.apache.james.managesieve.api.ScriptNotFoundException;
+import org.apache.james.managesieve.api.ScriptSummary;
+import org.apache.james.managesieve.api.SieveRepository;
+import org.apache.james.managesieve.api.StorageException;
+import org.apache.james.managesieve.api.UserNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,7 +79,7 @@ public class SieveFileRepositoryTestCase {
         if (root.exists()) {
             FileUtils.forceDelete(root);
         }
-        root.mkdir();
+        FileUtils.forceMkdir(root);
     }
 
     /**

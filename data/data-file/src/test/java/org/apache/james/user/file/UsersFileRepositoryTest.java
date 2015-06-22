@@ -33,6 +33,7 @@ import org.apache.james.lifecycle.api.LifecycleUtil;
 import org.apache.james.user.api.UsersRepository;
 import org.apache.james.user.api.UsersRepositoryException;
 import org.apache.james.user.lib.AbstractUsersRepositoryTest;
+import org.junit.After;
 import org.junit.Before;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 public class UsersFileRepositoryTest extends AbstractUsersRepositoryTest {
     
     private static final String TARGET_REPOSITORY_FOLDER = "target/var/users";
+	private File targetRepositoryFolder;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -50,11 +52,13 @@ public class UsersFileRepositoryTest extends AbstractUsersRepositoryTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        File targetRepositoryFolder = new File(TARGET_REPOSITORY_FOLDER);
-        if (targetRepositoryFolder.exists()) {
-            FileUtils.deleteDirectory(targetRepositoryFolder);
-        }
+        targetRepositoryFolder = new File(TARGET_REPOSITORY_FOLDER);
         this.usersRepository = getUsersRepository();
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        FileUtils.forceDelete(targetRepositoryFolder);
     }
 
     /**
