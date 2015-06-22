@@ -555,6 +555,13 @@
 
     <profiles>
         <profile>
+            <id>cassandra</id>
+            <properties>
+                <james.system-property2>-Dspring.profiles.active=cassandra</james.system-property2>
+                <james.system-properties>${james.system-property1} ${james.system-property2}</james.system-properties>
+            </properties>
+        </profile>
+        <profile>
             <id>with-assembly</id>
             <activation>
               <activeByDefault>true</activeByDefault>
@@ -798,6 +805,10 @@
                                                 <property>
                                                     <name>wrapper.java.additional.14</name>
                                                     <value>${james.system-property1}</value>
+                                                </property>
+                                                <property>
+                                                    <name>wrapper.java.additional.15</name>
+                                                    <value>${james.system-property2}</value>
                                                 </property>
                                             </configuration>
                                         </generatorConfiguration>
