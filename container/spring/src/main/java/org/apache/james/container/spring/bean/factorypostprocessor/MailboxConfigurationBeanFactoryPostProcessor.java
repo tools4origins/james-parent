@@ -50,30 +50,38 @@ public class MailboxConfigurationBeanFactoryPostProcessor implements BeanFactory
             BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
             String mailbox = null;
             String subscription = null;
+            String messageMapperFactory = null;
             if (provider.equalsIgnoreCase("jpa")) {
                 mailbox = "jpa-mailboxmanager";
                 subscription = "jpa-subscriptionManager";
+                messageMapperFactory = "jpa-sessionMapperFactory";
             } else if (provider.equalsIgnoreCase("memory")) {
                 mailbox = "memory-mailboxmanager";
                 subscription = "memory-subscriptionManager";
+                messageMapperFactory = "memory-sessionMapperFactory";
             } else if (provider.equalsIgnoreCase("jcr")) {
                 mailbox = "jcr-mailboxmanager";
                 subscription = "jcr-subscriptionManager";
+                messageMapperFactory = "jcr-sessionMapperFactory";
             } else if (provider.equalsIgnoreCase("maildir")) {
                 mailbox = "maildir-mailboxmanager";
                 subscription = "maildir-subscriptionManager";
+                messageMapperFactory = "maildir-sessionMapperFactory";
             } else if (provider.equalsIgnoreCase("hbase")) {
                 mailbox = "hbase-mailboxmanager";
                 subscription = "hbase-subscriptionManager";
+                messageMapperFactory = "hbase-sessionMapperFactory";
             } else if (provider.equalsIgnoreCase("cassandra")) {
                 mailbox = "cassandra-mailboxmanager";
                 subscription = "cassandra-subscriptionManager";
+                messageMapperFactory = "cassandra-sessionMapperFactory";
             }
 
             if (mailbox == null)
                 throw new ConfigurationException("Mailboxmanager provider " + provider + " not supported!");
             registry.registerAlias(mailbox, "mailboxmanager");
             registry.registerAlias(subscription, "subscriptionManager");
+            registry.registerAlias(messageMapperFactory, "messageMapperFactory");
 
         } catch (ConfigurationException e) {
             throw new FatalBeanException("Unable to config the mailboxmanager", e);
