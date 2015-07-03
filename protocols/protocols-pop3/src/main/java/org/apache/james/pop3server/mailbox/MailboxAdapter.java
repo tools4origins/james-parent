@@ -175,7 +175,7 @@ public class MailboxAdapter implements Mailbox {
         try {
             mailboxManager.startProcessingRequest(session);
             for (MessageRange range : ranges) {
-                manager.setFlags(new Flags(Flags.Flag.DELETED), true, false, range, session);
+                manager.setFlags(new Flags(Flags.Flag.DELETED), MessageManager.FlagsUpdateMode.ADD, range, session);
                 manager.expunge(range, session);
             }
         } catch (MailboxException e) {
