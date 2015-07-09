@@ -203,4 +203,9 @@ public class JmxServerProbe implements ServerProbe {
     public void createMailbox(String namespace, String user, String name) {
         mailboxManagerManagement.createMailbox(namespace, user, name);
     }
+
+    @Override
+    public Collection<String> listUserMailboxes(String user) {
+        return mailboxManagerManagement.listMailboxes(user);
+    }
 }

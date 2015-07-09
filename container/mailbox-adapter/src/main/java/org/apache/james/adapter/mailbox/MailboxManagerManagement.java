@@ -75,14 +75,7 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
         } catch (MailboxException e) {
             log.error("Error while remove mailboxes for user " + username, e);
         } finally {
-            if (session != null) {
-                mailboxManager.endProcessingRequest(session);
-                try {
-                    mailboxManager.logout(session, true);
-                } catch (MailboxException e) {
-                    // ignore here
-                }
-            }
+            closeSession(session);
         }
         return false;
     }
@@ -90,6 +83,7 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
     /**
      * @see org.apache.james.lifecycle.api.LogEnabled#setLog(org.slf4j.Logger)
      */
+    @Override
     public void setLog(Logger log) {
         this.log = log;
     }
@@ -101,6 +95,7 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
      */
     @Override
     public List<String> listMailboxes(String username) {
+        Preconditions.checkArgument(username != null, "Username should not be null");
         List<String> boxes = new ArrayList<String>();
         MailboxSession session = null;
         try {
@@ -114,14 +109,7 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
         } catch (MailboxException e) {
             log.error("Error list mailboxes for user " + username, e);
         } finally {
-            if (session != null) {
-                mailboxManager.endProcessingRequest(session);
-                try {
-                    mailboxManager.logout(session, true);
-                } catch (MailboxException e) {
-                    // ignore here
-                }
-            }
+            closeSession(session);
         }
         return boxes;
     }
@@ -129,11 +117,26 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
     @Override
     public void createMailbox(String namespace, String user, String name) {
         Preconditions.checkArgument(namespace != null && user != null && name != null, "Provided mailbox path components should not be null");
+        MailboxSession session = null;
         try {
-            MailboxSession session = mailboxManager.createSystemSession(user, log);
+            session = mailboxManager.createSystemSession(user, log);
+            mailboxManager.startProcessingRequest(session);
             mailboxManager.createMailbox(new MailboxPath(namespace, user, name), session);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to create mailbox", e);
+            log.error("Unable to create mailbox", e);
+        } finally {
+            closeSession(session);
+        }
+    }
+
+    private void closeSession(MailboxSession session) {
+        if (session != null) {
+            mailboxManager.endProcessingRequest(session);
+            try {
+                mailboxManager.logout(session, true);
+            } catch (MailboxException e) {
+                log.error("Can not log session out", e);
+            }
         }
     }
 

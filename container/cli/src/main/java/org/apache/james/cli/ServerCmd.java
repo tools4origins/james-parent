@@ -235,6 +235,14 @@ public class ServerCmd {
                     printUsage();
                     System.exit(1);
                 }
+            } else if (CmdType.LISTUSERMAILBOXES.equals(cmdType)) {
+                if (cmdType.hasCorrectArguments(arguments.length)) {
+                    Collection<String> mailboxes = probe.listUserMailboxes(arguments[1]);
+                    sCmd.print(mailboxes.toArray(new String[mailboxes.size()]), System.out);
+                } else {
+                    printUsage();
+                    System.exit(1);
+                }
             } else {
                 System.err.println("Unrecognized command: " + cmdName + ".");
                 printUsage();
@@ -300,7 +308,8 @@ public class ServerCmd {
                 "listmappings%n" + //
                 "copymailbox <srcbean> <dstbean>%n" + //
                 "deleteusermailboxes <user>%n" + //
-                "createmailbox <namespace> <user> <name>%n"
+                "createmailbox <namespace> <user> <name>%n" + //
+                "listusermailboxes <user>%n"
         );
         String usage = String.format("java %s --host <arg> <command>%n", ServerCmd.class.getName());
         hf.printHelp(usage, "", options, header);

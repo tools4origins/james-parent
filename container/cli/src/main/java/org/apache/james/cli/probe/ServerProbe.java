@@ -200,4 +200,12 @@ public interface ServerProbe extends Closeable {
      * @param name Name of the created mailbox
      */
     void createMailbox(String namespace, String user, String name);
+
+    /**
+     * List mailboxes belonging to the private namespace of a user
+     *
+     * @param user The given user
+     * @return List of mailboxes belonging to the private namespace of a user
+     */
+    Collection<String> listUserMailboxes(String user);
 }

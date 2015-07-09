@@ -153,4 +153,26 @@ public class MailboxManagementTest {
         mailboxManagerManagement.createMailbox("", "", null);
     }
 
+    @Test
+    public void listMailboxesShouldReturnUserMailboxes() throws Exception {
+        Mailbox<InMemoryId> mailbox1 = new SimpleMailbox<InMemoryId>(new MailboxPath("#top", USER, "name1"), UID_VALIDITY);
+        Mailbox<InMemoryId> mailbox2 = new SimpleMailbox<InMemoryId>(new MailboxPath(MailboxConstants.USER_NAMESPACE, USER, "name2"), UID_VALIDITY);
+        Mailbox<InMemoryId> mailbox3 = new SimpleMailbox<InMemoryId>(new MailboxPath(MailboxConstants.USER_NAMESPACE, "other_user", "name3"), UID_VALIDITY);
+        Mailbox<InMemoryId> mailbox4 = new SimpleMailbox<InMemoryId>(new MailboxPath(MailboxConstants.USER_NAMESPACE, USER, "name4"), UID_VALIDITY);
+        Mailbox<InMemoryId> mailbox5 = new SimpleMailbox<InMemoryId>(new MailboxPath(MailboxConstants.USER_NAMESPACE, USER, "INBOX"), UID_VALIDITY);
+        Mailbox<InMemoryId> mailbox6 = new SimpleMailbox<InMemoryId>(new MailboxPath(MailboxConstants.USER_NAMESPACE, USER, "INBOX.toto"), UID_VALIDITY);
+        inMemoryMapperFactory.createMailboxMapper(session).save(mailbox1);
+        inMemoryMapperFactory.createMailboxMapper(session).save(mailbox2);
+        inMemoryMapperFactory.createMailboxMapper(session).save(mailbox3);
+        inMemoryMapperFactory.createMailboxMapper(session).save(mailbox4);
+        inMemoryMapperFactory.createMailboxMapper(session).save(mailbox5);
+        inMemoryMapperFactory.createMailboxMapper(session).save(mailbox6);
+        assertThat(mailboxManagerManagement.listMailboxes(USER)).containsOnly("name2", "name4", "INBOX", "INBOX.toto");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void listMailboxesShouldThrowOnNullUserName() {
+        mailboxManagerManagement.listMailboxes(null);
+    }
+
 }
