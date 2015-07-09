@@ -19,6 +19,7 @@
 package org.apache.james.cli;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -26,13 +27,18 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.james.cli.exceptions.InvalidArgumentNumberException;
+import org.apache.james.cli.exceptions.InvalidPortException;
+import org.apache.james.cli.exceptions.JamesCliException;
+import org.apache.james.cli.exceptions.MissingCommandException;
+import org.apache.james.cli.exceptions.UnrecognizedCommandException;
 import org.apache.james.cli.probe.ServerProbe;
 import org.apache.james.cli.probe.impl.JmxServerProbe;
 import org.apache.james.cli.type.CmdType;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,21 +47,23 @@ import java.util.Map.Entry;
  * Command line utility for managing various aspect of the James server.
  */
 public class ServerCmd {
-    private static final String HOST_OPT_LONG = "host";
-    private static final String HOST_OPT_SHORT = "h";
-    private static final String PORT_OPT_LONG = "port";
-    private static final String PORT_OPT_SHORT = "p";
+    public static final String HOST_OPT_LONG = "host";
+    public static final String HOST_OPT_SHORT = "h";
+    public static final String PORT_OPT_LONG = "port";
+    public static final String PORT_OPT_SHORT = "p";
+
     private static final int DEFAULT_PORT = 9999;
-    private static final Options OPTIONS = new Options();
 
-    private ServerProbe probe;
-
-    static {
+    private static Options createOptions() {
+        Options options = new Options();
         Option optHost = new Option(HOST_OPT_SHORT, HOST_OPT_LONG, true, "node hostname or ip address");
         optHost.setRequired(true);
-        OPTIONS.addOption(optHost);
-        OPTIONS.addOption(PORT_OPT_SHORT, PORT_OPT_LONG, true, "remote jmx agent port number");
+        options.addOption(optHost);
+        options.addOption(PORT_OPT_SHORT, PORT_OPT_LONG, true, "remote jmx agent port number");
+        return options;
     }
+
+    private final ServerProbe probe;
 
     public ServerCmd(ServerProbe probe) {
         this.probe = probe;
@@ -65,53 +73,60 @@ public class ServerCmd {
      * Main method to initialize the class.
      *
      * @param args Command-line arguments.
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws ParseException
      */
-    public static void main(String[] args) throws IOException, InterruptedException, ParseException {
-        long start = Calendar.getInstance().getTimeInMillis();
-        CommandLine cmd = parseCommandLine(args);
-        if (cmd.getArgs().length < 1) {
-            failWithMessage("Missing argument for command.");
-        }
+    public static void main(String[] args) {
+
         try {
-            new ServerCmd(new JmxServerProbe(cmd.getOptionValue(HOST_OPT_LONG), getPort(cmd)))
-                .executeCommandLine(start, cmd);
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+            CommandLine cmd = parseCommandLine(args);
+            CmdType cmdType =new ServerCmd(new JmxServerProbe(cmd.getOptionValue(HOST_OPT_LONG), getPort(cmd)))
+                .executeCommandLine(cmd);
+            stopWatch.stop();
+            print(new String[] { Joiner.on(' ')
+                    .join(cmdType.getCommand(), "command executed sucessfully in", stopWatch.getSplitTime(), "ms.")},
+                System.out);
+            System.exit(0);
+        } catch (JamesCliException e) {
+            failWithMessage(e.getMessage());
+        } catch (ParseException e) {
+            failWithMessage("Error parsing command line : " + e.getMessage());
         } catch (IOException ioe) {
-            System.err.println("Error connecting to remote JMX agent!");
-            ioe.printStackTrace();
-            System.exit(3);
+            failWithMessage("Error connecting to remote JMX agent : " + ioe.getMessage());
         } catch (Exception e) {
             failWithMessage("Error while executing command:" + e.getMessage());
         }
-        System.exit(0);
+
     }
 
     @VisibleForTesting
-    static CommandLine parseCommandLine(String[] args) {
-        try {
-            CommandLineParser parser = new PosixParser();
-            return parser.parse(OPTIONS, args);
-        } catch (ParseException parseExcep) {
-            System.err.println(parseExcep.getMessage());
-            printUsage();
-            parseExcep.printStackTrace(System.err);
-            System.exit(1);
-            return null;
+    static CommandLine parseCommandLine(String[] args) throws ParseException {
+        CommandLineParser parser = new PosixParser();
+        CommandLine commandLine = parser.parse(createOptions(), args);
+        if (commandLine.getArgs().length < 1) {
+            throw new MissingCommandException();
         }
+        return commandLine;
     }
 
-    private static int getPort(CommandLine cmd) throws ParseException {
+    @VisibleForTesting
+    static int getPort(CommandLine cmd) throws ParseException {
         String portNum = cmd.getOptionValue(PORT_OPT_LONG);
         if (portNum != null) {
             try {
-                return Integer.parseInt(portNum);
+                return validatePortNumber(Integer.parseInt(portNum));
             } catch (NumberFormatException e) {
                 throw new ParseException("Port must be a number");
             }
         }
         return DEFAULT_PORT;
+    }
+
+    private static int validatePortNumber(int portNumber) {
+        if (portNumber < 1 || portNumber > 65535) {
+            throw new InvalidPortException(portNumber);
+        }
+        return portNumber;
     }
 
     private static void failWithMessage(String s) {
@@ -121,23 +136,21 @@ public class ServerCmd {
     }
 
     @VisibleForTesting
-    void executeCommandLine(long start, CommandLine cmd) throws Exception {
+    CmdType executeCommandLine(CommandLine cmd) throws Exception {
         String[] arguments = cmd.getArgs();
         String cmdName = arguments[0];
         CmdType cmdType = CmdType.lookup(cmdName);
-
-        if (! cmdType.hasCorrectArguments(arguments.length)) {
-            throw new Exception(String.format("%s is expecting %d arguments but got %d",
-                cmdType.getCommand(),
-                cmdType.getArguments(),
-                arguments.length));
+        if (cmdType == null) {
+            throw  new UnrecognizedCommandException(cmdName);
         }
-        executeCommand(arguments, cmdName, cmdType);
-
-        this.print(new String[] { cmdType.getCommand() + " command executed sucessfully in " + (Calendar.getInstance().getTimeInMillis() - start) + " ms." }, System.out);
+        if (! cmdType.hasCorrectArguments(arguments.length)) {
+            throw new InvalidArgumentNumberException(cmdType, arguments.length);
+        }
+        executeCommand(arguments, cmdType);
+        return cmdType;
     }
 
-    private void executeCommand(String[] arguments, String cmdName, CmdType cmdType) throws Exception {
+    private void executeCommand(String[] arguments, CmdType cmdType) throws Exception {
         switch (cmdType) {
         case ADDUSER:
             probe.addUser(arguments[1], arguments[2]);
@@ -165,7 +178,7 @@ public class ServerCmd {
             break;
         case LISTUSERDOMAINMAPPINGS:
             Collection<String> userDomainMappings = probe.listUserDomainMappings(arguments[1], arguments[2]);
-            this.print(userDomainMappings.toArray(new String[userDomainMappings.size()]), System.out);
+            print(userDomainMappings.toArray(new String[0]), System.out);
             break;
         case ADDADDRESSMAPPING:
             probe.addAddressMapping(arguments[1], arguments[2], arguments[3]);
@@ -193,75 +206,48 @@ public class ServerCmd {
             break;
         case LISTUSERMAILBOXES:
             Collection<String> mailboxes = probe.listUserMailboxes(arguments[1]);
-            this.print(mailboxes.toArray(new String[mailboxes.size()]), System.out);
+            print(mailboxes.toArray(new String[0]), System.out);
             break;
         case DELETEMAILBOX:
             probe.deleteMailbox(arguments[1], arguments[2], arguments[3]);
             break;
         default:
-            throw new Exception("Unrecognized command: " + cmdName + ".");
+            throw new UnrecognizedCommandException(cmdType.getCommand());
         }
     }
 
-    /**
-     * Print data to an output stream.
-     *
-     * @param data The data to print, each element representing a line.
-     * @param out  The output stream to which printing should occur.
-     */
-    public void print(String[] data, PrintStream out) {
-        if (data == null)
-            return;
-        for (String u : data) {
-            out.println(u);
+    private static void print(String[] data, PrintStream out) {
+        if (data != null) {
+            for (String u : data) {
+                out.println(u);
+            }
+            out.println(Joiner.on('\n').join(data));
         }
-        out.println();
     }
 
-    public void print(Map<String, Collection<String>> map, PrintStream out) {
-        if (map == null)
-            return;
-        for (Entry<String, Collection<String>> entry : map.entrySet()) {
-            out.println(entry.getKey() + '=' + collectionToString(entry));
+    private void print(Map<String, Collection<String>> map, PrintStream out) {
+        if (map != null) {
+            for (Entry<String, Collection<String>> entry : map.entrySet()) {
+                out.println(entry.getKey() + '=' + collectionToString(entry));
+            }
+            out.println();
         }
-        out.println();
     }
 
     private String collectionToString(Entry<String, Collection<String>> entry) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String value : entry.getValue()) {
-            stringBuilder.append(value).append(',');
-        }
-        return stringBuilder.toString();
+        return Joiner.on(',').join(entry.getValue());
     }
 
-    /**
-     * Prints usage information to stdout.
-     */
     private static void printUsage() {
-        HelpFormatter hf = new HelpFormatter();
-        String footer = String.format("%nAvailable commands:%n" +
-                "adduser <username> <password>%n" +
-                "setpassword <username> <password>%n" +
-                "removeuser <username>%n" + "listusers%n" +
-                "adddomain <domainname>%n" +
-                "containsdomain <domainname>%n" +
-                "removedomain <domainname>%n" +
-                "listdomains%n" +
-                "addaddressmapping <user> <domain> <fromaddress>%n" +
-                "removeaddressmapping <user> <domain> <fromaddress>%n" +
-                "addregexmapping <user> <domain> <regex>%n" +
-                "removeregexmapping <user> <domain> <regex>%n" +
-                "listuserdomainmappings <user> <domain>%n" +
-                "listmappings%n" +
-                "copymailbox <srcbean> <dstbean>%n" +
-                "deleteusermailboxes <user>%n" +
-                "createmailbox <namespace> <user> <name>%n" +
-                "listusermailboxes <user>%n" +
-                "deletemailbox <namespace> <user> <name>%n"
-        );
-        String usage = String.format("java %s --host <arg> <command>%n", ServerCmd.class.getName());
-        hf.printHelp(usage, "", OPTIONS, footer);
+        StringBuilder footerBuilder = new StringBuilder();
+        for (CmdType cmdType : CmdType.values()) {
+            footerBuilder.append(cmdType.getUsage()).append("\n");
+        }
+        new HelpFormatter().printHelp(
+            String.format("java %s --host <arg> <command>%n", ServerCmd.class.getName()),
+            "",
+            createOptions(),
+            footerBuilder.toString());
     }
 
 }

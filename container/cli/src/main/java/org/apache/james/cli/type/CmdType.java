@@ -22,30 +22,30 @@ package org.apache.james.cli.type;
  * Enumeration of valid command types.
  */
 public enum CmdType {
-	ADDUSER("adduser", 3), //
-	REMOVEUSER("removeuser", 2), //
-	LISTUSERS("listusers", 1), //
-	ADDDOMAIN("adddomain", 2), //
-	REMOVEDOMAIN("removedomain", 2), //
-	CONTAINSDOMAIN("containsdomain", 2), //
-	LISTDOMAINS("listdomains", 1), //
-	LISTMAPPINGS("listmappings", 1), //
-	LISTUSERDOMAINMAPPINGS("listuserdomainmappings", 3), //
-	ADDADDRESSMAPPING("addaddressmapping", 4), //
-	REMOVEADDRESSMAPPING("removeaddressmapping", 4), //
-	ADDREGEXMAPPING("addregexmapping", 4), //
-	REMOVEREGEXMAPPING("removeregexmapping", 4), //
-	SETPASSWORD("setpassword", 3), //
-	COPYMAILBOX("copymailbox", 3), //
-	DELETEUSERMAILBOXES("deleteusermailboxes", 2), //
-	CREATEMAILBOX("createmailbox", 4), //
-	LISTUSERMAILBOXES("listusermailboxes",2), //
-	DELETEMAILBOX("deletemailbox", 4) //
-	;
-	private final String command;
-	private final int arguments;
+	ADDUSER("adduser", "username","password"),
+	REMOVEUSER("removeuser", "username"),
+	LISTUSERS("listusers"),
+	ADDDOMAIN("adddomain", "domainname"),
+	REMOVEDOMAIN("removedomain", "domainname"),
+	CONTAINSDOMAIN("containsdomain", "domainname"),
+	LISTDOMAINS("listdomains"),
+	LISTMAPPINGS("listmappings"),
+	LISTUSERDOMAINMAPPINGS("listuserdomainmappings", "user","domain"),
+	ADDADDRESSMAPPING("addaddressmapping", "user","domain", "fromaddress"),
+	REMOVEADDRESSMAPPING("removeaddressmapping", "user","domain", "fromaddress"),
+	ADDREGEXMAPPING("addregexmapping", "user","domain", "regex"),
+	REMOVEREGEXMAPPING("removeregexmapping", "user","domain", "regex"),
+	SETPASSWORD("setpassword", "username","password"),
+	COPYMAILBOX("copymailbox", "srcbean","dstbean"),
+	DELETEUSERMAILBOXES("deleteusermailboxes", "user"),
+	CREATEMAILBOX("createmailbox", "namespace", "user", "name"),
+	LISTUSERMAILBOXES("listusermailboxes", "user"),
+	DELETEMAILBOX("deletemailbox", "namespace", "user", "name");
 
-	private CmdType(String command, int arguments) {
+	private final String command;
+	private final String[] arguments;
+
+	CmdType(String command, String... arguments) {
 		this.command = command;
 		this.arguments = arguments;
 	}
@@ -58,7 +58,7 @@ public enum CmdType {
 	 * @return true if values match, false otherwise.
 	 */
 	public boolean hasCorrectArguments(int arguments) {
-        return this.arguments == arguments;
+        return this.arguments.length + 1 == arguments;
 
     }
 
@@ -72,9 +72,11 @@ public enum CmdType {
 	 */
 	public static CmdType lookup(String command) {
 		if (command != null) {
-			for (CmdType cmd : values())
-				if (cmd.getCommand().equalsIgnoreCase(command))
-					return cmd;
+			for (CmdType cmd : values()) {
+                if (cmd.getCommand().equalsIgnoreCase(command)) {
+                    return cmd;
+                }
+            }
 		}
 		return null;
 	}
@@ -93,7 +95,15 @@ public enum CmdType {
 	 * 
 	 * @return the value of arguments.
 	 */
-	public int getArguments() {
-		return this.arguments;
+	public int getArgumentCount() {
+		return this.arguments.length + 1;
 	}
+
+    public String getUsage() {
+		StringBuilder stringBuilder = new StringBuilder();
+		for(String argument : arguments) {
+			stringBuilder.append(" <" + argument + ">");
+		}
+        return stringBuilder.toString();
+    }
 }

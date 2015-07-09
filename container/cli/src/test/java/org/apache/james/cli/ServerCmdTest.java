@@ -19,6 +19,8 @@
 
 package org.apache.james.cli;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.easymock.EasyMock.createControl;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
@@ -29,12 +31,16 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.ParseException;
+import org.apache.james.cli.exceptions.InvalidArgumentNumberException;
+import org.apache.james.cli.exceptions.InvalidPortException;
+import org.apache.james.cli.exceptions.MissingCommandException;
+import org.apache.james.cli.exceptions.UnrecognizedCommandException;
 import org.apache.james.cli.probe.ServerProbe;
 import org.apache.james.cli.type.CmdType;
 import org.easymock.IMocksControl;
 import org.junit.Before;
 import org.junit.Test;
-
 
 public class ServerCmdTest {
 
@@ -62,7 +68,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -76,7 +82,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -89,7 +95,7 @@ public class ServerCmdTest {
         expect(serverProbe.containsDomain(domain)).andReturn(true);
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -102,7 +108,7 @@ public class ServerCmdTest {
         expect(serverProbe.listDomains()).andReturn(res);
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -117,7 +123,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -131,7 +137,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -144,7 +150,7 @@ public class ServerCmdTest {
         expect(serverProbe.listUsers()).andReturn(res);
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -156,7 +162,7 @@ public class ServerCmdTest {
         expect(serverProbe.listMappings()).andReturn(new HashMap<String, Collection<String>>());
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -170,7 +176,7 @@ public class ServerCmdTest {
         expect(serverProbe.listUserDomainMappings(user, domain)).andReturn(new ArrayList<String>());
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -186,7 +192,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -202,7 +208,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -218,7 +224,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -234,7 +240,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -249,7 +255,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -264,7 +270,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -278,7 +284,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -294,7 +300,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -310,7 +316,7 @@ public class ServerCmdTest {
         expectLastCall();
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
@@ -323,50 +329,50 @@ public class ServerCmdTest {
         expect(serverProbe.listUserMailboxes(user)).andReturn(new ArrayList<String>());
 
         control.replay();
-        testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+        testee.executeCommandLine(commandLine);
         control.verify();
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void addDomainCommandShouldThrowOnMissingArguments() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.ADDDOMAIN.getCommand()};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void removeDomainCommandShouldThrowOnMissingArguments() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.REMOVEDOMAIN.getCommand()};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void containsDomainCommandShouldThrowOnMissingArguments() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.CONTAINSDOMAIN.getCommand()};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void addUserCommandShouldThrowOnMissingArguments() throws Exception {
         String user = "user@domain";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.ADDUSER.getCommand(), user};
@@ -374,26 +380,26 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void removeUserCommandShouldThrowOnMissingArguments() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.REMOVEUSER.getCommand()};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void listUserDomainMappingsCommandShouldThrowOnMissingArguments() throws Exception {
         String user = "user@domain";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.LISTUSERDOMAINMAPPINGS.getCommand(), user};
@@ -401,13 +407,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void addAddressCommandShouldThrowOnMissingArguments() throws Exception {
         String user = "user@domain";
         String domain = "domain";
@@ -416,13 +422,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void removeAddressCommandShouldThrowOnMissingArguments() throws Exception {
         String user = "user@domain";
         String domain = "domain";
@@ -431,13 +437,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void addRegexMappingCommandShouldThrowOnMissingArguments() throws Exception {
         String user = "user@domain";
         String domain = "domain";
@@ -446,13 +452,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void removeRegexMappingCommandShouldThrowOnMissingArguments() throws Exception {
         String user = "user@domain";
         String domain = "domain";
@@ -461,13 +467,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void setPasswordMappingCommandShouldThrowOnMissingArguments() throws Exception {
         String user = "user@domain";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.SETPASSWORD.getCommand(), user};
@@ -475,13 +481,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void copyMailboxMappingCommandShouldThrowOnMissingArguments() throws Exception {
         String srcBean = "srcBean";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.COPYMAILBOX.getCommand(), srcBean};
@@ -489,26 +495,26 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void deleteUserMailboxesMappingCommandShouldThrowOnMissingArguments() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.DELETEUSERMAILBOXES.getCommand()};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void createMailboxMappingCommandShouldThrowOnMissingArguments() throws Exception {
         String user = "user@domain";
         String namespace = "#private";
@@ -517,13 +523,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void deleteMailboxMappingCommandShouldThrowOnMissingArguments() throws Exception {
         String user = "user@domain";
         String namespace = "#private";
@@ -532,26 +538,26 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void listUserMailboxesMappingsCommandShouldThrowOnMissingArguments() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.LISTUSERMAILBOXES.getCommand()};
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void addDomainCommandShouldThrowOnAdditionalArguments() throws Exception {
         String domain = "example.com";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.ADDDOMAIN.getCommand(), domain, ADDITIONAL_ARGUMENT };
@@ -559,13 +565,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void removeDomainCommandShouldThrowOnAdditionalArguments() throws Exception {
         String domain = "example.com";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.REMOVEDOMAIN.getCommand(), domain, ADDITIONAL_ARGUMENT };
@@ -573,13 +579,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void containsDomainCommandShouldThrowOnAdditionalArguments() throws Exception {
         String domain = "example.com";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.CONTAINSDOMAIN.getCommand(), domain, ADDITIONAL_ARGUMENT };
@@ -587,26 +593,26 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void listDomainsCommandShouldThrowOnAdditionalArguments() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.LISTDOMAINS.getCommand(), ADDITIONAL_ARGUMENT };
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void addUserCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String password = "password";
@@ -615,13 +621,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void removeUserCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.REMOVEUSER.getCommand(), user, ADDITIONAL_ARGUMENT };
@@ -629,39 +635,39 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void listUsersCommandShouldThrowOnAdditionalArguments() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.LISTUSERS.getCommand(), ADDITIONAL_ARGUMENT };
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void listMappingsCommandShouldThrowOnAdditionalArguments() throws Exception {
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.LISTMAPPINGS.getCommand(), ADDITIONAL_ARGUMENT };
         CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void listUserDomainMappingsCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String domain = "domain";
@@ -670,13 +676,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void addAddressCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String domain = "domain";
@@ -686,13 +692,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void removeAddressCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String domain = "domain";
@@ -702,13 +708,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void addRegexMappingCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String domain = "domain";
@@ -718,13 +724,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void removeRegexMappingCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String domain = "domain";
@@ -734,13 +740,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void setPasswordMappingCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String password = "pass";
@@ -749,13 +755,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void copyMailboxMappingCommandShouldThrowOnAdditionalArguments() throws Exception {
         String srcBean = "srcBean";
         String dstBean = "dstBean";
@@ -764,13 +770,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void deleteUserMailboxesMappingCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.DELETEUSERMAILBOXES.getCommand(), user, ADDITIONAL_ARGUMENT };
@@ -778,13 +784,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void createMailboxMappingCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String namespace = "#private";
@@ -794,13 +800,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void deleteMailboxMappingCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String namespace = "#private";
@@ -810,13 +816,13 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidArgumentNumberException.class)
     public void listUserMailboxesMappingsCommandShouldThrowOnAdditionalArguments() throws Exception {
         String user = "user@domain";
         String[] arguments = { "-h", "127.0.0.1", "-p", "9999", CmdType.LISTUSERMAILBOXES.getCommand(), user, ADDITIONAL_ARGUMENT };
@@ -824,9 +830,108 @@ public class ServerCmdTest {
 
         control.replay();
         try {
-            testee.executeCommandLine(Calendar.getInstance().getTimeInMillis(), commandLine);
+            testee.executeCommandLine(commandLine);
         } finally {
             control.verify();
         }
     }
+
+    @Test(expected = UnrecognizedCommandException.class)
+    public void executeCommandLineShouldThrowOnUnrecognizedCommands() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "wrongCommand"};
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+
+        control.replay();
+        try {
+            testee.executeCommandLine(commandLine);
+        } finally {
+            control.verify();
+        }
+    }
+
+    @Test(expected = MissingCommandException.class)
+    public void parseCommandLineShouldThrowWhenOnlyOptionAreProvided() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999" };
+        ServerCmd.parseCommandLine(arguments);
+    }
+
+    @Test(expected = ParseException.class)
+    public void parseCommandLineShouldThrowWhenInvalidOptionIsProvided() throws Exception {
+        String[] arguments = { "-v", "-h", "127.0.0.1", "-p", "9999" };
+        ServerCmd.parseCommandLine(arguments);
+    }
+
+    @Test(expected = ParseException.class)
+    public void parseCommandLineShouldThrowWhenMandatoryOptionIsMissing() throws Exception {
+        String[] arguments = { "-v", "-h", "127.0.0.1", "-p", "9999" };
+        ServerCmd.parseCommandLine(arguments);
+    }
+
+    @Test
+    public void parseCommandLineShouldReturnACommandLineWithCorrectArguments() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "command", "arg1", "arg2", "arg3" };
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+        assertThat(commandLine.getArgs()).containsExactly("command", "arg1", "arg2", "arg3");
+    }
+
+    @Test
+    public void parseCommandLineShouldReturnACommandLineWithCorrectPortOption() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "command", "arg1", "arg2", "arg3" };
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+        assertThat(commandLine.getOptionValue(ServerCmd.PORT_OPT_LONG)).isEqualTo("9999");
+    }
+
+    @Test
+    public void parseCommandLineShouldReturnACommandLineWithCorrectHostOption() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "command", "arg1", "arg2", "arg3" };
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+        assertThat(commandLine.getOptionValue(ServerCmd.HOST_OPT_LONG)).isEqualTo("127.0.0.1");
+    }
+
+    @Test
+    public void getPortShouldRetrievePort() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "9999", "command", "arg1", "arg2", "arg3" };
+        CommandLine commandLine = ServerCmd.parseCommandLine(arguments);
+        assertThat(ServerCmd.getPort(commandLine)).isEqualTo(9999);
+    }
+
+    @Test(expected = InvalidPortException.class)
+    public void getPortShouldThrowOnNullPortValueOption() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "0", "command", "arg1", "arg2", "arg3" };
+        CommandLine commandLine;
+        try {
+            commandLine = ServerCmd.parseCommandLine(arguments);
+        } catch (Exception e) {
+            fail("Exception received", e);
+            return;
+        }
+        ServerCmd.getPort(commandLine);
+    }
+
+    @Test(expected = InvalidPortException.class)
+    public void getPortShouldThrowOnNegativePortValueOption() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "-1", "command", "arg1", "arg2", "arg3" };
+        CommandLine commandLine;
+        try {
+            commandLine = ServerCmd.parseCommandLine(arguments);
+        } catch (Exception e) {
+            fail("Exception received", e);
+            return;
+        }
+        ServerCmd.getPort(commandLine);
+    }
+
+    @Test(expected = InvalidPortException.class)
+    public void getPortShouldThrowOnTooHighPortValueOption() throws Exception {
+        String[] arguments = { "-h", "127.0.0.1", "-p", "99999", "command", "arg1", "arg2", "arg3" };
+        CommandLine commandLine;
+        try {
+            commandLine = ServerCmd.parseCommandLine(arguments);
+        } catch (Exception e) {
+            fail("Exception received", e);
+            return;
+        }
+        ServerCmd.getPort(commandLine);
+    }
+
 }

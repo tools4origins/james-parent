@@ -41,11 +41,11 @@ public class CmdTypeTest {
         assertEquals(false, result);
 
         // Test actual number
-        result = cmd.hasCorrectArguments(cmd.getArguments());
+        result = cmd.hasCorrectArguments(cmd.getArgumentCount());
         assertEquals(true, result);
 
         // Test known bad number
-        result = cmd.hasCorrectArguments(cmd.getArguments() - 1);
+        result = cmd.hasCorrectArguments(cmd.getArgumentCount() - 1);
         assertEquals(false, result);
     }
 
