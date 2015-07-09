@@ -37,7 +37,8 @@ public enum CmdType {
 	REMOVEREGEXMAPPING("removeregexmapping", 4), //
 	SETPASSWORD("setpassword", 3), //
 	COPYMAILBOX("copymailbox", 3), //
-	DELETEUSERMAILBOXES("deleteusermailboxes", 2) //
+	DELETEUSERMAILBOXES("deleteusermailboxes", 2), //
+	CREATEMAILBOX("createmailbox", 4)
 	;
 	private final String command;
 	private final int arguments;

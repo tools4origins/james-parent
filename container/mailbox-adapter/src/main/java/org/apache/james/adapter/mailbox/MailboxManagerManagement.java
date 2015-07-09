@@ -126,6 +126,16 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
         return boxes;
     }
 
+    @Override
+    public void createMailbox(String namespace, String user, String name) {
+        try {
+            MailboxSession session = mailboxManager.createSystemSession(user, log);
+            mailboxManager.createMailbox(new MailboxPath(namespace, user, name), session);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to create mailbox", e);
+        }
+    }
+
     private List<MailboxMetaData> retrieveAllUserMailboxes(String username, MailboxSession session) throws MailboxException {
         return mailboxManager.search(
             new MailboxQuery(new MailboxPath(MailboxConstants.USER_NAMESPACE, username, ""),

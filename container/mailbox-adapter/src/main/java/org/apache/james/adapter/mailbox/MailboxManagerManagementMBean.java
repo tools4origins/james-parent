@@ -40,4 +40,13 @@ public interface MailboxManagerManagementMBean {
      * @return mailboxes
      */
     List<String> listMailboxes(String username);
+
+    /**
+     * Create a mailbox
+     *
+     * @param namespace Namespace of the created mailbox
+     * @param user User of the created mailbox
+     * @param name Name of the created mailbox
+     */
+    void createMailbox(String namespace,String user, String name);
 }
