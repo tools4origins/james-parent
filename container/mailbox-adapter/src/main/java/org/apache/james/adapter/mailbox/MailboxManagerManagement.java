@@ -22,14 +22,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 
+import com.google.common.base.Preconditions;
 import org.apache.james.lifecycle.api.LogEnabled;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
 import org.apache.james.mailbox.exception.MailboxException;
+import org.apache.james.mailbox.model.MailboxConstants;
 import org.apache.james.mailbox.model.MailboxMetaData;
 import org.apache.james.mailbox.model.MailboxPath;
 import org.apache.james.mailbox.model.MailboxQuery;
@@ -44,7 +48,8 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
     private Logger log;
 
     @Inject
-    public void setMailboxManager(MailboxManager mailboxManager) {
+    @Resource(name = "mailboxmanager")
+    public void setMailboxManager(@Named("mailboxmanager") MailboxManager mailboxManager) {
         this.mailboxManager = mailboxManager;
     }
 
@@ -55,12 +60,14 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
     /**
      * @see org.apache.james.adapter.mailbox.MailboxManagerManagementMBean#deleteMailboxes(java.lang.String)
      */
+    @Override
     public boolean deleteMailboxes(String username) {
+        Preconditions.checkArgument(username != null, "Username should not be null");
         MailboxSession session = null;
         try {
             session = mailboxManager.createSystemSession(username, log);
             mailboxManager.startProcessingRequest(session);
-            List<MailboxMetaData> mList = mailboxManager.search(new MailboxQuery(MailboxPath.inbox(session), "", session.getPathDelimiter()), session);
+            List<MailboxMetaData> mList = retrieveAllUserMailboxes(username, session);
             for (MailboxMetaData aMList : mList) {
                 mailboxManager.deleteMailbox(aMList.getPath(), session);
             }
@@ -92,13 +99,14 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
      * org.apache.james.adapter.mailbox.MailboxManagerManagementMBean#listMailboxes
      * (java.lang.String)
      */
+    @Override
     public List<String> listMailboxes(String username) {
         List<String> boxes = new ArrayList<String>();
         MailboxSession session = null;
         try {
             session = mailboxManager.createSystemSession(username, log);
             mailboxManager.startProcessingRequest(session);
-            List<MailboxMetaData> mList = mailboxManager.search(new MailboxQuery(MailboxPath.inbox(session), "", session.getPathDelimiter()), session);
+            List<MailboxMetaData> mList = retrieveAllUserMailboxes(username, session);
             for (MailboxMetaData aMList : mList) {
                 boxes.add(aMList.getPath().getName());
             }
@@ -116,5 +124,13 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
             }
         }
         return boxes;
+    }
+
+    private List<MailboxMetaData> retrieveAllUserMailboxes(String username, MailboxSession session) throws MailboxException {
+        return mailboxManager.search(
+            new MailboxQuery(new MailboxPath(MailboxConstants.USER_NAMESPACE, username, ""),
+                "*",
+                session.getPathDelimiter()),
+            session);
     }
 }

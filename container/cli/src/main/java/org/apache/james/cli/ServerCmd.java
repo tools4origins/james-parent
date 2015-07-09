@@ -221,6 +221,13 @@ public class ServerCmd {
                     printUsage();
                     System.exit(1);
                 }
+            } else if (CmdType.DELETEUSERMAILBOXES.equals(cmdType)) {
+                if (cmdType.hasCorrectArguments(arguments.length)) {
+                    probe.deleteUserMailboxesNames(arguments[1]);
+                } else {
+                    printUsage();
+                    System.exit(1);
+                }
             } else {
                 System.err.println("Unrecognized command: " + cmdName + ".");
                 printUsage();
@@ -284,7 +291,8 @@ public class ServerCmd {
                 "removeregexmapping <user> <domain> <regex>%n" + //
                 "listuserdomainmappings <user> <domain>%n" + //
                 "listmappings%n" + //
-                "copymailbox <srcbean> <dstbean>%n" //
+                "copymailbox <srcbean> <dstbean>%n" + //
+                "deleteusermailboxes <user>%n" //
         );
         String usage = String.format("java %s --host <arg> <command>%n", ServerCmd.class.getName());
         hf.printHelp(usage, "", options, header);

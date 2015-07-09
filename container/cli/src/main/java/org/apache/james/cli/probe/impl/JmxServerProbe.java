@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.cli.probe.impl;
 
+import org.apache.james.adapter.mailbox.MailboxManagerManagementMBean;
 import org.apache.james.cli.probe.ServerProbe;
 import org.apache.james.container.spring.mailbox.MailboxCopierManagementMBean;
 import org.apache.james.domainlist.api.DomainListManagementMBean;
@@ -42,6 +43,7 @@ public class JmxServerProbe implements ServerProbe {
     private final static String VIRTUALUSERTABLE_OBJECT_NAME = "org.apache.james:type=component,name=recipientrewritetable";
     private final static String USERSREPOSITORY_OBJECT_NAME = "org.apache.james:type=component,name=usersrepository";
     private final static String MAILBOXCOPIER_OBJECT_NAME = "org.apache.james:type=component,name=mailboxcopier";
+    private final static String MAILBOXMANAGER_OBJECT_NAME = "org.apache.james:type=component,name=mailboxmanagerbean";
 
     private JMXConnector jmxc;
     
@@ -49,6 +51,7 @@ public class JmxServerProbe implements ServerProbe {
     private RecipientRewriteTableManagementMBean virtualUserTableProxy;
     private UsersRepositoryManagementMBean usersRepositoryProxy;
     private MailboxCopierManagementMBean mailboxCopierManagement;
+    private MailboxManagerManagementMBean mailboxManagerManagement;
 
     private static final String fmtUrl = "service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi";
     private static final int defaultPort = 9999;
@@ -103,6 +106,9 @@ public class JmxServerProbe implements ServerProbe {
             name = new ObjectName(MAILBOXCOPIER_OBJECT_NAME);
             mailboxCopierManagement = MBeanServerInvocationHandler.newProxyInstance(
                     mbeanServerConn, name, MailboxCopierManagementMBean.class, true);
+            name = new ObjectName(MAILBOXMANAGER_OBJECT_NAME);
+            mailboxManagerManagement = MBeanServerInvocationHandler.newProxyInstance(
+                    mbeanServerConn, name, MailboxManagerManagementMBean.class, true);
         } catch (MalformedObjectNameException e) {
             throw new RuntimeException("Invalid ObjectName? Please report this as a bug.", e);
         }
@@ -188,4 +194,8 @@ public class JmxServerProbe implements ServerProbe {
         mailboxCopierManagement.copy(srcBean, dstBean);
     }
 
+    @Override
+    public void deleteUserMailboxesNames(String user) throws Exception {
+        mailboxManagerManagement.deleteMailboxes(user);
+    }
 }

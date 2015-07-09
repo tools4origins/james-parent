@@ -212,8 +212,8 @@
                 <entry key="org.apache.james:type=component,name=usersrepository"
                        value-ref="usersrepositorymanagement"/>
                 <entry key="org.apache.james:type=component,name=fetchmail" value-ref="fetchmail"/>
-                <entry key="org.apache.james:type=component,name=mailboxmanagement"
-                       value-ref="mailboxmanagermanagement"/>
+                <entry key="org.apache.james:type=component,name=mailboxmanagerbean"
+                       value-ref="mailboxmanagermanagementbean"/>
                 <entry key="org.apache.james:type=component,component=mailetcontainer,name=mailspooler"
                        value-ref="mailspooler"/>
                 <entry key="org.apache.james:type=component,name=mailboxcopier" value-ref="mailboxcopiermanagement"/>
@@ -234,7 +234,7 @@
     <bean id="usersrepositorymanagement" class="org.apache.james.user.lib.UsersRepositoryManagement"/>
     <bean id="recipientrewritetablemanagement" class="org.apache.james.rrt.lib.RecipientRewriteTableManagement"/>
     <bean id="domainlistmanagement" class="org.apache.james.domainlist.lib.DomainListManagement"/>
-    <bean id="mailboxmanagermanagement" class="org.apache.james.adapter.mailbox.MailboxManagerManagement"/>
+    <bean id="mailboxmanagermanagementbean" class="org.apache.james.adapter.mailbox.MailboxManagerManagement"/>
     <bean id="mailboxcopiermanagement" class="org.apache.james.container.spring.mailbox.MailboxCopierManagement"/>
     <!--
         <bean id="james23importermanagement" class="org.apache.james.container.spring.tool.James23ImporterManagement" />
