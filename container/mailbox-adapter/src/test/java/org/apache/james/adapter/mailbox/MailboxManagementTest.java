@@ -122,4 +122,35 @@ public class MailboxManagementTest {
         assertThat(inMemoryMapperFactory.createMailboxMapper(session).list()).isEmpty();
     }
 
+    @Test
+    public void createMailboxShouldCreateAMailbox() throws Exception {
+        mailboxManagerManagement.createMailbox(MailboxConstants.USER_NAMESPACE, USER, "name");
+        assertThat(inMemoryMapperFactory.createMailboxMapper(session).list()).hasSize(1);
+        assertThat(inMemoryMapperFactory.createMailboxMapper(session).findMailboxByPath(new MailboxPath(MailboxConstants.USER_NAMESPACE, USER, "name"))).isNotNull();
+    }
+
+    @Test
+    public void createMailboxShouldNotThrowIfMailboxAlreadyExist() throws Exception {
+        MailboxPath path = new MailboxPath(MailboxConstants.USER_NAMESPACE, USER, "name");
+        Mailbox<InMemoryId> mailbox = new SimpleMailbox<InMemoryId>(path, UID_VALIDITY);
+        inMemoryMapperFactory.createMailboxMapper(session).save(mailbox);
+        mailboxManagerManagement.createMailbox(MailboxConstants.USER_NAMESPACE, USER, "name");
+        assertThat(inMemoryMapperFactory.createMailboxMapper(session).list()).containsExactly(mailbox);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createMailboxShouldThrowOnNullNamespace() {
+        mailboxManagerManagement.createMailbox(null, "", "");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createMailboxShouldThrowOnNullUser() {
+        mailboxManagerManagement.createMailbox("", null, "");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createMailboxShouldThrowOnNullName() {
+        mailboxManagerManagement.createMailbox("", "", null);
+    }
+
 }

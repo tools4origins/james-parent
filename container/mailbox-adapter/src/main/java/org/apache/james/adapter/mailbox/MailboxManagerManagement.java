@@ -128,6 +128,7 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
 
     @Override
     public void createMailbox(String namespace, String user, String name) {
+        Preconditions.checkArgument(namespace != null && user != null && name != null, "Provided mailbox path components should not be null");
         try {
             MailboxSession session = mailboxManager.createSystemSession(user, log);
             mailboxManager.createMailbox(new MailboxPath(namespace, user, name), session);
