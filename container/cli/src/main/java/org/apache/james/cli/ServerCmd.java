@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.james.cli;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -44,14 +45,20 @@ public class ServerCmd {
     private static final String HOST_OPT_SHORT = "h";
     private static final String PORT_OPT_LONG = "port";
     private static final String PORT_OPT_SHORT = "p";
-    private static final int defaultPort = 9999;
-    private static final Options options = new Options();
+    private static final int DEFAULT_PORT = 9999;
+    private static final Options OPTIONS = new Options();
+
+    private ServerProbe probe;
 
     static {
         Option optHost = new Option(HOST_OPT_SHORT, HOST_OPT_LONG, true, "node hostname or ip address");
         optHost.setRequired(true);
-        options.addOption(optHost);
-        options.addOption(PORT_OPT_SHORT, PORT_OPT_LONG, true, "remote jmx agent port number");
+        OPTIONS.addOption(optHost);
+        OPTIONS.addOption(PORT_OPT_SHORT, PORT_OPT_LONG, true, "remote jmx agent port number");
+    }
+
+    public ServerCmd(ServerProbe probe) {
+        this.probe = probe;
     }
 
     /**
@@ -63,206 +70,137 @@ public class ServerCmd {
      * @throws ParseException
      */
     public static void main(String[] args) throws IOException, InterruptedException, ParseException {
-
         long start = Calendar.getInstance().getTimeInMillis();
-
-        CommandLineParser parser = new PosixParser();
-        CommandLine cmd = null;
-
-        try {
-            cmd = parser.parse(options, args);
-        } catch (ParseException parseExcep) {
-            System.err.println(parseExcep);
-            printUsage();
-            System.exit(1);
-        }
-
-        // Verify arguments
+        CommandLine cmd = parseCommandLine(args);
         if (cmd.getArgs().length < 1) {
-            System.err.println("Missing argument for command.");
-            printUsage();
-            System.exit(1);
+            failWithMessage("Missing argument for command.");
         }
-
-        String host = cmd.getOptionValue(HOST_OPT_LONG);
-        int port = defaultPort;
-
-        String portNum = cmd.getOptionValue(PORT_OPT_LONG);
-        if (portNum != null) {
-            try {
-                port = Integer.parseInt(portNum);
-            } catch (NumberFormatException e) {
-                throw new ParseException("Port must be a number");
-            }
-        }
-
-        ServerProbe probe = null;
         try {
-            probe = new JmxServerProbe(host, port);
+            new ServerCmd(new JmxServerProbe(cmd.getOptionValue(HOST_OPT_LONG), getPort(cmd)))
+                .executeCommandLine(start, cmd);
         } catch (IOException ioe) {
             System.err.println("Error connecting to remote JMX agent!");
             ioe.printStackTrace();
             System.exit(3);
+        } catch (Exception e) {
+            failWithMessage("Error while executing command:" + e.getMessage());
         }
+        System.exit(0);
+    }
 
-        ServerCmd sCmd = new ServerCmd();
+    @VisibleForTesting
+    static CommandLine parseCommandLine(String[] args) {
+        try {
+            CommandLineParser parser = new PosixParser();
+            return parser.parse(OPTIONS, args);
+        } catch (ParseException parseExcep) {
+            System.err.println(parseExcep.getMessage());
+            printUsage();
+            parseExcep.printStackTrace(System.err);
+            System.exit(1);
+            return null;
+        }
+    }
 
-        // Execute the requested command.
+    private static int getPort(CommandLine cmd) throws ParseException {
+        String portNum = cmd.getOptionValue(PORT_OPT_LONG);
+        if (portNum != null) {
+            try {
+                return Integer.parseInt(portNum);
+            } catch (NumberFormatException e) {
+                throw new ParseException("Port must be a number");
+            }
+        }
+        return DEFAULT_PORT;
+    }
+
+    private static void failWithMessage(String s) {
+        System.err.println(s);
+        printUsage();
+        System.exit(1);
+    }
+
+    @VisibleForTesting
+    void executeCommandLine(long start, CommandLine cmd) throws Exception {
         String[] arguments = cmd.getArgs();
         String cmdName = arguments[0];
-        CmdType cmdType = null;
-        try {
+        CmdType cmdType = CmdType.lookup(cmdName);
 
-            cmdType = CmdType.lookup(cmdName);
-
-            if (CmdType.ADDUSER.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.addUser(arguments[1], arguments[2]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.REMOVEUSER.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.removeUser(arguments[1]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.LISTUSERS.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    sCmd.print(probe.listUsers(), System.out);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.ADDDOMAIN.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.addDomain(arguments[1]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.REMOVEDOMAIN.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.removeDomain(arguments[1]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.CONTAINSDOMAIN.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.containsDomain(arguments[1]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.LISTDOMAINS.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    sCmd.print(probe.listDomains(), System.out);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.LISTMAPPINGS.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    sCmd.print(probe.listMappings(), System.out);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.LISTUSERDOMAINMAPPINGS.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    Collection<String> userDomainMappings = probe.listUserDomainMappings(arguments[1], arguments[2]);
-                    sCmd.print(userDomainMappings.toArray(new String[userDomainMappings.size()]), System.out);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.ADDADDRESSMAPPING.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.addAddressMapping(arguments[1], arguments[2], arguments[3]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.REMOVEADDRESSMAPPING.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.removeAddressMapping(arguments[1], arguments[2], arguments[3]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.ADDREGEXMAPPING.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.addRegexMapping(arguments[1], arguments[2], arguments[3]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.REMOVEREGEXMAPPING.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.removeRegexMapping(arguments[1], arguments[2], arguments[3]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.SETPASSWORD.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.setPassword(arguments[1], arguments[2]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.COPYMAILBOX.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.copyMailbox(arguments[1], arguments[2]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.DELETEUSERMAILBOXES.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.deleteUserMailboxesNames(arguments[1]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.CREATEMAILBOX.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.createMailbox(arguments[1], arguments[2], arguments[3]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.LISTUSERMAILBOXES.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    Collection<String> mailboxes = probe.listUserMailboxes(arguments[1]);
-                    sCmd.print(mailboxes.toArray(new String[mailboxes.size()]), System.out);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else if (CmdType.DELETEMAILBOX.equals(cmdType)) {
-                if (cmdType.hasCorrectArguments(arguments.length)) {
-                    probe.deleteMailbox(arguments[1], arguments[2], arguments[3]);
-                } else {
-                    printUsage();
-                    System.exit(1);
-                }
-            } else {
-                System.err.println("Unrecognized command: " + cmdName + ".");
-                printUsage();
-                System.exit(1);
-            }
-        } catch (Exception e) {
-            sCmd.onException(e, System.err);
-            System.exit(1);
+        if (! cmdType.hasCorrectArguments(arguments.length)) {
+            throw new Exception(String.format("%s is expecting %d arguments but got %d",
+                cmdType.getCommand(),
+                cmdType.getArguments(),
+                arguments.length));
         }
+        executeCommand(arguments, cmdName, cmdType);
 
-        sCmd.print(new String[]{cmdType.getCommand() + " command executed sucessfully in "
-                + (Calendar.getInstance().getTimeInMillis() - start) + " ms."}, System.out);
-        System.exit(0);
+        this.print(new String[] { cmdType.getCommand() + " command executed sucessfully in " + (Calendar.getInstance().getTimeInMillis() - start) + " ms." }, System.out);
+    }
+
+    private void executeCommand(String[] arguments, String cmdName, CmdType cmdType) throws Exception {
+        switch (cmdType) {
+        case ADDUSER:
+            probe.addUser(arguments[1], arguments[2]);
+            break;
+        case REMOVEUSER:
+            probe.removeUser(arguments[1]);
+            break;
+        case LISTUSERS:
+            print(probe.listUsers(), System.out);
+            break;
+        case ADDDOMAIN:
+            probe.addDomain(arguments[1]);
+            break;
+        case REMOVEDOMAIN:
+            probe.removeDomain(arguments[1]);
+            break;
+        case CONTAINSDOMAIN:
+            probe.containsDomain(arguments[1]);
+            break;
+        case LISTDOMAINS:
+            print(probe.listDomains(), System.out);
+            break;
+        case LISTMAPPINGS:
+            print(probe.listMappings(), System.out);
+            break;
+        case LISTUSERDOMAINMAPPINGS:
+            Collection<String> userDomainMappings = probe.listUserDomainMappings(arguments[1], arguments[2]);
+            this.print(userDomainMappings.toArray(new String[userDomainMappings.size()]), System.out);
+            break;
+        case ADDADDRESSMAPPING:
+            probe.addAddressMapping(arguments[1], arguments[2], arguments[3]);
+            break;
+        case REMOVEADDRESSMAPPING:
+            probe.removeAddressMapping(arguments[1], arguments[2], arguments[3]);
+            break;
+        case ADDREGEXMAPPING:
+            probe.addRegexMapping(arguments[1], arguments[2], arguments[3]);
+            break;
+        case REMOVEREGEXMAPPING:
+            probe.removeRegexMapping(arguments[1], arguments[2], arguments[3]);
+            break;
+        case SETPASSWORD:
+            probe.setPassword(arguments[1], arguments[2]);
+            break;
+        case COPYMAILBOX:
+            probe.copyMailbox(arguments[1], arguments[2]);
+            break;
+        case DELETEUSERMAILBOXES:
+            probe.deleteUserMailboxesNames(arguments[1]);
+            break;
+        case CREATEMAILBOX:
+            probe.createMailbox(arguments[1], arguments[2], arguments[3]);
+            break;
+        case LISTUSERMAILBOXES:
+            Collection<String> mailboxes = probe.listUserMailboxes(arguments[1]);
+            this.print(mailboxes.toArray(new String[mailboxes.size()]), System.out);
+            break;
+        case DELETEMAILBOX:
+            probe.deleteMailbox(arguments[1], arguments[2], arguments[3]);
+            break;
+        default:
+            throw new Exception("Unrecognized command: " + cmdName + ".");
+        }
     }
 
     /**
@@ -274,24 +212,27 @@ public class ServerCmd {
     public void print(String[] data, PrintStream out) {
         if (data == null)
             return;
-
         for (String u : data) {
             out.println(u);
         }
-
         out.println();
     }
 
     public void print(Map<String, Collection<String>> map, PrintStream out) {
         if (map == null)
             return;
-
         for (Entry<String, Collection<String>> entry : map.entrySet()) {
-            out.print(entry.getKey());
-            out.print("=");
-            out.println(entry.getValue().toString());
+            out.println(entry.getKey() + '=' + collectionToString(entry));
         }
         out.println();
+    }
+
+    private String collectionToString(Entry<String, Collection<String>> entry) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String value : entry.getValue()) {
+            stringBuilder.append(value).append(',');
+        }
+        return stringBuilder.toString();
     }
 
     /**
@@ -299,35 +240,28 @@ public class ServerCmd {
      */
     private static void printUsage() {
         HelpFormatter hf = new HelpFormatter();
-        String header = String.format("%nAvailable commands:%n" + //
-                "adduser <username> <password>%n" + //
-                "setpassword <username> <password>%n" + //
-                "removeuser <username>%n" + "listusers%n" + //
-                "adddomain <domainname>%n" + //
-                "containsdomain <domainname>%n" + //
-                "removedomain <domainname>%n" + //
-                "listdomains%n" + //
-                "addaddressmapping <user> <domain> <fromaddress>%n" + //
-                "removeaddressmapping <user> <domain> <fromaddress>%n" + //
-                "addregexmapping <user> <domain> <regex>%n" + //
-                "removeregexmapping <user> <domain> <regex>%n" + //
-                "listuserdomainmappings <user> <domain>%n" + //
-                "listmappings%n" + //
-                "copymailbox <srcbean> <dstbean>%n" + //
-                "deleteusermailboxes <user>%n" + //
-                "createmailbox <namespace> <user> <name>%n" + //
-                "listusermailboxes <user>%n" + //
+        String footer = String.format("%nAvailable commands:%n" +
+                "adduser <username> <password>%n" +
+                "setpassword <username> <password>%n" +
+                "removeuser <username>%n" + "listusers%n" +
+                "adddomain <domainname>%n" +
+                "containsdomain <domainname>%n" +
+                "removedomain <domainname>%n" +
+                "listdomains%n" +
+                "addaddressmapping <user> <domain> <fromaddress>%n" +
+                "removeaddressmapping <user> <domain> <fromaddress>%n" +
+                "addregexmapping <user> <domain> <regex>%n" +
+                "removeregexmapping <user> <domain> <regex>%n" +
+                "listuserdomainmappings <user> <domain>%n" +
+                "listmappings%n" +
+                "copymailbox <srcbean> <dstbean>%n" +
+                "deleteusermailboxes <user>%n" +
+                "createmailbox <namespace> <user> <name>%n" +
+                "listusermailboxes <user>%n" +
                 "deletemailbox <namespace> <user> <name>%n"
         );
         String usage = String.format("java %s --host <arg> <command>%n", ServerCmd.class.getName());
-        hf.printHelp(usage, "", options, header);
+        hf.printHelp(usage, "", OPTIONS, footer);
     }
 
-    /**
-     * Handle an exception.
-     */
-    private void onException(Exception e, PrintStream out) {
-        out.println("Error while execute command:");
-        out.println(e.getMessage());
-    }
 }
