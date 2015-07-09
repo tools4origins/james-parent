@@ -29,6 +29,7 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.james.lifecycle.api.LogEnabled;
 import org.apache.james.mailbox.MailboxManager;
 import org.apache.james.mailbox.MailboxSession;
@@ -62,7 +63,7 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
      */
     @Override
     public boolean deleteMailboxes(String username) {
-        Preconditions.checkArgument(username != null, "Username should not be null");
+        Preconditions.checkArgument(Strings.isNullOrEmpty(username), "Username should not be null");
         MailboxSession session = null;
         try {
             session = mailboxManager.createSystemSession(username, log);
@@ -95,7 +96,7 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
      */
     @Override
     public List<String> listMailboxes(String username) {
-        Preconditions.checkArgument(username != null, "Username should not be null");
+        Preconditions.checkArgument(Strings.isNullOrEmpty(username), "Username should not be null");
         List<String> boxes = new ArrayList<String>();
         MailboxSession session = null;
         try {
@@ -116,7 +117,7 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
 
     @Override
     public void createMailbox(String namespace, String user, String name) {
-        Preconditions.checkArgument(namespace != null && user != null && name != null, "Provided mailbox path components should not be null");
+        checkMailboxArguments(namespace, user, name);
         MailboxSession session = null;
         try {
             session = mailboxManager.createSystemSession(user, log);
@@ -127,6 +128,27 @@ public class MailboxManagerManagement extends StandardMBean implements MailboxMa
         } finally {
             closeSession(session);
         }
+    }
+
+    @Override
+    public void deleteMailbox(String namespace, String user, String name) {
+        checkMailboxArguments(namespace, user, name);
+        MailboxSession session = null;
+        try {
+            session = mailboxManager.createSystemSession(user, log);
+            mailboxManager.startProcessingRequest(session);
+            mailboxManager.deleteMailbox(new MailboxPath(namespace, user, name), session);
+        } catch (Exception e) {
+            log.error("Unable to create mailbox", e);
+        } finally {
+            closeSession(session);
+        }
+    }
+
+    private void checkMailboxArguments(String namespace, String user, String name) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(namespace), "Provided mailbox path components should not be null or empty");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(user), "Provided mailbox path components should not be null or empty");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(name), "Provided mailbox name components should not be null or empty");
     }
 
     private void closeSession(MailboxSession session) {

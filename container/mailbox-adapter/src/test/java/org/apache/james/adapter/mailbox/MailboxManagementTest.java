@@ -113,6 +113,11 @@ public class MailboxManagementTest {
         mailboxManagerManagement.deleteMailboxes(null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteMailboxesShouldThrowOnEmptyUserName() throws Exception {
+        mailboxManagerManagement.deleteMailboxes("");
+    }
+
     @Test
     public void deleteMailboxesShouldDeleteMultipleMailboxes() throws Exception {
         inMemoryMapperFactory.createMailboxMapper(session).save(new SimpleMailbox<InMemoryId>(new MailboxPath(MailboxConstants.USER_NAMESPACE, USER, "name"), UID_VALIDITY));
@@ -140,17 +145,32 @@ public class MailboxManagementTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createMailboxShouldThrowOnNullNamespace() {
-        mailboxManagerManagement.createMailbox(null, "", "");
+        mailboxManagerManagement.createMailbox(null, "a", "a");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void createMailboxShouldThrowOnNullUser() {
-        mailboxManagerManagement.createMailbox("", null, "");
+        mailboxManagerManagement.createMailbox("a", null, "a");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void createMailboxShouldThrowOnNullName() {
-        mailboxManagerManagement.createMailbox("", "", null);
+        mailboxManagerManagement.createMailbox("a", "a", null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createMailboxShouldThrowOnEmptyNamespace() {
+        mailboxManagerManagement.createMailbox("", "a", "a");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createMailboxShouldThrowOnEmptyUser() {
+        mailboxManagerManagement.createMailbox("a", "", "a");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createMailboxShouldThrowOnEmptyName() {
+        mailboxManagerManagement.createMailbox("a", "a", "");
     }
 
     @Test
@@ -173,6 +193,72 @@ public class MailboxManagementTest {
     @Test(expected = IllegalArgumentException.class)
     public void listMailboxesShouldThrowOnNullUserName() {
         mailboxManagerManagement.listMailboxes(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void listMailboxesShouldThrowOnEmptyUserName() {
+        mailboxManagerManagement.listMailboxes("");
+    }
+
+    @Test
+    public void deleteMailboxShouldDeleteGivenMailbox() throws Exception {
+        inMemoryMapperFactory.createMailboxMapper(session).save(new SimpleMailbox<InMemoryId>(new MailboxPath(MailboxConstants.USER_NAMESPACE, USER, "name"), UID_VALIDITY));
+        mailboxManagerManagement.deleteMailbox(MailboxConstants.USER_NAMESPACE, USER, "name");
+        assertThat(inMemoryMapperFactory.createMailboxMapper(session).list()).isEmpty();
+    }
+
+    @Test
+    public void deleteMailboxShouldNotDeleteGivenMailboxIfWrongNamespace() throws Exception {
+        Mailbox<InMemoryId> mailbox = new SimpleMailbox<InMemoryId>(new MailboxPath("#top", USER, "name"), UID_VALIDITY);
+        inMemoryMapperFactory.createMailboxMapper(session).save(mailbox);
+        mailboxManagerManagement.deleteMailbox(MailboxConstants.USER_NAMESPACE, USER, "name");
+        assertThat(inMemoryMapperFactory.createMailboxMapper(session).list()).containsOnly(mailbox);
+    }
+
+    @Test
+    public void deleteMailboxShouldNotDeleteGivenMailboxIfWrongUser() throws Exception {
+        Mailbox<InMemoryId> mailbox = new SimpleMailbox<InMemoryId>(new MailboxPath(MailboxConstants.USER_NAMESPACE, "userbis", "name"), UID_VALIDITY);
+        inMemoryMapperFactory.createMailboxMapper(session).save(mailbox);
+        mailboxManagerManagement.deleteMailbox(MailboxConstants.USER_NAMESPACE, USER, "name");
+        assertThat(inMemoryMapperFactory.createMailboxMapper(session).list()).containsOnly(mailbox);
+    }
+
+    @Test
+    public void deleteMailboxShouldNotDeleteGivenMailboxIfWrongName() throws Exception {
+        Mailbox<InMemoryId> mailbox = new SimpleMailbox<InMemoryId>(new MailboxPath(MailboxConstants.USER_NAMESPACE, USER, "wrong_name"), UID_VALIDITY);
+        inMemoryMapperFactory.createMailboxMapper(session).save(mailbox);
+        mailboxManagerManagement.deleteMailbox(MailboxConstants.USER_NAMESPACE, USER, "name");
+        assertThat(inMemoryMapperFactory.createMailboxMapper(session).list()).containsOnly(mailbox);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteMailboxShouldThrowOnNullNamespace() {
+        mailboxManagerManagement.deleteMailbox(null, "a", "a");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteMailboxShouldThrowOnNullUser() {
+        mailboxManagerManagement.deleteMailbox("a", null, "a");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteMailboxShouldThrowOnNullName() {
+        mailboxManagerManagement.deleteMailbox("a", "a", null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteMailboxShouldThrowOnEmptyNamespace() {
+        mailboxManagerManagement.deleteMailbox("", "a", "a");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteMailboxShouldThrowOnEmptyUser() {
+        mailboxManagerManagement.deleteMailbox("a", "", "a");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteMailboxShouldThrowOnEmptyName() {
+        mailboxManagerManagement.deleteMailbox("a", "a", "");
     }
 
 }

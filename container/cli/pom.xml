@@ -41,11 +41,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.james</groupId>
-            <artifactId>james-server-spring</artifactId>
+            <artifactId>james-server-mailbox-adapter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.james</groupId>
-            <artifactId>james-server-mailbox-adapter</artifactId>
+            <artifactId>james-server-spring</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>

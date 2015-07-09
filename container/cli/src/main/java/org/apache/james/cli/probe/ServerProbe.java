@@ -184,7 +184,7 @@ public interface ServerProbe extends Closeable {
     void copyMailbox(String srcBean, String dstBean) throws Exception;
 
     /**
-     * Return the name of all mailboxes belonging to #private:${user}
+     * Delete mailboxes Belonging to #private:${user}
      *
      * @param user Username of the user we want to list mailboxes on
      * @return Collection of the mailboxes names
@@ -208,4 +208,13 @@ public interface ServerProbe extends Closeable {
      * @return List of mailboxes belonging to the private namespace of a user
      */
     Collection<String> listUserMailboxes(String user);
+
+    /**
+     * Delete the given mailbox
+     *
+     * @param namespace Namespace of the mailbox to delete
+     * @param user User the mailbox to delete belongs to
+     * @param name Name of the mailbox to delete
+     */
+    void deleteMailbox(String namespace, String user, String name);
 }

@@ -208,4 +208,9 @@ public class JmxServerProbe implements ServerProbe {
     public Collection<String> listUserMailboxes(String user) {
         return mailboxManagerManagement.listMailboxes(user);
     }
+
+    @Override
+    public void deleteMailbox(String namespace, String user, String name) {
+        mailboxManagerManagement.deleteMailbox(namespace, user, name);
+    }
 }

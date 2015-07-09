@@ -39,7 +39,8 @@ public enum CmdType {
 	COPYMAILBOX("copymailbox", 3), //
 	DELETEUSERMAILBOXES("deleteusermailboxes", 2), //
 	CREATEMAILBOX("createmailbox", 4), //
-	LISTUSERMAILBOXES("listusermailboxes",2) //
+	LISTUSERMAILBOXES("listusermailboxes",2), //
+	DELETEMAILBOX("deletemailbox", 4) //
 	;
 	private final String command;
 	private final int arguments;

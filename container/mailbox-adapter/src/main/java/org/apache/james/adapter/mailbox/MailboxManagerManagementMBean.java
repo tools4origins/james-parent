@@ -49,4 +49,13 @@ public interface MailboxManagerManagementMBean {
      * @param name Name of the created mailbox
      */
     void createMailbox(String namespace,String user, String name);
+
+    /**
+     * Delete the given mailbox
+     *
+     * @param namespace Namespace of the mailbox to delete
+     * @param user User the mailbox to delete belongs to
+     * @param name Name of the mailbox to delete
+     */
+    void deleteMailbox(String namespace, String user, String name);
 }
