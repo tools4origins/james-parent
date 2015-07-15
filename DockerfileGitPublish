@@ -1,0 +1,13 @@
+FROM debian:8.1
+
+ENV GIT_VERSION 1:2.1.4-2.1
+
+RUN apt-get update
+RUN apt-get install -y git="$GIT_VERSION"
+
+ADD . /git_merge
+WORKDIR /git_merge
+
+RUN git checkout -b MERGE
+
+ENTRYPOINT git daemon --export-all --base-path=$PWD --verbose
