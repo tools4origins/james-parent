@@ -5,9 +5,10 @@ ENV GIT_VERSION 1:2.1.4-2.1
 RUN apt-get update
 RUN apt-get install -y git="$GIT_VERSION"
 
-ADD . /git_merge
-WORKDIR /git_merge
+RUN git config --global user.email \"merge@localhost\" \
+    && git config --global user.name \"Merge\"
 
-RUN git checkout -b MERGE
+ADD . /origin
+WORKDIR /origin
 
-ENTRYPOINT git daemon --export-all --base-path=$PWD --verbose
+ENTRYPOINT ["/origin/merge.sh"]
