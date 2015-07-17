@@ -82,10 +82,11 @@ public class ServerCmd {
             CommandLine cmd = parseCommandLine(args);
             CmdType cmdType =new ServerCmd(new JmxServerProbe(cmd.getOptionValue(HOST_OPT_LONG), getPort(cmd)))
                 .executeCommandLine(cmd);
-            stopWatch.stop();
+            stopWatch.split();
             print(new String[] { Joiner.on(' ')
                     .join(cmdType.getCommand(), "command executed sucessfully in", stopWatch.getSplitTime(), "ms.")},
                 System.out);
+            stopWatch.stop();
             System.exit(0);
         } catch (JamesCliException e) {
             failWithMessage(e.getMessage());
