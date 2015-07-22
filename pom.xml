@@ -40,6 +40,7 @@ http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modules>
         <module>james-project</module>
+        <module>modules/backend</module>
         <module>modules/jdkim</module>
         <module>modules/jsieve</module>
         <module>modules/jspf</module>
@@ -62,6 +63,7 @@ http://maven.apache.org/maven-v4_0_0.xsd">
         <james-project.version>1.8.3-SNAPSHOT</james-project.version>
         <protocols.version>1.6.4-SNAPSHOT</protocols.version>
         <mpt.version>0.2-SNAPSHOT</mpt.version>
+        <james-backends.version>1.0.0-SNAPSHOT</james-backends.version>
     </properties>
 
     <dependencyManagement>
@@ -70,6 +72,11 @@ http://maven.apache.org/maven-v4_0_0.xsd">
                 <groupId>org.apache.james</groupId>
                 <artifactId>james-project</artifactId>
                 <version>${james-project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.james</groupId>
+                <artifactId>apache-backend-project</artifactId>
+                <version>${james-backends.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.james</groupId>
