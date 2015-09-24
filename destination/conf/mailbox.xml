@@ -20,4 +20,5 @@
 
 <mailbox>
   <provider>cassandra</provider>
+  <enableHystrix>true</enableHystrix>
 </mailbox>

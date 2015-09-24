@@ -28,7 +28,7 @@
                 <protocol>file</protocol>
             </protocols>
             <!-- Set if the messages should be listed sorted. False by default -->
-            <config FIFO="false" CACHEKEYS="true"/>
+            <config FIFO="false" CACHEKEYS="true" enableHystrix="true"/>
         </mailrepository>
     </mailrepositories>
 </mailrepositorystore>

@@ -52,9 +52,11 @@
     </quotaRootResolver>
     <currentQuotaManager>
         <provider>cassandra</provider>
+        <enableHystrix>true</enableHystrix>
     </currentQuotaManager>
     <maxQuotaManager>
         <provider>cassandra</provider>
+        <enableHystrix>true</enableHystrix>
     </maxQuotaManager>
     <quotaManager>
         <provider>store</provider>

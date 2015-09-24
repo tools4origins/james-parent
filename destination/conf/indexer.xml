@@ -20,4 +20,5 @@
 
 <indexer>
   <provider>elasticsearch</provider>
+  <enableHystrix>true</enableHystrix>
 </indexer>

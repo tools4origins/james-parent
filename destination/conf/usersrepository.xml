@@ -19,6 +19,7 @@
  -->
 
 <usersrepository name="LocalUsers" class="org.apache.james.user.jpa.JPAUsersRepository">
+    <enableHystrix>true</enableHystrix>
     <algorithm>MD5</algorithm>
     <enableVirtualHosting>true</enableVirtualHosting>    
 </usersrepository>

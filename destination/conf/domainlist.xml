@@ -19,6 +19,7 @@
  -->
 
 <domainlist class="org.apache.james.domainlist.jpa.JPADomainList">
+    <enableHystrix>true</enableHystrix>
     <domainnames>
         <domainname>james.linagora.com</domainname>
     </domainnames>
